@@ -206,7 +206,7 @@ namespace Nez.UI
 			{
 				PropertyTweens.FloatPropertyTo( container, "scaleX", 0.2f, 0.2f ).SetEaseType( EaseType.QuintOut ).Start();
 				PropertyTweens.FloatPropertyTo( container, "scaleY", 0.2f, 0.2f ).SetEaseType( EaseType.QuintOut )
-							  .setCompletionHandler( t => container.Remove() )
+							  .SetCompletionHandler( t => container.Remove() )
 							  .Start();
 			}
 			else

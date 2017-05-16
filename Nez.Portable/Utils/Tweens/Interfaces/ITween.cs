@@ -47,7 +47,7 @@ namespace Nez.Tweens
 		/// <summary>
 		/// chainable. sets the action that should be called when the tween is complete.
 		/// </summary>
-		ITween<T> setCompletionHandler( Action<ITween<T>> completionHandler );
+		ITween<T> SetCompletionHandler( Action<ITween<T>> completionHandler );
 
 		/// <summary>
 		/// chainable. set the loop type for the tween. a single pingpong loop means going from start-finish-start.
@@ -60,7 +60,7 @@ namespace Nez.Tweens
 		/// loops (which are really two part tweens) will not fire the loop completion handler on the last iteration. The normal
 		/// tween completion handler will fire though
 		/// </summary>
-		ITween<T> setLoopCompletionHandler( Action<ITween<T>> loopCompleteHandler );
+		ITween<T> SetLoopCompletionHandler( Action<ITween<T>> loopCompleteHandler );
 
 		/// <summary>
 		/// sets the start position for the tween

@@ -90,7 +90,7 @@ namespace Nez.Tweens
 		}
 
 
-		public ITween<T> setCompletionHandler( Action<ITween<T>> completionHandler )
+		public ITween<T> SetCompletionHandler( Action<ITween<T>> completionHandler )
 		{
 			_completionHandler = completionHandler;
 			return this;
@@ -111,7 +111,7 @@ namespace Nez.Tweens
 		}
 
 
-		public ITween<T> setLoopCompletionHandler( Action<ITween<T>> loopCompleteHandler )
+		public ITween<T> SetLoopCompletionHandler( Action<ITween<T>> loopCompleteHandler )
 		{
 			_loopCompleteHandler = loopCompleteHandler;
 			return this;
