@@ -13,7 +13,9 @@ namespace Nez.Tweens
 		Scale,
 		LocalScale,
 		RotationDegrees,
-		LocalRotationDegrees
+		LocalRotationDegrees,
+        RotationFull,
+        LocalRotationFull
 	}
 
 	/// <summary>
@@ -43,10 +45,12 @@ namespace Nez.Tweens
 					_transform.LocalScale = value;
 					break;
 				case TransformTargetType.RotationDegrees:
-					_transform.RotationDegrees = value.X;
+                case TransformTargetType.RotationFull:
+                    _transform.RotationDegrees = value.X;
 					break;
 				case TransformTargetType.LocalRotationDegrees:
-					_transform.LocalRotationDegrees = value.X;
+                case TransformTargetType.LocalRotationFull:
+                    _transform.LocalRotationDegrees = value.X;
 					break;
 				default:
 					throw new System.ArgumentOutOfRangeException();
@@ -67,9 +71,11 @@ namespace Nez.Tweens
 				case TransformTargetType.LocalScale:
 					return _transform.LocalScale;
 				case TransformTargetType.RotationDegrees:
-					return new Vector2( _transform.RotationDegrees );
+                case TransformTargetType.RotationFull:
+                    return new Vector2( _transform.RotationDegrees );
 				case TransformTargetType.LocalRotationDegrees:
-					return new Vector2( _transform.LocalRotationDegrees, 0 );
+                case TransformTargetType.LocalRotationFull:
+                    return new Vector2( _transform.LocalRotationDegrees, 0 );
 				default:
 					throw new System.ArgumentOutOfRangeException();
 			}

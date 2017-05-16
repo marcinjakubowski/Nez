@@ -267,20 +267,53 @@ namespace Nez
 			return tween;
 		}
 
-		#endregion
+        /// <summary>
+        /// transform.rotation tween, using full rotation, no shortcut
+        /// </summary>
+        /// <returns>The rotation to.</returns>
+        /// <param name="self">Self.</param>
+        /// <param name="to">To.</param>
+        /// <param name="duration">Duration.</param>
+        public static ITween<Vector2> TweenRotationFullTo(this Entity self, float to, float duration = 0.3f)
+        {
+            var tween = Pool<TransformVector2Tween>.Obtain();
+            tween.SetTargetAndType(self.Transform, TransformTargetType.RotationFull);
+            tween.Initialize(tween, new Vector2(to), duration);
+
+            return tween;
+        }
+
+
+        /// <summary>
+        /// transform.localEulers tween, using full rotation, no shortcut
+        /// </summary>
+        /// <returns>The klocal eulers to.</returns>
+        /// <param name="self">Self.</param>
+        /// <param name="to">To.</param>
+        /// <param name="duration">Duration.</param>
+        public static ITween<Vector2> TweenLocalRotationFullo(this Entity self, float to, float duration = 0.3f)
+        {
+            var tween = Pool<TransformVector2Tween>.Obtain();
+            tween.SetTargetAndType(self.Transform, TransformTargetType.LocalRotationFull);
+            tween.Initialize(tween, new Vector2(to), duration);
+
+            return tween;
+        }
+
+        #endregion
 
 
 
-		#region RenderableComponent tweens
+        #region RenderableComponent tweens
 
-		/// <summary>
-		/// RenderableComponent.color tween
-		/// </summary>
-		/// <returns>The color to.</returns>
-		/// <param name="self">Self.</param>
-		/// <param name="to">To.</param>
-		/// <param name="duration">Duration.</param>
-		public static ITween<Color> TweenColorTo( this RenderableComponent self, Color to, float duration = 0.3f )
+        /// <summary>
+        /// RenderableComponent.color tween
+        /// </summary>
+        /// <returns>The color to.</returns>
+        /// <param name="self">Self.</param>
+        /// <param name="to">To.</param>
+        /// <param name="duration">Duration.</param>
+        public static ITween<Color> TweenColorTo( this RenderableComponent self, Color to, float duration = 0.3f )
 		{
 			var tween = Pool<RenderableColorTween>.Obtain();
 			tween.SetTarget( self );
