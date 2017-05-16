@@ -7,30 +7,30 @@ namespace Nez.UI
 {
 	public class ArraySelection<T> : Selection<T> where T : class
 	{
-		List<T> array;
-		bool rangeSelect = true;
-		int rangeStart;
+		List<T> _array;
+		bool _rangeSelect = true;
+		int _rangeStart;
 
 
 		public ArraySelection( List<T> array )
 		{
-			this.array = array;
+			this._array = array;
 		}
 
 
-		public override void choose( T item )
+		public override void Choose( T item )
 		{
-			Assert.isNotNull( item, "item cannot be null" );
+			Assert.IsNotNull( item, "item cannot be null" );
 			if( _isDisabled )
 				return;
 			
-			var index = array.IndexOf( item );
-			if( selected.Count > 0 && rangeSelect && multiple && InputUtils.isShiftDown() )
+			var index = _array.IndexOf( item );
+			if( Selected.Count > 0 && _rangeSelect && Multiple && InputUtils.IsShiftDown() )
 			{
-				int oldRangeState = rangeStart;
-				snapshot();
+				int oldRangeState = _rangeStart;
+				Snapshot();
 				// Select new range.
-				int start = rangeStart, end = index;
+				int start = _rangeStart, end = index;
 				if( start > end )
 				{
 					var temp = end;
@@ -38,37 +38,37 @@ namespace Nez.UI
 					start = temp;
 				}
 
-				if( !InputUtils.isControlDown() )
-					selected.Clear();
+				if( !InputUtils.IsControlDown() )
+					Selected.Clear();
 				for( int i = start; i <= end; i++ )
-					selected.Add( array[i] );
+					Selected.Add( _array[i] );
 
-				if( fireChangeEvent() )
+				if( FireChangeEvent() )
 				{
-					rangeStart = oldRangeState;
-					revert();
+					_rangeStart = oldRangeState;
+					Revert();
 				}
-				cleanup();
+				Cleanup();
 				return;
 			}
 			else
 			{
-				rangeStart = index;
+				_rangeStart = index;
 			}
 
-			base.choose( item );
+			base.Choose( item );
 		}
 
 
-		public bool getRangeSelect()
+		public bool GetRangeSelect()
 		{
-			return rangeSelect;
+			return _rangeSelect;
 		}
 
 
-		public void setRangeSelect( bool rangeSelect )
+		public void SetRangeSelect( bool rangeSelect )
 		{
-			this.rangeSelect = rangeSelect;
+			this._rangeSelect = rangeSelect;
 		}
 
 
@@ -76,23 +76,23 @@ namespace Nez.UI
 		/// Removes objects from the selection that are no longer in the items array. If getRequired() is true and there is
 		/// no selected item, the first item is selected.
 		/// </summary>
-		public void validate()
+		public void Validate()
 		{
-			if( array.Count == 0 )
+			if( _array.Count == 0 )
 			{
-				clear();
+				Clear();
 				return;
 			}
 
-			for( var i = selected.Count - 1; i >= 0; i-- )
+			for( var i = Selected.Count - 1; i >= 0; i-- )
 			{
-				var item = selected[i];
-				if( !array.Contains( item ) )
-					selected.Remove( item );
+				var item = Selected[i];
+				if( !_array.Contains( item ) )
+					Selected.Remove( item );
 			}
 
-			if( required && selected.Count == 0 )
-				set( array.First() );
+			if( Required && Selected.Count == 0 )
+				Set( _array.First() );
 		}
 	}
 }

@@ -8,9 +8,9 @@ namespace Nez.Overlap2D
 {
 	public class O2DScene
 	{
-		public string sceneName;
-		public Color ambientColor;
-		public O2DComposite composite;
+		public string SceneName;
+		public Color AmbientColor;
+		public O2DComposite Composite;
 
 
 		public O2DScene()

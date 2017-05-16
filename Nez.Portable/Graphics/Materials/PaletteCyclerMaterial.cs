@@ -4,13 +4,13 @@
 	{
 		public PaletteCyclerMaterial()
 		{
-			effect = new PaletteCyclerEffect();
+			Effect = new PaletteCyclerEffect();
 		}
 
 
-		public override void onPreRender( Camera camera )
+		public override void OnPreRender( Camera camera )
 		{
-			effect.updateTime();
+			Effect.UpdateTime();
 		}
 
 	}

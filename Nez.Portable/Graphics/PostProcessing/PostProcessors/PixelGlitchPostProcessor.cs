@@ -15,7 +15,7 @@ namespace Nez
 		/// vertical size in pixels or each row. default 5.0
 		/// </summary>
 		/// <value>The size of the vertical.</value>
-		public float verticalSize
+		public float VerticalSize
 		{
 			get { return _verticalSize; }
 			set
@@ -24,7 +24,7 @@ namespace Nez
 				{
 					_verticalSize = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_verticalSizeParam.SetValue( _verticalSize );
 				}
 			}
@@ -34,7 +34,7 @@ namespace Nez
 		/// horizontal shift in pixels. default 10.0
 		/// </summary>
 		/// <value>The horizontal offset.</value>
-		public float horizontalOffset
+		public float HorizontalOffset
 		{
 			get { return _horizontalOffset; }
 			set
@@ -43,7 +43,7 @@ namespace Nez
 				{
 					_horizontalOffset = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_horizontalOffsetParam.SetValue( _horizontalOffset );
 				}
 			}
@@ -61,21 +61,21 @@ namespace Nez
 		{}
 
 
-		public override void onAddedToScene()
+		public override void OnAddedToScene()
 		{
-			effect = scene.content.loadEffect<Effect>( "pixelGlitch", EffectResource.pixelGlitchBytes );
+			Effect = Scene.Content.LoadEffect<Effect>( "pixelGlitch", EffectResource.PixelGlitchBytes );
 
-			_verticalSizeParam = effect.Parameters["_verticalSize"];
-			_horizontalOffsetParam = effect.Parameters["_horizontalOffset"];
-			_screenSizeParam = effect.Parameters["_screenSize"];
+			_verticalSizeParam = Effect.Parameters["_verticalSize"];
+			_horizontalOffsetParam = Effect.Parameters["_horizontalOffset"];
+			_screenSizeParam = Effect.Parameters["_screenSize"];
 
 			_verticalSizeParam.SetValue( _verticalSize );
 			_horizontalOffsetParam.SetValue( _horizontalOffset );
-			_screenSizeParam.SetValue( new Vector2( Screen.width, Screen.height ) );
+			_screenSizeParam.SetValue( new Vector2( Screen.Width, Screen.Height ) );
 		}
 
 
-		public override void onSceneBackBufferSizeChanged( int newWidth, int newHeight )
+		public override void OnSceneBackBufferSizeChanged( int newWidth, int newHeight )
 		{
 			_screenSizeParam.SetValue( new Vector2( newWidth, newHeight ) );
 		}

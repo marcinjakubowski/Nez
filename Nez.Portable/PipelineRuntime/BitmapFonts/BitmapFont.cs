@@ -10,55 +10,55 @@ namespace Nez.BitmapFonts
 {
 	public class BitmapFont : IFont
 	{
-		float IFont.lineSpacing { get { return lineHeight; } }
+		float IFont.LineSpacing { get { return LineHeight; } }
 
 		/// <summary>
 		/// Gets or sets the line spacing (the distance from baseline to baseline) of the font.
 		/// </summary>
 		/// <value>The height of the line.</value>
-		public int lineHeight;
+		public int LineHeight;
 
 		/// <summary>
 		/// Gets or sets the spacing (tracking) between characters in the font.
 		/// </summary>
-		public float spacing;
+		public float Spacing;
 
 		/// <summary>
 		/// The distance from the bottom of the glyph that extends the lowest to the baseline. This number is negative.
 		/// </summary>
-		public float descent;
+		public float Descent;
 
 		/// <summary>
 		/// these are currently read in from the .fnt file but not used
 		/// </summary>
-		public float padTop, padBottom, padLeft, padRight;
+		public float PadTop, PadBottom, PadLeft, PadRight;
 
 		/// <summary>
 		/// Gets or sets the character that will be substituted when a given character is not included in the font.
 		/// </summary>
-		public char defaultCharacter
+		public char DefaultCharacter
 		{
 			set
 			{
-				if( !_characterMap.TryGetValue( value, out defaultCharacterRegion ) )
-					Debug.error( "BitmapFont does not contain a region for the default character being set: {0}", value );
+				if( !_characterMap.TryGetValue( value, out DefaultCharacterRegion ) )
+					Debug.Error( "BitmapFont does not contain a region for the default character being set: {0}", value );
 			}
 		}
 
 		/// <summary>
 		/// populated with ' ' by default and reset whenever defaultCharacter is set
 		/// </summary>
-		public BitmapFontRegion defaultCharacterRegion;
+		public BitmapFontRegion DefaultCharacterRegion;
 
 		/// <summary>
 		/// this sucker gets used a lot so we cache it to avoid having to create it every frame
 		/// </summary>
-		Matrix2D _transformationMatrix = Matrix2D.identity;
+		Matrix2D _transformationMatrix = Matrix2D.Identity;
 
 		/// <summary>
 		/// width of a space
 		/// </summary>
-		public readonly int spaceWidth;
+		public readonly int SpaceWidth;
 
 
 		readonly Dictionary<char,BitmapFontRegion> _characterMap;
@@ -66,7 +66,7 @@ namespace Nez.BitmapFonts
 
 		class CharComparer : IEqualityComparer<char>
 		{
-			static public readonly CharComparer defaultCharComparer = new CharComparer();
+			static public readonly CharComparer DefaultCharComparer = new CharComparer();
 
 			public bool Equals( char x, char y )
 			{
@@ -82,47 +82,47 @@ namespace Nez.BitmapFonts
 
 		internal BitmapFont( BitmapFontRegion[] regions, int lineHeight )
 		{
-			_characterMap = new Dictionary<char,BitmapFontRegion>( regions.Length, CharComparer.defaultCharComparer );
+			_characterMap = new Dictionary<char,BitmapFontRegion>( regions.Length, CharComparer.DefaultCharComparer );
 			for( var i = 0; i < regions.Length; i++ )
-				_characterMap[regions[i].character] = regions[i];
+				_characterMap[regions[i].Character] = regions[i];
 
-			this.lineHeight = lineHeight;
-			defaultCharacter = ' ';
-			spaceWidth = defaultCharacterRegion.width + defaultCharacterRegion.xAdvance;
+			this.LineHeight = lineHeight;
+			DefaultCharacter = ' ';
+			SpaceWidth = DefaultCharacterRegion.Width + DefaultCharacterRegion.XAdvance;
 		}
 
 
-		public string wrapText( string text, float maxLineWidth )
+		public string WrapText( string text, float maxLineWidth )
 		{
 			var words = text.Split( ' ' );
 			var sb = new StringBuilder();
 			var lineWidth = 0f;
 
-			if( maxLineWidth < spaceWidth )
+			if( maxLineWidth < SpaceWidth )
 				return string.Empty;
 
 			foreach( var word in words )
 			{
-				var size = measureString( word );
+				var size = MeasureString( word );
 
 				if( lineWidth + size.X < maxLineWidth )
 				{
 					sb.Append( word + " " );
-					lineWidth += size.X + spaceWidth;
+					lineWidth += size.X + SpaceWidth;
 				}
 				else
 				{
 					if( size.X > maxLineWidth )
 					{
 						if( sb.ToString() == "" )
-							sb.Append( wrapText( word.Insert( word.Length / 2, " " ) + " ", maxLineWidth ) );
+							sb.Append( WrapText( word.Insert( word.Length / 2, " " ) + " ", maxLineWidth ) );
 						else
-							sb.Append( "\n" + wrapText( word.Insert( word.Length / 2, " " ) + " ", maxLineWidth ) );
+							sb.Append( "\n" + WrapText( word.Insert( word.Length / 2, " " ) + " ", maxLineWidth ) );
 					}
 					else
 					{
 						sb.Append( "\n" + word + " " );
-						lineWidth = size.X + spaceWidth;
+						lineWidth = size.X + SpaceWidth;
 					}
 				}
 			}
@@ -136,11 +136,11 @@ namespace Nez.BitmapFonts
 		/// </summary>
 		/// <returns>The string.</returns>
 		/// <param name="text">Text.</param>
-		public Vector2 measureString( string text )
+		public Vector2 MeasureString( string text )
 		{
 			var source = new FontCharacterSource( text );
 			Vector2 size;
-			measureString( ref source, out size );
+			MeasureString( ref source, out size );
 			return size;
 		}
 
@@ -150,11 +150,11 @@ namespace Nez.BitmapFonts
 		/// </summary>
 		/// <returns>The string.</returns>
 		/// <param name="text">Text.</param>
-		public Vector2 measureString( StringBuilder text )
+		public Vector2 MeasureString( StringBuilder text )
 		{
 			var source = new FontCharacterSource( text );
 			Vector2 size;
-			measureString( ref source, out size );
+			MeasureString( ref source, out size );
 			return size;
 		}
 
@@ -166,13 +166,13 @@ namespace Nez.BitmapFonts
 		/// <param name="c">C.</param>
 		/// <param name="fontRegion">Font region.</param>
 		/// <param name="useDefaultRegionIfNotPresent">If set to <c>true</c> use default region if not present.</param>
-		public bool tryGetFontRegionForChar( char c, out BitmapFontRegion fontRegion, bool useDefaultRegionIfNotPresent = false )
+		public bool TryGetFontRegionForChar( char c, out BitmapFontRegion fontRegion, bool useDefaultRegionIfNotPresent = false )
 		{
 			if( !_characterMap.TryGetValue( c, out fontRegion ) )
 			{
 				if( useDefaultRegionIfNotPresent )
 				{
-					fontRegion = defaultCharacterRegion;
+					fontRegion = DefaultCharacterRegion;
 					return true;
 				}
 				return false;
@@ -187,10 +187,10 @@ namespace Nez.BitmapFonts
 		/// </summary>
 		/// <returns><c>true</c>, if region exists for char was fonted, <c>false</c> otherwise.</returns>
 		/// <param name="c">C.</param>
-		public bool hasCharacter( char c )
+		public bool HasCharacter( char c )
 		{
 			BitmapFontRegion fontRegion;
-			return tryGetFontRegionForChar( c, out fontRegion );
+			return TryGetFontRegionForChar( c, out fontRegion );
 		}
 
 
@@ -200,15 +200,15 @@ namespace Nez.BitmapFonts
 		/// <returns>The region for char.</returns>
 		/// <param name="c">C.</param>
 		/// <param name="useDefaultRegionIfNotPresent">If set to <c>true</c> use default region if not present.</param>
-		public BitmapFontRegion fontRegionForChar( char c, bool useDefaultRegionIfNotPresent = false )
+		public BitmapFontRegion FontRegionForChar( char c, bool useDefaultRegionIfNotPresent = false )
 		{
 			BitmapFontRegion fontRegion;
-			tryGetFontRegionForChar( c, out fontRegion, useDefaultRegionIfNotPresent );
+			TryGetFontRegionForChar( c, out fontRegion, useDefaultRegionIfNotPresent );
 			return fontRegion;
 		}
 
 
-		void measureString( ref FontCharacterSource text, out Vector2 size )
+		void MeasureString( ref FontCharacterSource text, out Vector2 size )
 		{
 			if( text.Length == 0 )
 			{
@@ -217,7 +217,7 @@ namespace Nez.BitmapFonts
 			}
 
 			var width = 0.0f;
-			var finalLineHeight = (float)lineHeight;
+			var finalLineHeight = (float)LineHeight;
 			var fullLineCount = 0;
 			BitmapFontRegion currentFontRegion = null;
 			var offset = Vector2.Zero;
@@ -232,52 +232,52 @@ namespace Nez.BitmapFonts
 				if( c == '\n' )
 				{
 					fullLineCount++;
-					finalLineHeight = lineHeight;
+					finalLineHeight = LineHeight;
 
 					offset.X = 0;
-					offset.Y = lineHeight * fullLineCount;
+					offset.Y = LineHeight * fullLineCount;
 					currentFontRegion = null;
 					continue;
 				}
 
 				if( currentFontRegion != null )
-					offset.X += spacing + currentFontRegion.xAdvance;
+					offset.X += Spacing + currentFontRegion.XAdvance;
 
 				if( !_characterMap.TryGetValue( c, out currentFontRegion ) )
-					currentFontRegion = defaultCharacterRegion;
+					currentFontRegion = DefaultCharacterRegion;
 
-				var proposedWidth = offset.X + currentFontRegion.xAdvance + spacing;
+				var proposedWidth = offset.X + currentFontRegion.XAdvance + Spacing;
 				if( proposedWidth > width )
 					width = proposedWidth;
 
-				if( currentFontRegion.height + currentFontRegion.yOffset > finalLineHeight )
-					finalLineHeight = currentFontRegion.height + currentFontRegion.yOffset;
+				if( currentFontRegion.Height + currentFontRegion.YOffset > finalLineHeight )
+					finalLineHeight = currentFontRegion.Height + currentFontRegion.YOffset;
 			}
 
 			size.X = width;
-			size.Y = fullLineCount * lineHeight + finalLineHeight;
+			size.Y = fullLineCount * LineHeight + finalLineHeight;
 		}
 
 
 		#region drawing
 
-		void IFont.drawInto( Batcher batcher, string text, Vector2 position, Color color,
+		void IFont.DrawInto( Batcher batcher, string text, Vector2 position, Color color,
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effect, float depth )
 		{
 			var source = new FontCharacterSource( text );
-			drawInto( batcher, ref source, position, color, rotation, origin, scale, effect, depth );
+			DrawInto( batcher, ref source, position, color, rotation, origin, scale, effect, depth );
 		}
 
 
-		void IFont.drawInto( Batcher batcher, StringBuilder text, Vector2 position, Color color,
+		void IFont.DrawInto( Batcher batcher, StringBuilder text, Vector2 position, Color color,
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effect, float depth )
 		{
 			var source = new FontCharacterSource( text );
-			drawInto( batcher, ref source, position, color, rotation, origin, scale, effect, depth );
+			DrawInto( batcher, ref source, position, color, rotation, origin, scale, effect, depth );
 		}
 
 
-		internal void drawInto( Batcher batcher, ref FontCharacterSource text, Vector2 position, Color color,
+		internal void DrawInto( Batcher batcher, ref FontCharacterSource text, Vector2 position, Color color,
 		                        float rotation, Vector2 origin, Vector2 scale, SpriteEffects effect, float depth )
 		{
 			var flipAdjustment = Vector2.Zero;
@@ -288,7 +288,7 @@ namespace Nez.BitmapFonts
 			if( flippedVert || flippedHorz )
 			{
 				Vector2 size;
-				measureString( ref text, out size );
+				MeasureString( ref text, out size );
 
 				if( flippedHorz )
 				{
@@ -299,7 +299,7 @@ namespace Nez.BitmapFonts
 				if( flippedVert )
 				{
 					origin.Y *= -1;
-					flipAdjustment.Y = lineHeight - size.Y;
+					flipAdjustment.Y = LineHeight - size.Y;
 				}
 			}
 
@@ -308,15 +308,15 @@ namespace Nez.BitmapFonts
 			if( requiresTransformation )
 			{
 				Matrix2D temp;
-				Matrix2D.createTranslation( -origin.X, -origin.Y, out _transformationMatrix );
-				Matrix2D.createScale( ( flippedHorz ? -scale.X : scale.X ), ( flippedVert ? -scale.Y : scale.Y ), out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createTranslation( flipAdjustment.X, flipAdjustment.Y, out temp );
-				Matrix2D.multiply( ref temp, ref _transformationMatrix, out _transformationMatrix );
-				Matrix2D.createRotation( rotation, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createTranslation( position.X, position.Y, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( -origin.X, -origin.Y, out _transformationMatrix );
+				Matrix2D.CreateScale( ( flippedHorz ? -scale.X : scale.X ), ( flippedVert ? -scale.Y : scale.Y ), out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( flipAdjustment.X, flipAdjustment.Y, out temp );
+				Matrix2D.Multiply( ref temp, ref _transformationMatrix, out _transformationMatrix );
+				Matrix2D.CreateRotation( rotation, out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( position.X, position.Y, out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
 			}
 
 			BitmapFontRegion currentFontRegion = null;
@@ -331,40 +331,40 @@ namespace Nez.BitmapFonts
 				if( c == '\n' )
 				{
 					offset.X = requiresTransformation ? 0f : position.X - origin.X;
-					offset.Y += lineHeight;
+					offset.Y += LineHeight;
 					currentFontRegion = null;
 					continue;
 				}
 
 				if( currentFontRegion != null )
-					offset.X += spacing + currentFontRegion.xAdvance;
+					offset.X += Spacing + currentFontRegion.XAdvance;
 
 				if( !_characterMap.TryGetValue( c, out currentFontRegion ) )
-					currentFontRegion = defaultCharacterRegion;
+					currentFontRegion = DefaultCharacterRegion;
 
 
 				var p = offset;
 
 				if( flippedHorz )
-					p.X += currentFontRegion.width;
-				p.X += currentFontRegion.xOffset;
+					p.X += currentFontRegion.Width;
+				p.X += currentFontRegion.XOffset;
 
 				if( flippedVert )
-					p.Y += currentFontRegion.height - lineHeight;
-				p.Y += currentFontRegion.yOffset;
+					p.Y += currentFontRegion.Height - LineHeight;
+				p.Y += currentFontRegion.YOffset;
 
 				// transform our point if we need to
 				if( requiresTransformation )
-					Vector2Ext.transform( ref p, ref _transformationMatrix, out p );
+					Vector2Ext.Transform( ref p, ref _transformationMatrix, out p );
 
-				var destRect = RectangleExt.fromFloats
+				var destRect = RectangleExt.FromFloats
 				(
 	               p.X, p.Y, 
-	               currentFontRegion.width * scale.X,
-	               currentFontRegion.height * scale.Y
+	               currentFontRegion.Width * scale.X,
+	               currentFontRegion.Height * scale.Y
                );
 
-				batcher.draw( currentFontRegion.subtexture, destRect, currentFontRegion.subtexture.sourceRect, color, rotation, Vector2.Zero, effect, depth );
+				batcher.Draw( currentFontRegion.Subtexture, destRect, currentFontRegion.Subtexture.SourceRect, color, rotation, Vector2.Zero, effect, depth );
 			}
 		}
 
@@ -381,7 +381,7 @@ namespace Nez.BitmapFonts
 		/// <param name="scale">Scale.</param>
 		/// <param name="effect">Effect.</param>
 		/// <param name="depth">Depth.</param>
-		internal void drawInto( SpriteBatch spriteBatch, ref FontCharacterSource text, Vector2 position, Color color,
+		internal void DrawInto( SpriteBatch spriteBatch, ref FontCharacterSource text, Vector2 position, Color color,
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effect, float depth )
 		{
 			var flipAdjustment = Vector2.Zero;
@@ -392,7 +392,7 @@ namespace Nez.BitmapFonts
 			if( flippedVert || flippedHorz )
 			{
 				Vector2 size;
-				measureString( ref text, out size );
+				MeasureString( ref text, out size );
 
 				if( flippedHorz )
 				{
@@ -403,7 +403,7 @@ namespace Nez.BitmapFonts
 				if( flippedVert )
 				{
 					origin.Y *= -1;
-					flipAdjustment.Y = lineHeight - size.Y;
+					flipAdjustment.Y = LineHeight - size.Y;
 				}
 			}
 
@@ -412,15 +412,15 @@ namespace Nez.BitmapFonts
 			if( requiresTransformation )
 			{
 				Matrix2D temp;
-				Matrix2D.createTranslation( -origin.X, -origin.Y, out _transformationMatrix );
-				Matrix2D.createScale( ( flippedHorz ? -scale.X : scale.X ), ( flippedVert ? -scale.Y : scale.Y ), out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createTranslation( flipAdjustment.X, flipAdjustment.Y, out temp );
-				Matrix2D.multiply( ref temp, ref _transformationMatrix, out _transformationMatrix );
-				Matrix2D.createRotation( rotation, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createTranslation( position.X, position.Y, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( -origin.X, -origin.Y, out _transformationMatrix );
+				Matrix2D.CreateScale( ( flippedHorz ? -scale.X : scale.X ), ( flippedVert ? -scale.Y : scale.Y ), out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( flipAdjustment.X, flipAdjustment.Y, out temp );
+				Matrix2D.Multiply( ref temp, ref _transformationMatrix, out _transformationMatrix );
+				Matrix2D.CreateRotation( rotation, out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( position.X, position.Y, out temp );
+				Matrix2D.Multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
 			}
 
 			BitmapFontRegion currentFontRegion = null;
@@ -435,40 +435,40 @@ namespace Nez.BitmapFonts
 				if( c == '\n' )
 				{
 					offset.X = requiresTransformation ? 0f : position.X - origin.X;
-					offset.Y += lineHeight;
+					offset.Y += LineHeight;
 					currentFontRegion = null;
 					continue;
 				}
 
 				if( currentFontRegion != null )
-					offset.X += spacing + currentFontRegion.xAdvance;
+					offset.X += Spacing + currentFontRegion.XAdvance;
 
 				if( !_characterMap.TryGetValue( c, out currentFontRegion ) )
-					currentFontRegion = defaultCharacterRegion;
+					currentFontRegion = DefaultCharacterRegion;
 
 
 				var p = offset;
 
 				if( flippedHorz )
-					p.X += currentFontRegion.width;
-				p.X += currentFontRegion.xOffset;
+					p.X += currentFontRegion.Width;
+				p.X += currentFontRegion.XOffset;
 
 				if( flippedVert )
-					p.Y += currentFontRegion.height - lineHeight;
-				p.Y += currentFontRegion.yOffset;
+					p.Y += currentFontRegion.Height - LineHeight;
+				p.Y += currentFontRegion.YOffset;
 
 				// transform our point if we need to
 				if( requiresTransformation )
-					Vector2Ext.transform( ref p, ref _transformationMatrix, out p );
+					Vector2Ext.Transform( ref p, ref _transformationMatrix, out p );
 
-				var destRect = RectangleExt.fromFloats
+				var destRect = RectangleExt.FromFloats
 				(
 					p.X, p.Y, 
-					currentFontRegion.width * scale.X,
-					currentFontRegion.height * scale.Y
+					currentFontRegion.Width * scale.X,
+					currentFontRegion.Height * scale.Y
 				);
 
-				spriteBatch.Draw( currentFontRegion.subtexture, destRect, currentFontRegion.subtexture.sourceRect, color, rotation, Vector2.Zero, effect, depth );
+				spriteBatch.Draw( currentFontRegion.Subtexture, destRect, currentFontRegion.Subtexture.SourceRect, color, rotation, Vector2.Zero, effect, depth );
 			}
 		}
 

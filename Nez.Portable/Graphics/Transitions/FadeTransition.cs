@@ -15,27 +15,27 @@ namespace Nez
 		/// <summary>
 		/// the color we will fade to/from
 		/// </summary>
-		public Color fadeToColor = Color.Black;
+		public Color FadeToColor = Color.Black;
 
 		/// <summary>
 		/// duration to fade to fadeToColor
 		/// </summary>
-		public float fadeOutDuration = 0.6f;
+		public float FadeOutDuration = 0.6f;
 
 		/// <summary>
 		/// delay to start fading out
 		/// </summary>
-		public float delayBeforeFadeInDuration = 0.2f;
+		public float DelayBeforeFadeInDuration = 0.2f;
 
 		/// <summary>
 		/// duration to fade from fadeToColor to the new Scene
 		/// </summary>
-		public float fadeInDuration = 0.8f;
+		public float FadeInDuration = 0.8f;
 
 		/// <summary>
 		/// ease equation to use for the fade
 		/// </summary>
-		public EaseType fadeEaseType = EaseType.QuartOut;
+		public EaseType FadeEaseType = EaseType.QuartOut;
 
 		Color _fromColor = Color.White;
 		Color _toColor = Color.Transparent;
@@ -47,7 +47,7 @@ namespace Nez
 
 		public FadeTransition( Func<Scene> sceneLoadAction ) : base( sceneLoadAction, true )
 		{
-			_destinationRect = previousSceneRender.Bounds;
+			_destinationRect = PreviousSceneRender.Bounds;
 		}
 
 
@@ -55,55 +55,55 @@ namespace Nez
 		{}
 
 
-		public override IEnumerator onBeginTransition()
+		public override IEnumerator OnBeginTransition()
 		{
 			// create a single pixel texture of our fadeToColor
-			_overlayTexture = Graphics.createSingleColorTexture( 1, 1, fadeToColor );
+			_overlayTexture = Graphics.CreateSingleColorTexture( 1, 1, FadeToColor );
 
 			var elapsed = 0f;
-			while( elapsed < fadeOutDuration )
+			while( elapsed < FadeOutDuration )
 			{
-				elapsed += Time.deltaTime;
-				_color = Lerps.ease( fadeEaseType, ref _toColor, ref _fromColor, elapsed, fadeOutDuration );
+				elapsed += Time.DeltaTime;
+				_color = Lerps.Ease( FadeEaseType, ref _toColor, ref _fromColor, elapsed, FadeOutDuration );
 
 				yield return null;
 			}
 
 			// load up the new Scene
-			yield return Core.startCoroutine( loadNextScene() );
+			yield return Core.StartCoroutine( LoadNextScene() );
 
 			// dispose of our previousSceneRender. We dont need it anymore.
-			previousSceneRender.Dispose();
-			previousSceneRender = null;
+			PreviousSceneRender.Dispose();
+			PreviousSceneRender = null;
 
-			yield return Coroutine.waitForSeconds( delayBeforeFadeInDuration );
+			yield return Coroutine.WaitForSeconds( DelayBeforeFadeInDuration );
 
 			elapsed = 0f;
-			while( elapsed < fadeInDuration )
+			while( elapsed < FadeInDuration )
 			{
-				elapsed += Time.deltaTime;
-				_color = Lerps.ease( EaseHelper.oppositeEaseType( fadeEaseType ), ref _fromColor, ref _toColor, elapsed, fadeInDuration );
+				elapsed += Time.DeltaTime;
+				_color = Lerps.Ease( EaseHelper.OppositeEaseType( FadeEaseType ), ref _fromColor, ref _toColor, elapsed, FadeInDuration );
 
 				yield return null;
 			}
 
-			transitionComplete();
+			TransitionComplete();
 			_overlayTexture.Dispose();
 		}
 
 
-		public override void render( Graphics graphics )
+		public override void Render( Graphics graphics )
 		{
-			Core.graphicsDevice.setRenderTarget( null );
-			graphics.batcher.begin( BlendState.NonPremultiplied, Core.defaultSamplerState, DepthStencilState.None, null );
+			GraphicsDeviceExt.SetRenderTarget(Core.CoreGraphicsDevice, null );
+			graphics.Batcher.Begin( BlendState.NonPremultiplied, Core.DefaultSamplerState, DepthStencilState.None, null );
 
 			// we only render the previousSceneRender while fading to _color. It will be null after that.
 			if( !_isNewSceneLoaded )
-				graphics.batcher.draw( previousSceneRender, _destinationRect, Color.White );
+				graphics.Batcher.Draw( PreviousSceneRender, _destinationRect, Color.White );
 			
-			graphics.batcher.draw( _overlayTexture, new Rectangle( 0, 0, Screen.width, Screen.height ), _color );
+			graphics.Batcher.Draw( _overlayTexture, new Rectangle( 0, 0, Screen.Width, Screen.Height ), _color );
 			
-			graphics.batcher.end();
+			graphics.Batcher.End();
 		}
 	}
 }

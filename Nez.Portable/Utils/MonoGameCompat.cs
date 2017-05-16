@@ -13,9 +13,9 @@ namespace Nez
 	/// </summary>
 	public static class MonoGameCompat
 	{
-		#region GraphicsDevice
+		#region CoreGraphicsDevice
 
-		public static void DrawIndexedPrimitives( this GraphicsDevice self, PrimitiveType primitiveType, int baseVertex, int startIndex, int primitiveCount )
+		public static void DrawIndexedPrimitives( this CoreGraphicsDevice self, PrimitiveType primitiveType, int baseVertex, int startIndex, int primitiveCount )
 		{
 			#if DEBUG
 			Core.drawCalls++;
@@ -30,7 +30,7 @@ namespace Nez
 		/// <returns>The render targets.</returns>
 		/// <param name="self">Self.</param>
 		/// <param name="outTargets">Out targets.</param>
-		public static void GetRenderTargets( this GraphicsDevice self, RenderTargetBinding[] outTargets )
+		public static void GetRenderTargets( this CoreGraphicsDevice self, RenderTargetBinding[] outTargets )
 		{
 			var currentRenderTargets = self.GetRenderTargets();
 			System.Diagnostics.Debug.Assert( outTargets.Length == currentRenderTargets.Length, "Invalid outTargets array length!" );

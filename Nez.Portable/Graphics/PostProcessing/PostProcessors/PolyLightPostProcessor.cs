@@ -17,43 +17,43 @@ namespace Nez
 		/// multiplicative factor for the blend of the base and light render targets. Defaults to 1.
 		/// </summary>
 		/// <value>The multiplicative factor.</value>
-		public float multiplicativeFactor
+		public float MultiplicativeFactor
 		{
 			get { return _multiplicativeFactor; }
-			set { setMultiplicativeFactor( value ); }
+			set { SetMultiplicativeFactor( value ); }
 		}
 
 		/// <summary>
 		/// enables/disables a gaussian blur of the light texture before it is combined with the scene render
 		/// </summary>
 		/// <value><c>true</c> if enable blur; otherwise, <c>false</c>.</value>
-		public bool enableBlur
+		public bool EnableBlur
 		{
 			get { return _blurEnabled; }
-			set { setEnableBlur( value ); }
+			set { SetEnableBlur( value ); }
 		}
 
 		/// <summary>
 		/// scale of the internal RenderTargets used for the blur. For high resolution renders a half sized RT is usually more than enough.
 		/// Defaults to 0.5.
 		/// </summary>
-		public float blurRenderTargetScale
+		public float BlurRenderTargetScale
 		{
 			get { return _blurRenderTargetScale; }
-			set { setBlurRenderTargetScale( value ); }
+			set { SetBlurRenderTargetScale( value ); }
 		}
 
 		/// <summary>
 		/// amount to blur. A range of 0.5 - 6 works well. Defaults to 2.
 		/// </summary>
 		/// <value>The blur amount.</value>
-		public float blurAmount
+		public float BlurAmount
 		{
-			get { return _blurEffect != null ? _blurEffect.blurAmount : -1; }
+			get { return _blurEffect != null ? _blurEffect.BlurAmount : -1; }
 			set
 			{
 				if( _blurEffect != null )
-					_blurEffect.blurAmount = value;
+					_blurEffect.BlurAmount = value;
 			}
 		}
 
@@ -74,37 +74,37 @@ namespace Nez
 		/// <summary>
 		/// updates the GaussianBlurEffect with the new vertical and horizontal deltas after a back buffer size or blurRenderTargetScale change
 		/// </summary>
-		void updateBlurEffectDeltas()
+		void UpdateBlurEffectDeltas()
 		{
-			var sceneRenderTargetSize = scene.sceneRenderTargetSize;
-			_blurEffect.horizontalBlurDelta = 1f / ( sceneRenderTargetSize.X * _blurRenderTargetScale );
-			_blurEffect.verticalBlurDelta = 1f / ( sceneRenderTargetSize.Y * _blurRenderTargetScale );
+			var sceneRenderTargetSize = Scene.SceneRenderTargetSize;
+			_blurEffect.HorizontalBlurDelta = 1f / ( sceneRenderTargetSize.X * _blurRenderTargetScale );
+			_blurEffect.VerticalBlurDelta = 1f / ( sceneRenderTargetSize.Y * _blurRenderTargetScale );
 		}
 
 
 		#region chainable setters
 
-		public PolyLightPostProcessor setMultiplicativeFactor( float multiplicativeFactor )
+		public PolyLightPostProcessor SetMultiplicativeFactor( float multiplicativeFactor )
 		{
 			_multiplicativeFactor = multiplicativeFactor;
-			if( effect != null )
-				effect.Parameters["_multiplicativeFactor"].SetValue( multiplicativeFactor );
+			if( Effect != null )
+				Effect.Parameters["_multiplicativeFactor"].SetValue( multiplicativeFactor );
 			
 			return this;
 		}
 
 
-		public PolyLightPostProcessor setEnableBlur( bool enableBlur )
+		public PolyLightPostProcessor SetEnableBlur( bool enableBlur )
 		{
 			if( enableBlur != _blurEnabled )
 			{
 				_blurEnabled = enableBlur;
 
-				if( _blurEnabled && _blurEffect == null && scene != null )
+				if( _blurEnabled && _blurEffect == null && Scene != null )
 				{
-					_blurEffect = scene.content.loadNezEffect<GaussianBlurEffect>();
-					if( scene.sceneRenderTarget != null )
-						updateBlurEffectDeltas();
+					_blurEffect = Scene.Content.LoadNezEffect<GaussianBlurEffect>();
+					if( Scene.SceneRenderTarget != null )
+						UpdateBlurEffectDeltas();
 				}
 			}
 
@@ -112,23 +112,23 @@ namespace Nez
 		}
 
 
-		public PolyLightPostProcessor setBlurRenderTargetScale( float blurRenderTargetScale )
+		public PolyLightPostProcessor SetBlurRenderTargetScale( float blurRenderTargetScale )
 		{
 			if( _blurRenderTargetScale != blurRenderTargetScale )
 			{
 				_blurRenderTargetScale = blurRenderTargetScale;
-				if( _blurEffect != null && scene.sceneRenderTarget != null )
-					updateBlurEffectDeltas();
+				if( _blurEffect != null && Scene.SceneRenderTarget != null )
+					UpdateBlurEffectDeltas();
 			}
 
 			return this;
 		}
 
 
-		public PolyLightPostProcessor setBlurAmount( float blurAmount )
+		public PolyLightPostProcessor SetBlurAmount( float blurAmount )
 		{
 			if( _blurEffect != null )
-				_blurEffect.blurAmount = blurAmount;
+				_blurEffect.BlurAmount = blurAmount;
 
 			return this;
 		}
@@ -136,52 +136,52 @@ namespace Nez
 		#endregion
 
 
-		public override void onAddedToScene()
+		public override void OnAddedToScene()
 		{
-			effect = scene.content.loadEffect<Effect>( "spriteLightMultiply", EffectResource.spriteLightMultiplyBytes );
-			effect.Parameters["_lightTexture"].SetValue( _lightsRenderTexture );
-			effect.Parameters["_multiplicativeFactor"].SetValue( _multiplicativeFactor );
+			Effect = Scene.Content.LoadEffect<Effect>( "spriteLightMultiply", EffectResource.SpriteLightMultiplyBytes );
+			Effect.Parameters["_lightTexture"].SetValue( _lightsRenderTexture );
+			Effect.Parameters["_multiplicativeFactor"].SetValue( _multiplicativeFactor );
 
 			if( _blurEnabled )
-				_blurEffect = scene.content.loadNezEffect<GaussianBlurEffect>();
+				_blurEffect = Scene.Content.LoadNezEffect<GaussianBlurEffect>();
 		}
 
 
-		public override void process( RenderTarget2D source, RenderTarget2D destination )
+		public override void Process( RenderTarget2D source, RenderTarget2D destination )
 		{
 			if( _blurEnabled )
 			{
 				// aquire a temporary rendertarget for the processing. It can be scaled via renderTargetScale in order to minimize fillrate costs. Reducing
 				// the resolution in this way doesn't hurt quality, because we are going to be blurring the images in any case.
-				var sceneRenderTargetSize = scene.sceneRenderTargetSize;
-				var tempRenderTarget = RenderTarget.getTemporary( (int)( sceneRenderTargetSize.X * _blurRenderTargetScale ), (int)( sceneRenderTargetSize.Y * _blurRenderTargetScale ), DepthFormat.None );
+				var sceneRenderTargetSize = Scene.SceneRenderTargetSize;
+				var tempRenderTarget = RenderTarget.GetTemporary( (int)( sceneRenderTargetSize.X * _blurRenderTargetScale ), (int)( sceneRenderTargetSize.Y * _blurRenderTargetScale ), DepthFormat.None );
 
 
 				// Pass 1: draw from _lightsRenderTexture into tempRenderTarget, applying a horizontal gaussian blur filter
-				_blurEffect.prepareForHorizontalBlur();
-				drawFullscreenQuad( _lightsRenderTexture, tempRenderTarget, _blurEffect );
+				_blurEffect.PrepareForHorizontalBlur();
+				DrawFullscreenQuad( _lightsRenderTexture, tempRenderTarget, _blurEffect );
 
 				// Pass 2: draw from tempRenderTarget back into _lightsRenderTexture, applying a vertical gaussian blur filter
-				_blurEffect.prepareForVerticalBlur();
-				drawFullscreenQuad( tempRenderTarget, _lightsRenderTexture, _blurEffect );
+				_blurEffect.PrepareForVerticalBlur();
+				DrawFullscreenQuad( tempRenderTarget, _lightsRenderTexture, _blurEffect );
 
-				RenderTarget.releaseTemporary( tempRenderTarget );
+				RenderTarget.ReleaseTemporary( tempRenderTarget );
 			}
 			
-			Core.graphicsDevice.setRenderTarget( destination );
-			Graphics.instance.batcher.begin( effect );
-			Graphics.instance.batcher.draw( source, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
-			Graphics.instance.batcher.end();
+			GraphicsDeviceExt.SetRenderTarget(Core.CoreGraphicsDevice, destination );
+			Graphics.Instance.Batcher.Begin( Effect );
+			Graphics.Instance.Batcher.Draw( source, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
+			Graphics.Instance.Batcher.End();
 		}
 
 
-		public override void onSceneBackBufferSizeChanged( int newWidth, int newHeight )
+		public override void OnSceneBackBufferSizeChanged( int newWidth, int newHeight )
 		{
 			// when the RenderTexture changes we have to reset the shader param since the underlying RenderTarget will be different
-			effect.Parameters["_lightTexture"].SetValue( _lightsRenderTexture );
+			Effect.Parameters["_lightTexture"].SetValue( _lightsRenderTexture );
 
 			if( _blurEnabled )
-				updateBlurEffectDeltas();
+				UpdateBlurEffectDeltas();
 		}
 
 	}

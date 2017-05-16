@@ -16,18 +16,18 @@ namespace Nez.AI.FSM
 	{
 		class StateMethodCache
 		{
-			public Action enterState;
-			public Action tick;
-			public Action exitState;
+			public Action EnterState;
+			public Action Tick;
+			public Action ExitState;
 		}
 
-		protected float elapsedTimeInState = 0f;
-		protected TEnum previousState;
+		protected float ElapsedTimeInState = 0f;
+		protected TEnum PreviousState;
 		Dictionary<TEnum,StateMethodCache> _stateCache;
 		StateMethodCache _stateMethods;
 
 		TEnum _currentState;
-		protected TEnum currentState
+		protected TEnum CurrentState
 		{
 			get
 			{
@@ -40,30 +40,30 @@ namespace Nez.AI.FSM
 					return;
 				
 				// swap previous/current
-				previousState = _currentState;
+				PreviousState = _currentState;
 				_currentState = value;
 
 				// exit the state, fetch the next cached state methods then enter that state
-				if( _stateMethods.exitState != null )
-					_stateMethods.exitState();
+				if( _stateMethods.ExitState != null )
+					_stateMethods.ExitState();
 
-				elapsedTimeInState = 0f;
+				ElapsedTimeInState = 0f;
 				_stateMethods = _stateCache[_currentState];
 
-				if( _stateMethods.enterState != null )
-					_stateMethods.enterState();
+				if( _stateMethods.EnterState != null )
+					_stateMethods.EnterState();
 			}
 		}
 
-		protected TEnum initialState
+		protected TEnum InitialState
 		{
 			set
 			{
 				_currentState = value;
 				_stateMethods = _stateCache[_currentState];
 
-				if( _stateMethods.enterState != null )
-					_stateMethods.enterState();
+				if( _stateMethods.EnterState != null )
+					_stateMethods.EnterState();
 			}
 		}
 
@@ -75,37 +75,37 @@ namespace Nez.AI.FSM
 			// cache all of our state methods
 			var enumValues = (TEnum[])Enum.GetValues( typeof( TEnum ) );
 			foreach( var e in enumValues )
-				configureAndCacheState( e );
+				ConfigureAndCacheState( e );
 		}
 
 
-		public void update()
+		public void Update()
 		{
-			elapsedTimeInState += Time.deltaTime;
+			ElapsedTimeInState += Time.DeltaTime;
 
-			if( _stateMethods.tick != null )
-				_stateMethods.tick();
+			if( _stateMethods.Tick != null )
+				_stateMethods.Tick();
 		}
 
 
-		void configureAndCacheState( TEnum stateEnum )
+		void ConfigureAndCacheState( TEnum stateEnum )
 		{
 			var stateName = stateEnum.ToString();
 
 			var state = new StateMethodCache();
-			state.enterState = getDelegateForMethod( stateName + "_Enter" );
-			state.tick = getDelegateForMethod( stateName + "_Tick" );
-			state.exitState = getDelegateForMethod( stateName + "_Exit" );
+			state.EnterState = GetDelegateForMethod( stateName + "_Enter" );
+			state.Tick = GetDelegateForMethod( stateName + "_Tick" );
+			state.ExitState = GetDelegateForMethod( stateName + "_Exit" );
 
 			_stateCache[stateEnum] = state;
 		}
 
 
-		Action getDelegateForMethod( string methodName )
+		Action GetDelegateForMethod( string methodName )
 		{
-			var methodInfo = ReflectionUtils.getMethodInfo( this, methodName );
+			var methodInfo = ReflectionUtils.GetMethodInfo( this, methodName );
 			if( methodInfo != null )
-				return ReflectionUtils.createDelegate<Action>( this, methodInfo );
+				return ReflectionUtils.CreateDelegate<Action>( this, methodInfo );
 
 			return null;
 		}

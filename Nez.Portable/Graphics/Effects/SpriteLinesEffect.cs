@@ -14,7 +14,7 @@ namespace Nez
 		/// color of the lines. Defaults to red.
 		/// </summary>
 		/// <value>The color of the line.</value>
-		public Color lineColor
+		public Color LineColor
 		{
 			get { return new Color( _lineColor ); }
 			set
@@ -32,7 +32,7 @@ namespace Nez
 		/// size of the lines in pixels. Defaults to 5.
 		/// </summary>
 		/// <value>The size of the line.</value>
-		public float lineSize
+		public float LineSize
 		{
 			get { return _lineSize; }
 			set
@@ -49,7 +49,7 @@ namespace Nez
 		/// toggles vertical/horizontal lines
 		/// </summary>
 		/// <value><c>true</c> if is vertical; otherwise, <c>false</c>.</value>
-		public bool isVertical
+		public bool IsVertical
 		{
 			get { return _isVertical; }
 			set
@@ -70,7 +70,7 @@ namespace Nez
 		EffectParameter _lineSizeParam;
 
 
-		public SpriteLinesEffect() : base( Core.graphicsDevice, EffectResource.spriteLinesEffectBytes )
+		public SpriteLinesEffect() : base( Core.CoreGraphicsDevice, EffectResource.SpriteLinesEffectBytes )
 		{
 			_lineColorParam = Parameters["_lineColor"];
 			_lineSizeParam = Parameters["_lineSize"];

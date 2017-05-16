@@ -6,7 +6,7 @@ namespace Nez
 	{
 		public ScanlinesPostProcessor( int executionOrder ) : base( executionOrder )
 		{
-			effect = new ScanlinesEffect();
+			Effect = new ScanlinesEffect();
 		}
 	}
 }

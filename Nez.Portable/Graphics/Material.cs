@@ -9,10 +9,10 @@ namespace Nez
 	/// </summary>
 	public class Material<T> : Material, IDisposable where T : Effect
 	{
-		public new T effect
+		public new T Effect
 		{
-			get { return (T)base.effect; }
-			set { base.effect = value; }
+			get { return (T)base.Effect; }
+			set { base.Effect = value; }
 		}
 
 
@@ -30,32 +30,32 @@ namespace Nez
 		/// <summary>
 		/// default Material instance
 		/// </summary>
-		public static Material defaultMaterial = new Material();
+		public static Material DefaultMaterial = new Material();
 
 		/// <summary>
 		/// default opaque Material used for PostProcessors
 		/// </summary>
-		public static Material defaultOpaqueMaterial = new Material( BlendState.Opaque );
+		public static Material DefaultOpaqueMaterial = new Material( BlendState.Opaque );
 
 		/// <summary>
 		/// BlendState used by the Batcher for the current RenderableComponent
 		/// </summary>
-		public BlendState blendState = BlendState.AlphaBlend;
+		public BlendState BlendState = BlendState.AlphaBlend;
 
 		/// <summary>
 		/// DepthStencilState used by the Batcher for the current RenderableComponent
 		/// </summary>
-		public DepthStencilState depthStencilState = DepthStencilState.None;
+		public DepthStencilState DepthStencilState = DepthStencilState.None;
 
 		/// <summary>
 		/// SamplerState used by the Batcher for the current RenderableComponent
 		/// </summary>
-		public SamplerState samplerState = Core.defaultSamplerState;
+		public SamplerState SamplerState = Core.DefaultSamplerState;
 
 		/// <summary>
 		/// Effect used by the Batcher for the current RenderableComponent
 		/// </summary>
-		public Effect effect;
+		public Effect Effect;
 
 
 		#region Static common states
@@ -64,10 +64,10 @@ namespace Nez
 		// - AlphaSourceBlend = Blend.SourceAlpha, 
 		// - AlphaDestinationBlend = Blend.InverseSourceAlpha 
 
-		public static Material stencilWrite( int stencilRef = 1 )
+		public static Material StencilWrite( int stencilRef = 1 )
 		{
 			return new Material {
-				depthStencilState = new DepthStencilState {
+				DepthStencilState = new DepthStencilState {
 					StencilEnable = true,
 					StencilFunction = CompareFunction.Always,
 					StencilPass = StencilOperation.Replace,
@@ -78,11 +78,11 @@ namespace Nez
 		}
 
 
-		public static Material stencilRead( int stencilRef = 1 )
+		public static Material StencilRead( int stencilRef = 1 )
 		{
 			return new Material
 			{
-				depthStencilState = new DepthStencilState {
+				DepthStencilState = new DepthStencilState {
 					StencilEnable = true,
 					StencilFunction = CompareFunction.Equal,
 					StencilPass = StencilOperation.Keep,
@@ -93,10 +93,10 @@ namespace Nez
 		}
 
 
-		public static Material blendDarken()
+		public static Material BlendDarken()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.One,
 					ColorBlendFunction = BlendFunction.Min,
@@ -108,10 +108,10 @@ namespace Nez
 		}
 
 
-		public static Material blendLighten()
+		public static Material BlendLighten()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.One,
 					ColorBlendFunction = BlendFunction.Max,
@@ -123,10 +123,10 @@ namespace Nez
 		}
 
 
-		public static Material blendScreen()
+		public static Material BlendScreen()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.InverseDestinationColor,
 					ColorDestinationBlend = Blend.One,
 					ColorBlendFunction = BlendFunction.Add
@@ -135,10 +135,10 @@ namespace Nez
 		}
 
 
-		public static Material blendMultiply()
+		public static Material BlendMultiply()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.DestinationColor,
 					ColorDestinationBlend = Blend.Zero,
 					ColorBlendFunction = BlendFunction.Add,
@@ -155,10 +155,10 @@ namespace Nez
 		/// blend equation is sourceColor * sourceBlend + destinationColor * destinationBlend so this works out to sourceColor * destinationColor * 2
 		/// and results in colors < 0.5 darkening and colors > 0.5 lightening the base
 		/// </summary>
-		public static Material blendMultiply2x()
+		public static Material BlendMultiply2X()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.DestinationColor,
 					ColorDestinationBlend = Blend.SourceColor,
 					ColorBlendFunction = BlendFunction.Add
@@ -167,10 +167,10 @@ namespace Nez
 		}
 
 
-		public static Material blendLinearDodge()
+		public static Material BlendLinearDodge()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.One,
 					ColorBlendFunction = BlendFunction.Add
@@ -179,10 +179,10 @@ namespace Nez
 		}
 
 
-		public static Material blendLinearBurn()
+		public static Material BlendLinearBurn()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.One,
 					ColorDestinationBlend = Blend.One,
 					ColorBlendFunction = BlendFunction.ReverseSubtract
@@ -191,10 +191,10 @@ namespace Nez
 		}
 
 
-		public static Material blendDifference()
+		public static Material BlendDifference()
 		{
 			return new Material {
-				blendState = new BlendState {
+				BlendState = new BlendState {
 					ColorSourceBlend = Blend.InverseDestinationColor,
 					ColorDestinationBlend = Blend.InverseSourceColor,
 					ColorBlendFunction = BlendFunction.Add
@@ -203,11 +203,11 @@ namespace Nez
 		}
 
 
-		public static Material blendSubtractive()
+		public static Material BlendSubtractive()
 		{
 			return new Material
 			{
-				blendState = new BlendState
+				BlendState = new BlendState
 				{
 					ColorSourceBlend = Blend.SourceAlpha,
 					ColorDestinationBlend = Blend.One,
@@ -220,11 +220,11 @@ namespace Nez
 		}
 
 
-		public static Material blendAdditive()
+		public static Material BlendAdditive()
 		{
 			return new Material
 			{
-				blendState = new BlendState
+				BlendState = new BlendState
 				{
 					ColorSourceBlend = Blend.SourceAlpha,
 					ColorDestinationBlend = Blend.One,
@@ -243,21 +243,21 @@ namespace Nez
 
 		public Material( Effect effect )
 		{
-			this.effect = effect;
+			this.Effect = effect;
 		}
 
 
 		public Material( BlendState blendState, Effect effect = null )
 		{
-			this.blendState = blendState;
-			this.effect = effect;
+			this.BlendState = blendState;
+			this.Effect = effect;
 		}
 
 
 		public Material( DepthStencilState depthStencilState, Effect effect = null )
 		{
-			this.depthStencilState = depthStencilState;
-			this.effect = effect;
+			this.DepthStencilState = depthStencilState;
+			this.Effect = effect;
 		}
 
 
@@ -269,28 +269,28 @@ namespace Nez
 
 		public virtual void Dispose()
 		{
-			if( blendState != null && blendState != BlendState.AlphaBlend )
+			if( BlendState != null && BlendState != BlendState.AlphaBlend )
 			{
-				blendState.Dispose();
-				blendState = null;
+				BlendState.Dispose();
+				BlendState = null;
 			}
 
-			if( depthStencilState != null && depthStencilState != DepthStencilState.None )
+			if( DepthStencilState != null && DepthStencilState != DepthStencilState.None )
 			{
-				depthStencilState.Dispose();
-				depthStencilState = null;
+				DepthStencilState.Dispose();
+				DepthStencilState = null;
 			}
 
-			if( samplerState != null && samplerState != Core.defaultSamplerState )
+			if( SamplerState != null && SamplerState != Core.DefaultSamplerState )
 			{
-				samplerState.Dispose();
-				samplerState = null;
+				SamplerState.Dispose();
+				SamplerState = null;
 			}
 
-			if( effect != null )
+			if( Effect != null )
 			{
-				effect.Dispose();
-				effect = null;
+				Effect.Dispose();
+				Effect = null;
 			}
 		}
 
@@ -301,7 +301,7 @@ namespace Nez
 		/// only be called if there is a non-null Effect.
 		/// </summary>
 		/// <param name="camera">Camera.</param>
-		public virtual void onPreRender( Camera camera )
+		public virtual void OnPreRender( Camera camera )
 		{}
 
 
@@ -327,13 +327,13 @@ namespace Nez
 		/// <summary>
 		/// clones the Material. Note that the Effect is not cloned. It is the same instance as the original Material.
 		/// </summary>
-		public Material clone()
+		public Material Clone()
 		{
 			return new Material {
-				blendState = blendState,
-				depthStencilState = depthStencilState,
-				samplerState = samplerState,
-				effect = effect
+				BlendState = BlendState,
+				DepthStencilState = DepthStencilState,
+				SamplerState = SamplerState,
+				Effect = Effect
 			};
 		}
 	}

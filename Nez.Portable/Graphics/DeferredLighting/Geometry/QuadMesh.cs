@@ -38,11 +38,11 @@ namespace Nez.DeferredLighting
 		}
 
 
-		public void render()
+		public void Render()
 		{
-			Core.graphicsDevice.SetVertexBuffer( _vertexBuffer );
-			Core.graphicsDevice.Indices = _indexBuffer;
-			Core.graphicsDevice.DrawIndexedPrimitives( PrimitiveType.TriangleList, 0, 0, 2 );
+			Core.CoreGraphicsDevice.SetVertexBuffer( _vertexBuffer );
+			Core.CoreGraphicsDevice.Indices = _indexBuffer;
+			Core.CoreGraphicsDevice.DrawIndexedPrimitives( PrimitiveType.TriangleList, 0, 0, 2 );
 		}
 
 

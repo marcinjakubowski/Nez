@@ -13,48 +13,48 @@ namespace Nez
 	/// </summary>
 	public class PixelBloomPostProcessor : BloomPostProcessor
 	{
-		RenderTexture _layerRT;
-		RenderTexture _tempRT;
+		RenderTexture _layerRt;
+		RenderTexture _tempRt;
 
 
 		public PixelBloomPostProcessor( RenderTexture layerRenderTexture, int executionOrder ) : base( executionOrder )
 		{
-			_layerRT = layerRenderTexture;
-			_tempRT = new RenderTexture( _layerRT.renderTarget.Width, _layerRT.renderTarget.Height, DepthFormat.None );
+			_layerRt = layerRenderTexture;
+			_tempRt = new RenderTexture( _layerRt.RenderTarget.Width, _layerRt.RenderTarget.Height, DepthFormat.None );
 		}
 
 
-		public override void onSceneBackBufferSizeChanged( int newWidth, int newHeight )
+		public override void OnSceneBackBufferSizeChanged( int newWidth, int newHeight )
 		{
-			base.onSceneBackBufferSizeChanged( newWidth, newHeight );
+			base.OnSceneBackBufferSizeChanged( newWidth, newHeight );
 
-			_tempRT.resize( newWidth, newHeight );
+			_tempRt.Resize( newWidth, newHeight );
 		}
 
 
-		public override void process( RenderTarget2D source, RenderTarget2D destination )
+		public override void Process( RenderTarget2D source, RenderTarget2D destination )
 		{
 			// first we process the rendered layer with the bloom effect
-			base.process( _layerRT, _tempRT );
+			base.Process( _layerRt, _tempRt );
 
 			// we need to be careful here and ensure we use AlphaBlending since the layer we rendered is mostly transparent
-			Core.graphicsDevice.setRenderTarget( destination );
-			Graphics.instance.batcher.begin( BlendState.AlphaBlend, samplerState, DepthStencilState.None, RasterizerState.CullNone );
+			GraphicsDeviceExt.SetRenderTarget(Core.CoreGraphicsDevice, destination );
+			Graphics.Instance.Batcher.Begin( BlendState.AlphaBlend, SamplerState, DepthStencilState.None, RasterizerState.CullNone );
 
 			// now we first draw the full scene (source), then draw our bloomed layer (tempRT) then draw the un-bloomed layer (layerRT)
-			Graphics.instance.batcher.draw( source, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
-			Graphics.instance.batcher.draw( _tempRT, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
-			Graphics.instance.batcher.draw( _layerRT, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
+			Graphics.Instance.Batcher.Draw( source, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
+			Graphics.Instance.Batcher.Draw( _tempRt, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
+			Graphics.Instance.Batcher.Draw( _layerRt, new Rectangle( 0, 0, destination.Width, destination.Height ), Color.White );
 
-			Graphics.instance.batcher.end();
+			Graphics.Instance.Batcher.End();
 		}
 
 
-		public override void unload()
+		public override void Unload()
 		{
-			base.unload();
+			base.Unload();
 
-			_tempRT.Dispose();
+			_tempRt.Dispose();
 		}
 
 	}

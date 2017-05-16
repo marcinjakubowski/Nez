@@ -8,18 +8,18 @@
 		/// <summary>
 		/// First end-point of the segment
 		/// </summary>
-		internal EndPoint p1;
+		internal EndPoint P1;
 
 		/// <summary>
 		/// Second end-point of the segment
 		/// </summary>
-		internal EndPoint p2;
+		internal EndPoint P2;
 
 
 		internal Segment()
 		{
-			p1 = null;
-			p2 = null;
+			P1 = null;
+			P2 = null;
 		}
 
 
@@ -28,7 +28,7 @@
 			if( obj is Segment )
 			{
 				var other = obj as Segment;
-				return p1.Equals( other.p1 ) && p2.Equals( other.p2 );
+				return P1.Equals( other.P1 ) && P2.Equals( other.P2 );
 			}
 
 			return false;
@@ -37,13 +37,13 @@
 
 		public override int GetHashCode()
 		{
-			return p1.GetHashCode() + p2.GetHashCode();
+			return P1.GetHashCode() + P2.GetHashCode();
 		}
 
 
 		public override string ToString()
 		{
-			return "{" + p1.position.ToString() + ", " + p2.position.ToString() + "}";
+			return "{" + P1.Position.ToString() + ", " + P2.Position.ToString() + "}";
 		}
 	}
 }

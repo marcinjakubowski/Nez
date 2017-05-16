@@ -21,23 +21,23 @@ namespace System.Collections.Generic
 		/// <summary>
 		/// The default capacity of the deque.
 		/// </summary>
-		const int defaultCapacity = 16;
+		const int DefaultCapacity = 16;
 
 		/// <summary>
 		/// The first element offset from the beginning of the data array.
 		/// </summary>
-		int startOffset;
+		int _startOffset;
 
 		/// <summary>
 		/// The circular array holding the items.
 		/// </summary>
-		T[] buffer;
+		T[] _buffer;
 
 		/// <summary>
 		/// Creates a new instance of the Deque class with
 		/// the default capacity.
 		/// </summary>
-		public Deque() : this( defaultCapacity )
+		public Deque() : this( DefaultCapacity )
 		{
 		}
 
@@ -62,12 +62,12 @@ namespace System.Collections.Generic
 		/// from the specified collection.
 		/// </summary>
 		/// <param name="collection">The co</param>
-		public Deque( IEnumerable<T> collection ) : this( collection.count() )
+		public Deque( IEnumerable<T> collection ) : this( collection.Count() )
 		{
 			InsertRange( 0, collection );
 		}
 
-		int capacityClosestPowerOfTwoMinusOne;
+		int _capacityClosestPowerOfTwoMinusOne;
 
 		/// <summary>
 		/// Gets or sets the total number of elements
@@ -77,7 +77,7 @@ namespace System.Collections.Generic
 		{
 			get
 			{
-				return buffer.Length;
+				return _buffer.Length;
 			}
 
 			set
@@ -93,13 +93,13 @@ namespace System.Collections.Generic
 					throw new InvalidOperationException(
 						"Capacity cannot be set to a value less than Count" );
 				}
-				else if( null != buffer && value == buffer.Length )
+				else if( null != _buffer && value == _buffer.Length )
 				{
 					return;
 				}
 
 				// Create a new array and copy the old values.
-				var powOfTwo = Mathf.closestPowerOfTwoGreaterThan( value );
+				var powOfTwo = Mathf.ClosestPowerOfTwoGreaterThan( value );
 
 				value = powOfTwo;
 
@@ -107,9 +107,9 @@ namespace System.Collections.Generic
 				this.CopyTo( newBuffer, 0 );
 
 				// Set up to use the new buffer.
-				buffer = newBuffer;
-				startOffset = 0;
-				this.capacityClosestPowerOfTwoMinusOne = powOfTwo - 1;
+				_buffer = newBuffer;
+				_startOffset = 0;
+				this._capacityClosestPowerOfTwoMinusOne = powOfTwo - 1;
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace System.Collections.Generic
 			get { return 0 == this.Count; }
 		}
 
-		void ensureCapacityFor( int numElements )
+		void EnsureCapacityFor( int numElements )
 		{
 			if( this.Count + numElements > this.Capacity )
 			{
@@ -137,17 +137,17 @@ namespace System.Collections.Generic
 			}
 		}
 
-		int toBufferIndex( int index )
+		int ToBufferIndex( int index )
 		{
 			int bufferIndex;
 
-			bufferIndex = ( index + this.startOffset )
-			& this.capacityClosestPowerOfTwoMinusOne;
+			bufferIndex = ( index + this._startOffset )
+			& this._capacityClosestPowerOfTwoMinusOne;
 
 			return bufferIndex;
 		}
 
-		void checkIndexOutOfRange( int index )
+		void CheckIndexOutOfRange( int index )
 		{
 			if( index >= this.Count )
 			{
@@ -156,7 +156,7 @@ namespace System.Collections.Generic
 			}
 		}
 
-		static void checkArgumentsOutOfRange( int length, int offset, int count )
+		static void CheckArgumentsOutOfRange( int length, int offset, int count )
 		{
 			if( offset < 0 )
 			{
@@ -178,23 +178,23 @@ namespace System.Collections.Generic
 			}
 		}
 
-		int shiftStartOffset( int value )
+		int ShiftStartOffset( int value )
 		{
-			this.startOffset = toBufferIndex( value );
+			this._startOffset = ToBufferIndex( value );
 
-			return this.startOffset;
+			return this._startOffset;
 		}
 
-		int preShiftStartOffset( int value )
+		int PreShiftStartOffset( int value )
 		{
-			int offset = this.startOffset;
-			this.shiftStartOffset( value );
+			int offset = this._startOffset;
+			this.ShiftStartOffset( value );
 			return offset;
 		}
 
-		int postShiftStartOffset( int value )
+		int PostShiftStartOffset( int value )
 		{
-			return shiftStartOffset( value );
+			return ShiftStartOffset( value );
 		}
 
 
@@ -214,25 +214,25 @@ namespace System.Collections.Generic
 			// that would go along with calls to Get(index), we can skip
 			// all of that by referencing the underlying array.
 
-			if( this.startOffset + this.Count > this.Capacity )
+			if( this._startOffset + this.Count > this.Capacity )
 			{
-				for( int i = this.startOffset; i < this.Capacity; i++ )
+				for( int i = this._startOffset; i < this.Capacity; i++ )
 				{
-					yield return buffer[i];
+					yield return _buffer[i];
 				}
 
-				int endIndex = toBufferIndex( this.Count );
+				int endIndex = ToBufferIndex( this.Count );
 				for( int i = 0; i < endIndex; i++ )
 				{
-					yield return buffer[i];
+					yield return _buffer[i];
 				}
 			}
 			else
 			{
-				int endIndex = this.startOffset + this.Count;
-				for( int i = this.startOffset; i < endIndex; i++ )
+				int endIndex = this._startOffset + this.Count;
+				for( int i = this._startOffset; i < endIndex; i++ )
 				{
-					yield return buffer[i];
+					yield return _buffer[i];
 				}
 			}
 		}
@@ -269,12 +269,12 @@ namespace System.Collections.Generic
 			set;
 		}
 
-		void incrementCount( int value )
+		void IncrementCount( int value )
 		{
 			this.Count = this.Count + value;
 		}
 
-		void decrementCount( int value )
+		void DecrementCount( int value )
 		{
 			this.Count = Math.Max( this.Count - value, 0 );
 		}
@@ -290,18 +290,18 @@ namespace System.Collections.Generic
 
 		void ClearBuffer( int logicalIndex, int length )
 		{
-			int offset = toBufferIndex( logicalIndex );
+			int offset = ToBufferIndex( logicalIndex );
 			if( offset + length > this.Capacity )
 			{
 				int len = this.Capacity - offset;
-				Array.Clear( this.buffer, offset, len );
+				Array.Clear( this._buffer, offset, len );
 
-				len = toBufferIndex( logicalIndex + length );
-				Array.Clear( this.buffer, 0, len );
+				len = ToBufferIndex( logicalIndex + length );
+				Array.Clear( this._buffer, 0, len );
 			}
 			else
 			{
-				Array.Clear( this.buffer, offset, length );
+				Array.Clear( this._buffer, offset, length );
 			}
 		}
 
@@ -315,7 +315,7 @@ namespace System.Collections.Generic
 				ClearBuffer( 0, this.Count );
 			}
 			this.Count = 0;
-			this.startOffset = 0;
+			this._startOffset = 0;
 		}
 
 		/// <summary>
@@ -361,29 +361,29 @@ namespace System.Collections.Generic
 			}
 
 			// Nothing to copy
-			if( null == this.buffer )
+			if( null == this._buffer )
 			{
 				return;
 			}
 
-			checkArgumentsOutOfRange( array.Length, arrayIndex, this.Count );
+			CheckArgumentsOutOfRange( array.Length, arrayIndex, this.Count );
 
-			if( 0 != this.startOffset
-			    && this.startOffset + this.Count >= this.Capacity )
+			if( 0 != this._startOffset
+			    && this._startOffset + this.Count >= this.Capacity )
 			{
-				int lengthFromStart = this.Capacity - this.startOffset;
+				int lengthFromStart = this.Capacity - this._startOffset;
 				int lengthFromEnd = this.Count - lengthFromStart;
 
 				Array.Copy(
-					buffer, this.startOffset, array, 0, lengthFromStart );
+					_buffer, this._startOffset, array, 0, lengthFromStart );
 
 				Array.Copy(
-					buffer, 0, array, lengthFromStart, lengthFromEnd );
+					_buffer, 0, array, lengthFromStart, lengthFromEnd );
 			}
 			else
 			{
 				Array.Copy(
-					buffer, this.startOffset, array, 0, Count );
+					_buffer, this._startOffset, array, 0, Count );
 			}
 		}
 
@@ -452,7 +452,7 @@ namespace System.Collections.Generic
 		/// </exception>
 		public void Insert( int index, T item )
 		{
-			ensureCapacityFor( 1 );
+			EnsureCapacityFor( 1 );
 
 			if( index == 0 )
 			{
@@ -528,9 +528,9 @@ namespace System.Collections.Generic
 		/// <param name="item">The item to add.</param>
 		public void AddFront( T item )
 		{
-			ensureCapacityFor( 1 );
-			buffer[postShiftStartOffset( -1 )] = item;
-			incrementCount( 1 );
+			EnsureCapacityFor( 1 );
+			_buffer[PostShiftStartOffset( -1 )] = item;
+			IncrementCount( 1 );
 		}
 
 		/// <summary>
@@ -539,9 +539,9 @@ namespace System.Collections.Generic
 		/// <param name="item">The item to add.</param>
 		public void AddBack( T item )
 		{
-			ensureCapacityFor( 1 );
-			buffer[toBufferIndex( this.Count )] = item;
-			incrementCount( 1 );
+			EnsureCapacityFor( 1 );
+			_buffer[ToBufferIndex( this.Count )] = item;
+			IncrementCount( 1 );
 		}
 
 		/// <summary>
@@ -555,9 +555,9 @@ namespace System.Collections.Generic
 				throw new InvalidOperationException( "The Deque is empty" );
 			}
 
-			T result = buffer[this.startOffset];
-			buffer[preShiftStartOffset( 1 )] = default(T);
-			decrementCount( 1 );
+			T result = _buffer[this._startOffset];
+			_buffer[PreShiftStartOffset( 1 )] = default(T);
+			DecrementCount( 1 );
 			return result;
 		}
 
@@ -570,10 +570,10 @@ namespace System.Collections.Generic
 			if( this.IsEmpty )
 				throw new InvalidOperationException( "The Deque is empty" );
 
-			decrementCount( 1 );
-			var endIndex = toBufferIndex( this.Count );
-			T result = buffer[endIndex];
-			buffer[endIndex] = default(T);
+			DecrementCount( 1 );
+			var endIndex = ToBufferIndex( this.Count );
+			T result = _buffer[endIndex];
+			_buffer[endIndex] = default(T);
 
 			return result;
 		}
@@ -593,7 +593,7 @@ namespace System.Collections.Generic
 		/// <param name="collection">The collection to add.</param>
 		public void AddFrontRange( IEnumerable<T> collection )
 		{
-			AddFrontRange( collection, 0, collection.count() );
+			AddFrontRange( collection, 0, collection.Count() );
 		}
 
 		/// <summary>
@@ -618,7 +618,7 @@ namespace System.Collections.Generic
 		/// <param name="collection">The collection to add.</param>
 		public void AddBackRange( IEnumerable<T> collection )
 		{
-			AddBackRange( collection, 0, collection.count() );
+			AddBackRange( collection, 0, collection.Count() );
 		}
 
 		/// <summary>
@@ -647,7 +647,7 @@ namespace System.Collections.Generic
 		/// <param name="collection">The collection to add.</param>
 		public void InsertRange( int index, IEnumerable<T> collection )
 		{
-			var count = collection.count();
+			var count = collection.Count();
 			this.InsertRange( index, collection, 0, count );
 		}
 
@@ -667,7 +667,7 @@ namespace System.Collections.Generic
 		/// </param>
 		public void InsertRange( int index, IEnumerable<T> collection, int fromIndex, int count )
 		{
-			checkIndexOutOfRange( index - 1 );
+			CheckIndexOutOfRange( index - 1 );
 
 			if( 0 == count )
 			{
@@ -675,7 +675,7 @@ namespace System.Collections.Generic
 			}
 
 			// Make room
-			ensureCapacityFor( count );
+			EnsureCapacityFor( count );
 
 			if( index < this.Count / 2 )
 			{
@@ -690,13 +690,13 @@ namespace System.Collections.Generic
 					int shiftIndex = this.Capacity - count;
 					for( int j = 0; j < copyCount; j++ )
 					{
-						buffer[toBufferIndex( shiftIndex + j )] = 
-							buffer[toBufferIndex( j )];
+						_buffer[ToBufferIndex( shiftIndex + j )] = 
+							_buffer[ToBufferIndex( j )];
 					}
 				}
 
 				// shift the starting offset
-				this.shiftStartOffset( -count );
+				this.ShiftStartOffset( -count );
 
 			}
 			else
@@ -711,8 +711,8 @@ namespace System.Collections.Generic
 					int shiftIndex = index + count;
 					for( int j = 0; j < copyCount; j++ )
 					{
-						buffer[toBufferIndex( shiftIndex + j )] = 
-							buffer[toBufferIndex( index + j )];
+						_buffer[ToBufferIndex( shiftIndex + j )] = 
+							_buffer[ToBufferIndex( index + j )];
 					}
 				}
 			}
@@ -721,12 +721,12 @@ namespace System.Collections.Generic
 			int i = index;
 			foreach( T item in collection )
 			{
-				buffer[toBufferIndex( i )] = item;
+				_buffer[ToBufferIndex( i )] = item;
 				++i;
 			}
 
 			// Adjust valid count
-			incrementCount( count );
+			IncrementCount( count );
 		}
 
 		/// <summary>
@@ -757,7 +757,7 @@ namespace System.Collections.Generic
 			if( index == 0 )
 			{
 				// Removing from the beginning: shift the start offset
-				this.shiftStartOffset( count );
+				this.ShiftStartOffset( count );
 				this.Count -= count;
 				return;
 			}
@@ -778,12 +778,12 @@ namespace System.Collections.Generic
 				int writeIndex = count;
 				for( int j = 0; j < copyCount; j++ )
 				{
-					buffer[toBufferIndex( writeIndex + j )]
-					= buffer[toBufferIndex( j )];
+					_buffer[ToBufferIndex( writeIndex + j )]
+					= _buffer[ToBufferIndex( j )];
 				}
 
 				// Rotate to new view
-				this.shiftStartOffset( count );
+				this.ShiftStartOffset( count );
 			}
 			else
 			{
@@ -796,13 +796,13 @@ namespace System.Collections.Generic
 				int readIndex = index + count;
 				for( int j = 0; j < copyCount; ++j )
 				{
-					buffer[toBufferIndex( index + j )] =
-						buffer[toBufferIndex( readIndex + j )];
+					_buffer[ToBufferIndex( index + j )] =
+						_buffer[ToBufferIndex( readIndex + j )];
 				}
 			}
 
 			// Adjust valid count
-			decrementCount( count );
+			DecrementCount( count );
 		}
 
 		/// <summary>
@@ -812,8 +812,8 @@ namespace System.Collections.Generic
 		/// <returns></returns>
 		public T Get( int index )
 		{
-			checkIndexOutOfRange( index );
-			return buffer[toBufferIndex( index )];
+			CheckIndexOutOfRange( index );
+			return _buffer[ToBufferIndex( index )];
 		}
 
 		/// <summary>
@@ -824,8 +824,8 @@ namespace System.Collections.Generic
 		/// <param name="item">The item to set at the specified index.</param>
 		public void Set( int index, T item )
 		{
-			checkIndexOutOfRange( index );
-			buffer[toBufferIndex( index )] = item;
+			CheckIndexOutOfRange( index );
+			_buffer[ToBufferIndex( index )] = item;
 		}
 
 	}

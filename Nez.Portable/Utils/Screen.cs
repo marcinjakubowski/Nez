@@ -6,34 +6,34 @@ namespace Nez
 {
 	public static class Screen
 	{
-		static internal GraphicsDeviceManager _graphicsManager;
+		static internal GraphicsDeviceManager GraphicsManager;
 
 
-		internal static void initialize( GraphicsDeviceManager graphicsManager )
+		internal static void Initialize( GraphicsDeviceManager graphicsManager )
 		{
-			_graphicsManager = graphicsManager;
+			GraphicsManager = graphicsManager;
 		}
 
 
 		/// <summary>
-		/// width of the GraphicsDevice back buffer
+		/// width of the CoreGraphicsDevice back buffer
 		/// </summary>
 		/// <value>The width.</value>
-		public static int width
+		public static int Width
 		{
-			get { return _graphicsManager.GraphicsDevice.PresentationParameters.BackBufferWidth; }
-			set { _graphicsManager.GraphicsDevice.PresentationParameters.BackBufferWidth = value; }
+			get { return GraphicsManager.GraphicsDevice.PresentationParameters.BackBufferWidth; }
+			set { GraphicsManager.GraphicsDevice.PresentationParameters.BackBufferWidth = value; }
 		}
 
 
 		/// <summary>
-		/// height of the GraphicsDevice back buffer
+		/// height of the CoreGraphicsDevice back buffer
 		/// </summary>
 		/// <value>The height.</value>
-		public static int height
+		public static int Height
 		{
-			get { return _graphicsManager.GraphicsDevice.PresentationParameters.BackBufferHeight; }
-			set { _graphicsManager.GraphicsDevice.PresentationParameters.BackBufferHeight = value; }
+			get { return GraphicsManager.GraphicsDevice.PresentationParameters.BackBufferHeight; }
+			set { GraphicsManager.GraphicsDevice.PresentationParameters.BackBufferHeight = value; }
 		}
 
 
@@ -41,78 +41,78 @@ namespace Nez
 		/// gets the Screen's center
 		/// </summary>
 		/// <value>The center.</value>
-		public static Vector2 center { get { return new Vector2( width / 2, height / 2 ); } }
+		public static Vector2 Center { get { return new Vector2( Width / 2, Height / 2 ); } }
 
 
-		public static int preferredBackBufferWidth
+		public static int PreferredBackBufferWidth
 		{
-			get { return _graphicsManager.PreferredBackBufferWidth; }
-			set { _graphicsManager.PreferredBackBufferWidth = value; }
+			get { return GraphicsManager.PreferredBackBufferWidth; }
+			set { GraphicsManager.PreferredBackBufferWidth = value; }
 		}
 
 
-		public static int preferredBackBufferHeight
+		public static int PreferredBackBufferHeight
 		{
-			get { return _graphicsManager.PreferredBackBufferHeight; }
-			set { _graphicsManager.PreferredBackBufferHeight = value; }
+			get { return GraphicsManager.PreferredBackBufferHeight; }
+			set { GraphicsManager.PreferredBackBufferHeight = value; }
 		}
 
 
-		public static int monitorWidth
+		public static int MonitorWidth
 		{
 			get { return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width; }
 		}
 
 
-		public static int monitorHeight
+		public static int MonitorHeight
 		{
 			get { return GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height; }
 		}
 
 
-		public static SurfaceFormat backBufferFormat
+		public static SurfaceFormat BackBufferFormat
 		{
-			get { return _graphicsManager.GraphicsDevice.PresentationParameters.BackBufferFormat; }
+			get { return GraphicsManager.GraphicsDevice.PresentationParameters.BackBufferFormat; }
 		}
 
 
-		public static SurfaceFormat preferredBackBufferFormat
+		public static SurfaceFormat PreferredBackBufferFormat
 		{
-			get { return _graphicsManager.PreferredBackBufferFormat; }
-			set { _graphicsManager.PreferredBackBufferFormat = value; }
+			get { return GraphicsManager.PreferredBackBufferFormat; }
+			set { GraphicsManager.PreferredBackBufferFormat = value; }
 		}
 
 
-		public static bool synchronizeWithVerticalRetrace
+		public static bool SynchronizeWithVerticalRetrace
 		{
-			get { return _graphicsManager.SynchronizeWithVerticalRetrace; }
-			set { _graphicsManager.SynchronizeWithVerticalRetrace = value; }
+			get { return GraphicsManager.SynchronizeWithVerticalRetrace; }
+			set { GraphicsManager.SynchronizeWithVerticalRetrace = value; }
 		}
 
 
 		// defaults to Depth24Stencil8
-		public static DepthFormat preferredDepthStencilFormat
+		public static DepthFormat PreferredDepthStencilFormat
 		{
-			get { return _graphicsManager.PreferredDepthStencilFormat; }
-			set { _graphicsManager.PreferredDepthStencilFormat = value;	}
+			get { return GraphicsManager.PreferredDepthStencilFormat; }
+			set { GraphicsManager.PreferredDepthStencilFormat = value;	}
 		}
 
 
-		public static bool isFullscreen
+		public static bool IsFullscreen
 		{
-			get { return _graphicsManager.IsFullScreen; }
-			set { _graphicsManager.IsFullScreen = value; }
+			get { return GraphicsManager.IsFullScreen; }
+			set { GraphicsManager.IsFullScreen = value; }
 		}
 
-		public static DisplayOrientation supportedOrientations
+		public static DisplayOrientation SupportedOrientations
 		{
-			get { return _graphicsManager.SupportedOrientations; }
-			set { _graphicsManager.SupportedOrientations = value; }
+			get { return GraphicsManager.SupportedOrientations; }
+			set { GraphicsManager.SupportedOrientations = value; }
 		}
 
-		public static void applyChanges()
+		public static void ApplyChanges()
 		{
-			_graphicsManager.ApplyChanges();
+			GraphicsManager.ApplyChanges();
 		}
 
 
@@ -121,11 +121,11 @@ namespace Nez
 		/// </summary>
 		/// <param name="width">Width.</param>
 		/// <param name="height">Height.</param>
-		public static void setSize( int width, int height )
+		public static void SetSize( int width, int height )
 		{
-			preferredBackBufferWidth = width;
-			preferredBackBufferHeight = height;
-			applyChanges();
+			PreferredBackBufferWidth = width;
+			PreferredBackBufferHeight = height;
+			ApplyChanges();
 		}
 
 	}

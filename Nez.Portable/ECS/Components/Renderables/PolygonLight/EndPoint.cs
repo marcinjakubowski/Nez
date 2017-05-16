@@ -12,31 +12,31 @@ namespace Nez.Shadows
 		/// <summary>
 		/// Position of the segment
 		/// </summary>
-		internal Vector2 position;
+		internal Vector2 Position;
 
 		/// <summary>
 		/// If this end-point is a begin or end end-point
 		/// of a segment (each segment has only one begin and one end end-point
 		/// </summary>
-		internal bool begin;
+		internal bool Begin;
 
 		/// <summary>
 		/// The segment this end-point belongs to
 		/// </summary>
-		internal Segment segment;
+		internal Segment Segment;
 
 		/// <summary>
 		/// The angle of the end-point relative to the location of the visibility test
 		/// </summary>
-		internal float angle;
+		internal float Angle;
 
 
 		internal EndPoint()
 		{
-			position = Vector2.Zero;
-			begin = false;
-			segment = null;
-			angle = 0;
+			Position = Vector2.Zero;
+			Begin = false;
+			Segment = null;
+			Angle = 0;
 		}
 
 
@@ -45,7 +45,7 @@ namespace Nez.Shadows
 			if( obj is EndPoint )
 			{
 				var other = obj as EndPoint;
-				return position.Equals( other.position ) && begin.Equals( other.begin ) && angle.Equals( other.angle );
+				return Position.Equals( other.Position ) && Begin.Equals( other.Begin ) && Angle.Equals( other.Angle );
 				// We do not care about the segment being the same since that would create a circular reference
 			}
 
@@ -55,13 +55,13 @@ namespace Nez.Shadows
 
 		public override int GetHashCode()
 		{
-			return position.GetHashCode() + begin.GetHashCode() + angle.GetHashCode();
+			return Position.GetHashCode() + Begin.GetHashCode() + Angle.GetHashCode();
 		}
 
 
 		public override string ToString()
 		{
-			return "{ p:" + position.ToString() + "a: " + angle + " in " + segment.ToString() + "}";
+			return "{ p:" + Position.ToString() + "a: " + Angle + " in " + Segment.ToString() + "}";
 		}
 	}
 
@@ -76,17 +76,17 @@ namespace Nez.Shadows
 		public int Compare( EndPoint a, EndPoint b )
 		{
 			// Traverse in angle order
-			if( a.angle > b.angle )
+			if( a.Angle > b.Angle )
 				return 1;
 
-			if( a.angle < b.angle )
+			if( a.Angle < b.Angle )
 				return -1;
 
 			// But for ties we want Begin nodes before End nodes
-			if( !a.begin && b.begin )
+			if( !a.Begin && b.Begin )
 				return 1;
 
-			if( a.begin && !b.begin )
+			if( a.Begin && !b.Begin )
 				return -1;
 
 			return 0;

@@ -11,7 +11,7 @@ namespace Nez
 	/// </summary>
 	class ReflectionUtils
 	{
-		public static Assembly getAssembly( Type type )
+		public static Assembly GetAssembly( Type type )
 		{
 			#if NETFX_CORE
 			return type.GetTypeInfo().Assembly;
@@ -21,7 +21,7 @@ namespace Nez
 		}
 
 		
-		public static FieldInfo getFieldInfo( System.Object targetObject, string fieldName )
+		public static FieldInfo GetFieldInfo( System.Object targetObject, string fieldName )
 		{
 			FieldInfo fieldInfo = null;
 			var type = targetObject.GetType();
@@ -47,7 +47,7 @@ namespace Nez
 		}
 
 
-		public static IEnumerable<FieldInfo> getFields( Type type )
+		public static IEnumerable<FieldInfo> GetFields( Type type )
 		{
 			#if NETFX_CORE
 			return type.GetRuntimeFields();
@@ -57,14 +57,14 @@ namespace Nez
 		}
 
 
-		public static object getFieldValue( object targetObject, string fieldName )
+		public static object GetFieldValue( object targetObject, string fieldName )
 		{
-			var fieldInfo = getFieldInfo( targetObject, fieldName );
+			var fieldInfo = GetFieldInfo( targetObject, fieldName );
 			return fieldInfo.GetValue( targetObject );
 		}
 
 
-		public static PropertyInfo getPropertyInfo( System.Object targetObject, string propertyName )
+		public static PropertyInfo GetPropertyInfo( System.Object targetObject, string propertyName )
 		{
 			#if NETFX_CORE
 			return targetObject.GetType().GetRuntimeProperty( propertyName );
@@ -74,7 +74,7 @@ namespace Nez
 		}
 
 
-		public static IEnumerable<PropertyInfo> getProperties( Type type )
+		public static IEnumerable<PropertyInfo> GetProperties( Type type )
 		{
 			#if NETFX_CORE
 			return type.GetRuntimeProperties();
@@ -84,7 +84,7 @@ namespace Nez
 		}
 
 
-		public static MethodInfo getPropertyGetter( PropertyInfo prop )
+		public static MethodInfo GetPropertyGetter( PropertyInfo prop )
 		{
 			#if NETFX_CORE
 			return prop.GetMethod;
@@ -94,7 +94,7 @@ namespace Nez
 		}
 
 
-		public static MethodInfo getPropertySetter( PropertyInfo prop )
+		public static MethodInfo GetPropertySetter( PropertyInfo prop )
 		{
 			#if NETFX_CORE
 			return prop.SetMethod;
@@ -104,15 +104,15 @@ namespace Nez
 		}
 
 
-		public static object getPropertyValue( object targetObject, string propertyName )
+		public static object GetPropertyValue( object targetObject, string propertyName )
 		{
-			var propInfo = getPropertyInfo( targetObject, propertyName );
-			var methodInfo = getPropertyGetter( propInfo );
+			var propInfo = GetPropertyInfo( targetObject, propertyName );
+			var methodInfo = GetPropertyGetter( propInfo );
 			return methodInfo.Invoke( targetObject, new object[] { } );
 		}
 
 
-		public static IEnumerable<MethodInfo> getMethods( Type type )
+		public static IEnumerable<MethodInfo> GetMethods( Type type )
 		{
 			#if NETFX_CORE
 			return type.GetRuntimeMethods();
@@ -122,19 +122,19 @@ namespace Nez
 		}
 
 
-		public static MethodInfo getMethodInfo( System.Object targetObject, string methodName )
+		public static MethodInfo GetMethodInfo( System.Object targetObject, string methodName )
 		{
-			return getMethodInfo( targetObject.GetType(), methodName );
+			return GetMethodInfo( targetObject.GetType(), methodName );
 		}
 
 
-		public static MethodInfo getMethodInfo( System.Object targetObject, string methodName, Type[] parameters )
+		public static MethodInfo GetMethodInfo( System.Object targetObject, string methodName, Type[] parameters )
 		{
-			return getMethodInfo( targetObject.GetType(), methodName, parameters );
+			return GetMethodInfo( targetObject.GetType(), methodName, parameters );
 		}
 
 
-		public static MethodInfo getMethodInfo( Type type, string methodName, Type[] parameters = null )
+		public static MethodInfo GetMethodInfo( Type type, string methodName, Type[] parameters = null )
 		{
 			#if NETFX_CORE
 			if( parameters != null )
@@ -152,7 +152,7 @@ namespace Nez
 		}
 
 
-		public static T createDelegate<T>( System.Object targetObject, MethodInfo methodInfo )
+		public static T CreateDelegate<T>( System.Object targetObject, MethodInfo methodInfo )
 		{
 			#if NETFX_CORE
 			return (T)(object)methodInfo.CreateDelegate( typeof( T ), targetObject );
@@ -166,14 +166,14 @@ namespace Nez
 		/// either returns a super fast Delegate to set the given property or null if it couldn't be found
 		/// via reflection
 		/// </summary>
-		public static T setterForProperty<T>( System.Object targetObject, string propertyName )
+		public static T SetterForProperty<T>( System.Object targetObject, string propertyName )
 		{
 			// first get the property
-			var propInfo = getPropertyInfo( targetObject, propertyName );
+			var propInfo = GetPropertyInfo( targetObject, propertyName );
 			if( propInfo == null )
 				return default(T);
 
-			return createDelegate<T>( targetObject, propInfo.SetMethod );
+			return CreateDelegate<T>( targetObject, propInfo.SetMethod );
 		}
 
 
@@ -181,14 +181,14 @@ namespace Nez
 		/// either returns a super fast Delegate to get the given property or null if it couldn't be found
 		/// via reflection
 		/// </summary>
-		public static T getterForProperty<T>( System.Object targetObject, string propertyName )
+		public static T GetterForProperty<T>( System.Object targetObject, string propertyName )
 		{
 			// first get the property
-			var propInfo = getPropertyInfo( targetObject, propertyName );
+			var propInfo = GetPropertyInfo( targetObject, propertyName );
 			if( propInfo == null )
 				return default(T);
 
-			return createDelegate<T>( targetObject, propInfo.GetMethod );
+			return CreateDelegate<T>( targetObject, propInfo.GetMethod );
 		}
 
 	}

@@ -13,12 +13,12 @@ namespace Nez.Sprites
 		/// <summary>
 		/// x speed of automatic scrolling
 		/// </summary>
-		public float scrollSpeedX = 0;
+		public float ScrollSpeedX = 0;
 
 		/// <summary>
 		/// y speed of automatic scrolling
 		/// </summary>
-		public float scrollSpeedY = 0;
+		public float ScrollSpeedY = 0;
 
 		// accumulate scroll in a separate float so that we can round it without losing precision for small scroll speeds
 		float _scrollX, _scrollY;
@@ -32,10 +32,10 @@ namespace Nez.Sprites
 		{}
 
 
-		void IUpdatable.update()
+		void IUpdatable.Update()
 		{
-			_scrollX += scrollSpeedX * Time.deltaTime;
-			_scrollY += scrollSpeedY * Time.deltaTime;
+			_scrollX += ScrollSpeedX * Time.DeltaTime;
+			_scrollY += ScrollSpeedY * Time.DeltaTime;
 			_sourceRect.X = (int)_scrollX;
 			_sourceRect.Y = (int)_scrollY;
 		}

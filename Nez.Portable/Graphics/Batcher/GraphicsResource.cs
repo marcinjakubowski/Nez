@@ -11,7 +11,7 @@ namespace Nez
 	/// </summary>
 	public abstract class GraphicsResource : IDisposable
 	{
-		public GraphicsDevice graphicsDevice
+		public GraphicsDevice GraphicsDevice
 		{
 			get
 			{
@@ -19,30 +19,30 @@ namespace Nez
 			}
 			internal set
 			{
-				Assert.isTrue( value != null );
+				Assert.IsTrue( value != null );
 
 				if( _graphicsDevice == value )
 					return;
 
-				// VertexDeclaration objects can be bound to multiple GraphicsDevice objects
-				// during their lifetime. But only one GraphicsDevice should retain ownership.
+				// VertexDeclaration objects can be bound to multiple CoreGraphicsDevice objects
+				// during their lifetime. But only one CoreGraphicsDevice should retain ownership.
 				if( _graphicsDevice != null )
 				{
-					updateResourceReference( false );
+					UpdateResourceReference( false );
 					_selfReference = null;
 				}
 
 				_graphicsDevice = value;
 
 				_selfReference = new WeakReference( this );
-				updateResourceReference( true );
+				UpdateResourceReference( true );
 			}
 		}
 			
-		public bool isDisposed { get; private set; }
+		public bool IsDisposed { get; private set; }
 
-		// The GraphicsDevice property should only be accessed in Dispose(bool) if the disposing
-		// parameter is true. If disposing is false, the GraphicsDevice may or may not be disposed yet.
+		// The CoreGraphicsDevice property should only be accessed in Dispose(bool) if the disposing
+		// parameter is true. If disposing is false, the CoreGraphicsDevice may or may not be disposed yet.
 		GraphicsDevice _graphicsDevice;
 
 		WeakReference _selfReference;
@@ -75,7 +75,7 @@ namespace Nez
 		/// <remarks>Native resources should always be released regardless of the value of the disposing parameter.</remarks>
 		protected virtual void Dispose( bool disposing )
 		{
-			if( !isDisposed )
+			if( !IsDisposed )
 			{
 				if( disposing )
 				{
@@ -83,21 +83,21 @@ namespace Nez
 				}
 					
 				// Remove from the global list of graphics resources
-				if( graphicsDevice != null )
-					updateResourceReference( false );
+				if( GraphicsDevice != null )
+					UpdateResourceReference( false );
 
 				_selfReference = null;
 				_graphicsDevice = null;
-				isDisposed = true;
+				IsDisposed = true;
 			}
 		}
 
 
-		void updateResourceReference( bool shouldAdd )
+		void UpdateResourceReference( bool shouldAdd )
 		{
 			var method = shouldAdd ? "AddResourceReference" : "RemoveResourceReference";
-			var methodInfo = ReflectionUtils.getMethodInfo( graphicsDevice, method );
-			methodInfo.Invoke( graphicsDevice, new object[] { _selfReference } );
+			var methodInfo = ReflectionUtils.GetMethodInfo( GraphicsDevice, method );
+			methodInfo.Invoke( GraphicsDevice, new object[] { _selfReference } );
 		}
 
 	}

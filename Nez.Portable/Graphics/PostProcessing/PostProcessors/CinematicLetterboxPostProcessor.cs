@@ -13,7 +13,7 @@ namespace Nez
 		/// color of the letterbox
 		/// </summary>
 		/// <value>The color.</value>
-		public Color color
+		public Color Color
 		{
 			get { return _color; }
 			set
@@ -22,7 +22,7 @@ namespace Nez
 				{
 					_color = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_colorParam.SetValue( _color.ToVector4() );
 				}
 			}
@@ -32,7 +32,7 @@ namespace Nez
 		/// size in pixels of the letterbox
 		/// </summary>
 		/// <value>The size of the letterbox.</value>
-		public float letterboxSize
+		public float LetterboxSize
 		{
 			get { return _letterboxSize; }
 			set
@@ -41,7 +41,7 @@ namespace Nez
 				{
 					_letterboxSize = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_letterboxSizeParam.SetValue( _letterboxSize );
 				}
 			}
@@ -58,12 +58,12 @@ namespace Nez
 		{}
 
 
-		public override void onAddedToScene()
+		public override void OnAddedToScene()
 		{
-			effect = scene.content.loadEffect<Effect>( "vignette", EffectResource.letterboxBytes );
+			Effect = Scene.Content.LoadEffect<Effect>( "vignette", EffectResource.LetterboxBytes );
 
-			_colorParam = effect.Parameters["_color"];
-			_letterboxSizeParam = effect.Parameters["_letterboxSize"];
+			_colorParam = Effect.Parameters["_color"];
+			_letterboxSizeParam = Effect.Parameters["_letterboxSize"];
 			_colorParam.SetValue( _color.ToVector4() );
 			_letterboxSizeParam.SetValue( _letterboxSize );
 		}
@@ -76,7 +76,7 @@ namespace Nez
 		/// <param name="letterboxSize">Letterbox size.</param>
 		/// <param name="duration">Duration.</param>
 		/// <param name="easeType">Ease type.</param>
-		public IEnumerator animateIn( float letterboxSize, float duration = 2, EaseType easeType = EaseType.ExpoOut )
+		public IEnumerator AnimateIn( float letterboxSize, float duration = 2, EaseType easeType = EaseType.ExpoOut )
 		{
 			// wait for any current animations to complete
 			while( _isAnimating )
@@ -86,8 +86,8 @@ namespace Nez
 			var elapsedTime = 0f;
 			while( elapsedTime < duration )
 			{
-				elapsedTime += Time.deltaTime;
-				this.letterboxSize = Lerps.ease( easeType, 0, letterboxSize, elapsedTime, duration );
+				elapsedTime += Time.DeltaTime;
+				this.LetterboxSize = Lerps.Ease( easeType, 0, letterboxSize, elapsedTime, duration );
 				yield return null;
 			}
 			_isAnimating = false;
@@ -100,19 +100,19 @@ namespace Nez
 		/// <returns>The out.</returns>
 		/// <param name="duration">Duration.</param>
 		/// <param name="easeType">Ease type.</param>
-		public IEnumerator animateOut( float duration = 2, EaseType easeType = EaseType.ExpoIn )
+		public IEnumerator AnimateOut( float duration = 2, EaseType easeType = EaseType.ExpoIn )
 		{
 			// wait for any current animations to complete
 			while( _isAnimating )
 				yield return null;
 			
 			_isAnimating = true;
-			var startSize = letterboxSize;
+			var startSize = LetterboxSize;
 			var elapsedTime = 0f;
 			while( elapsedTime < duration )
 			{
-				elapsedTime += Time.deltaTime;
-				this.letterboxSize = Lerps.ease( easeType, startSize, 0, elapsedTime, duration );
+				elapsedTime += Time.DeltaTime;
+				this.LetterboxSize = Lerps.Ease( easeType, startSize, 0, elapsedTime, duration );
 				yield return null;
 			}
 			_isAnimating = false;

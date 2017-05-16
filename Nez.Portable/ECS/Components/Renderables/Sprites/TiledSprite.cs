@@ -16,7 +16,7 @@ namespace Nez
 		/// x value of the texture scroll
 		/// </summary>
 		/// <value>The scroll x.</value>
-		public int scrollX
+		public int ScrollX
 		{
 			get { return _sourceRect.X; }
 			set { _sourceRect.X = value; }
@@ -26,7 +26,7 @@ namespace Nez
 		/// y value of the texture scroll
 		/// </summary>
 		/// <value>The scroll y.</value>
-		public int scrollY
+		public int ScrollY
 		{
 			get { return _sourceRect.Y; }
 			set { _sourceRect.Y = value; }
@@ -36,7 +36,7 @@ namespace Nez
 		/// scale of the texture
 		/// </summary>
 		/// <value>The texture scale.</value>
-		public Vector2 textureScale
+		public Vector2 TextureScale
 		{
 			get { return _textureScale; }
 			set
@@ -45,8 +45,8 @@ namespace Nez
 
 				// recalulcate our inverseTextureScale and the source rect size
 				_inverseTexScale = new Vector2( 1f / _textureScale.X, 1f / _textureScale.Y );
-				_sourceRect.Width = (int)( subtexture.sourceRect.Width * _inverseTexScale.X );
-				_sourceRect.Height = (int)( subtexture.sourceRect.Height * _inverseTexScale.Y );
+				_sourceRect.Width = (int)( Subtexture.SourceRect.Width * _inverseTexScale.X );
+				_sourceRect.Height = (int)( Subtexture.SourceRect.Height * _inverseTexScale.Y );
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace Nez
 		/// overridden width value so that the TiledSprite can have an independent width than its texture
 		/// </summary>
 		/// <value>The width.</value>
-		public new int width
+		public new int Width
 		{
 			get { return _sourceRect.Width; }
 			set { _sourceRect.Width = value; }
@@ -64,7 +64,7 @@ namespace Nez
 		/// overridden height value so that the TiledSprite can have an independent height than its texture
 		/// </summary>
 		/// <value>The height.</value>
-		public new int height
+		public new int Height
 		{
 			get { return _sourceRect.Height; }
 			set { _sourceRect.Height = value; }
@@ -80,10 +80,10 @@ namespace Nez
 
 		public TiledSprite( Subtexture subtexture ) : base( subtexture )
 		{
-			_sourceRect = subtexture.sourceRect;
-			material = new Material
+			_sourceRect = subtexture.SourceRect;
+			Material = new Material
 			{
-				samplerState = Core.defaultWrappedSamplerState
+				SamplerState = Core.DefaultWrappedSamplerState
 			};
 		}
 
@@ -92,12 +92,12 @@ namespace Nez
 		{}
 
 
-		public override void render( Graphics graphics, Camera camera )
+		public override void Render( Graphics graphics, Camera camera )
 		{
-			var topLeft = entity.transform.position + _localOffset;
-			var destinationRect = RectangleExt.fromFloats( topLeft.X, topLeft.Y, _sourceRect.Width * entity.transform.scale.X * textureScale.X, _sourceRect.Height * entity.transform.scale.Y * textureScale.Y );
+			var topLeft = Entity.Transform.Position + _localOffset;
+			var destinationRect = RectangleExt.FromFloats( topLeft.X, topLeft.Y, _sourceRect.Width * Entity.Transform.Scale.X * TextureScale.X, _sourceRect.Height * Entity.Transform.Scale.Y * TextureScale.Y );
 
-			graphics.batcher.draw( subtexture, destinationRect, _sourceRect, color, entity.transform.rotation, origin * _inverseTexScale, spriteEffects, _layerDepth );
+			graphics.Batcher.Draw( Subtexture, destinationRect, _sourceRect, Color, Entity.Transform.Rotation, Origin * _inverseTexScale, SpriteEffects, _layerDepth );
 		}
 
 	}

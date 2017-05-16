@@ -6,84 +6,84 @@ using Microsoft.Xna.Framework;
 namespace Nez.UI
 {
 	/// <summary>
-	/// Displays a dialog, which is a modal window containing a content table with a button table underneath it. Methods are provided
-	/// to add a label to the content table and buttons to the button table, but any widgets can be added. When a button is clicked,
+	/// Displays a dialog, which is a modal window containing a GlobalContent table with a button table underneath it. Methods are provided
+	/// to add a label to the GlobalContent table and buttons to the button table, but any widgets can be added. When a button is clicked,
 	/// {@link #result(Object)} is called and the dialog is removed from the stage.
 	/// </summary>
 	public class Dialog : Window
 	{
-		Table contentTable, buttonTable;
+		Table _contentTable, _buttonTable;
 
 
 		public Dialog( string title, WindowStyle windowStyle ) : base( title, windowStyle )
 		{
-			initialize();
+			Initialize();
 		}
 
 
-		public Dialog( string title, Skin skin, string styleName = null ) : this( title, skin.get<WindowStyle>( styleName ) )
+		public Dialog( string title, Skin skin, string styleName = null ) : this( title, skin.Get<WindowStyle>( styleName ) )
 		{}
 
 
-		private void initialize()
+		private void Initialize()
 		{
-			defaults().space( 16 );
-			add( contentTable = new Table() ).expand().fill();
-			row();
-			add( buttonTable = new Table() );
+			Defaults().Space( 16 );
+			Add( _contentTable = new Table() ).Expand().Fill();
+			Row();
+			Add( _buttonTable = new Table() );
 
-			contentTable.defaults().space( 16 );
-			buttonTable.defaults().space( 16 );
+			_contentTable.Defaults().Space( 16 );
+			_buttonTable.Defaults().Space( 16 );
 		}
 
 
-		public Table getContentTable()
+		public Table GetContentTable()
 		{
-			return contentTable;
+			return _contentTable;
 		}
 
 
-		public Table getButtonTable()
+		public Table GetButtonTable()
 		{
-			return buttonTable;
+			return _buttonTable;
 		}
 
 
 		/// <summary>
-		/// Adds a label to the content table
+		/// Adds a label to the GlobalContent table
 		/// </summary>
 		/// <returns>The text.</returns>
 		/// <param name="text">Text.</param>
-		public Dialog addText( string text )
+		public Dialog AddText( string text )
 		{
-			return addText( new Label( text ) );
+			return AddText( new Label( text ) );
 		}
 
 
 		/// <summary>
-		/// Adds the given Label to the content table
+		/// Adds the given Label to the GlobalContent table
 		/// </summary>
 		/// <param name="label">Label.</param>
-		public Dialog addText( Label label )
+		public Dialog AddText( Label label )
 		{
-			contentTable.add( label );
+			_contentTable.Add( label );
 			return this;
 		}
 
 
 		/** Adds a text button to the button table.
 	 * @param object The object that will be passed to {@link #result(Object)} if this button is clicked. May be null. */
-		public Button addButton( string text, TextButtonStyle buttonStyle )
+		public Button AddButton( string text, TextButtonStyle buttonStyle )
 		{
-			return addButton( new TextButton( text, buttonStyle ) );
+			return AddButton( new TextButton( text, buttonStyle ) );
 		}
 
 
 		/** Adds the given button to the button table.
 	 * @param object The object that will be passed to {@link #result(Object)} if this button is clicked. May be null. */
-		public Button addButton( Button button )
+		public Button AddButton( Button button )
 		{
-			buttonTable.add( button );
+			_buttonTable.Add( button );
 			return button;
 		}
 
@@ -92,12 +92,12 @@ namespace Nez.UI
 		/// {@link #pack() Packs} the dialog and adds it to the stage
 		/// </summary>
 		/// <param name="stage">Stage.</param>
-		public Dialog show( Stage stage )
+		public Dialog Show( Stage stage )
 		{
-			stage.addElement( this );
-			setPosition( Mathf.round( ( stage.getWidth() - getWidth() ) / 2 ), Mathf.round( ( stage.getHeight() - getHeight() ) / 2 ) );
+			stage.AddElement( this );
+			SetPosition( Mathf.Round( ( stage.GetWidth() - GetWidth() ) / 2 ), Mathf.Round( ( stage.GetHeight() - GetHeight() ) / 2 ) );
 
-			pack();
+			Pack();
 
 			return this;
 		}
@@ -106,9 +106,9 @@ namespace Nez.UI
 		/// <summary>
 		/// Hides the dialog
 		/// </summary>
-		public void hide()
+		public void Hide()
 		{
-			remove();
+			Remove();
 		}
 
 	}

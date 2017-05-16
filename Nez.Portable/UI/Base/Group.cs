@@ -6,50 +6,50 @@ namespace Nez.UI
 {
 	public class Group : Element
 	{
-		internal List<Element> children = new List<Element>();
-		protected bool transform = false;
+		internal List<Element> Children = new List<Element>();
+		protected bool Transform = false;
 		Matrix _previousBatcherTransform;
 
 
-		public T addElement<T>( T element ) where T : Element
+		public T AddElement<T>( T element ) where T : Element
 		{
-			if( element.parent != null )
-				element.parent.removeElement( element );
+			if( element.Parent != null )
+				element.Parent.RemoveElement( element );
 			
-			children.Add( element );
-			element.setParent( this );
-			element.setStage( stage );
-			onChildrenChanged();
+			Children.Add( element );
+			element.SetParent( this );
+			element.SetStage( Stage );
+			OnChildrenChanged();
 
 			return element;
 		}
 
 
-		public T insertElement<T>( int index, T element ) where T : Element
+		public T InsertElement<T>( int index, T element ) where T : Element
 		{
-			if( element.parent != null )
-				element.parent.removeElement( element );
+			if( element.Parent != null )
+				element.Parent.RemoveElement( element );
 
-			if( index >= children.Count )
-				return addElement( element );
+			if( index >= Children.Count )
+				return AddElement( element );
 			
-			children.Insert( index, element );
-			element.setParent( this );
-			element.setStage( stage );
-			onChildrenChanged();
+			Children.Insert( index, element );
+			element.SetParent( this );
+			element.SetStage( Stage );
+			OnChildrenChanged();
 
 			return element;
 		}
 
 
-		public virtual bool removeElement( Element element )
+		public virtual bool RemoveElement( Element element )
 		{
-			if( !children.Contains( element ) )
+			if( !Children.Contains( element ) )
 				return false;
 			
-			element.parent = null;
-			children.Remove( element );
-			onChildrenChanged();
+			element.Parent = null;
+			Children.Remove( element );
+			OnChildrenChanged();
 			return true;
 		}
 
@@ -58,15 +58,15 @@ namespace Nez.UI
 		/// Returns an ordered list of child elements in this group
 		/// </summary>
 		/// <returns>The children.</returns>
-		public List<Element> getChildren()
+		public List<Element> GetChildren()
 		{
-			return children;
+			return Children;
 		}
 
 
-		public void setTransform( bool transform )
+		public void SetTransform( bool transform )
 		{
-			this.transform = transform;
+			this.Transform = transform;
 		}
 
 
@@ -74,22 +74,22 @@ namespace Nez.UI
 		/// sets the stage on all children in case the Group is added to the Stage after it is configured
 		/// </summary>
 		/// <param name="stage">Stage.</param>
-		internal override void setStage( Stage stage )
+		internal override void SetStage( Stage stage )
 		{
-			this.stage = stage;
-			for( var i = 0; i < children.Count; i++ )
-				children[i].setStage( stage );
+			this.Stage = stage;
+			for( var i = 0; i < Children.Count; i++ )
+				Children[i].SetStage( stage );
 		}
 
 
-		void setLayoutEnabled( Group parent, bool enabled )
+		void SetLayoutEnabled( Group parent, bool enabled )
 		{
-			for( var i = 0; i < parent.children.Count; i++ )
+			for( var i = 0; i < parent.Children.Count; i++ )
 			{
-				if( parent.children[i] is ILayout )
-					( (ILayout)parent.children[i] ).layoutEnabled = enabled;
-				else if( parent.children[i] is Group )
-					setLayoutEnabled( parent.children[i] as Group, enabled );
+				if( parent.Children[i] is ILayout )
+					( (ILayout)parent.Children[i] ).LayoutEnabled = enabled;
+				else if( parent.Children[i] is Group )
+					SetLayoutEnabled( parent.Children[i] as Group, enabled );
 			}
 		}
 
@@ -97,161 +97,161 @@ namespace Nez.UI
 		/// <summary>
 		/// Removes all children
 		/// </summary>
-		public void clear()
+		public void Clear()
 		{
-			clearChildren();
+			ClearChildren();
 		}
 
 
 		/// <summary>
 		/// Removes all elements from this group
 		/// </summary>
-		public virtual void clearChildren()
+		public virtual void ClearChildren()
 		{
-			for( var i = 0; i < children.Count; i++ )
-				children[i].parent = null;
+			for( var i = 0; i < Children.Count; i++ )
+				Children[i].Parent = null;
 
-			children.Clear();
-			onChildrenChanged();
+			Children.Clear();
+			OnChildrenChanged();
 		}
 
 
 		/// <summary>
 		/// Called when elements are added to or removed from the group.
 		/// </summary>
-		protected virtual void onChildrenChanged()
+		protected virtual void OnChildrenChanged()
 		{
-			invalidateHierarchy();
+			InvalidateHierarchy();
 		}
 
 
-		public override Element hit( Vector2 point )
+		public override Element Hit( Vector2 point )
 		{
-			if( touchable == Touchable.Disabled )
+			if( Touchable == Touchable.Disabled )
 				return null;
 
-			for( var i = children.Count - 1; i >= 0; i-- )
+			for( var i = Children.Count - 1; i >= 0; i-- )
 			{
-				var child = children[i];
-				if( !child.isVisible() )
+				var child = Children[i];
+				if( !child.IsVisible() )
 					continue;
 
-				var childLocalPoint = child.parentToLocalCoordinates( point );
-				var hit = child.hit( childLocalPoint );
+				var childLocalPoint = child.ParentToLocalCoordinates( point );
+				var hit = child.Hit( childLocalPoint );
 				if( hit != null )
 					return hit;
 			}
 
-			return base.hit( point );
+			return base.Hit( point );
 		}
 
 
-		public override void draw( Graphics graphics, float parentAlpha )
+		public override void Draw( Graphics graphics, float parentAlpha )
 		{
-			if( !isVisible() )
+			if( !IsVisible() )
 				return;
 
-			validate();
+			Validate();
 
-			if( transform )
-				applyTransform( graphics, computeTransform() );
+			if( Transform )
+				ApplyTransform( graphics, ComputeTransform() );
 
-			drawChildren( graphics, parentAlpha );
+			DrawChildren( graphics, parentAlpha );
 
-			if( transform )
-				resetTransform( graphics );
+			if( Transform )
+				ResetTransform( graphics );
 		}
 
 
-		public void drawChildren( Graphics graphics, float parentAlpha )
+		public void DrawChildren( Graphics graphics, float parentAlpha )
 		{
-			parentAlpha *= color.A;
-			if( transform )
+			parentAlpha *= Color.A;
+			if( Transform )
 			{
-				for( var i = 0; i < children.Count; i++ )
+				for( var i = 0; i < Children.Count; i++ )
 				{
-					if( !children[i].isVisible() )
+					if( !Children[i].IsVisible() )
 						continue;
 					
-					children[i].draw( graphics, parentAlpha );
+					Children[i].Draw( graphics, parentAlpha );
 				}
 			}
 			else
 			{
 				// No transform for this group, offset each child.
-				float offsetX = x, offsetY = y;
-				x = 0;
-				y = 0;
-				for( var i = 0; i < children.Count; i++ )
+				float offsetX = X, offsetY = Y;
+				X = 0;
+				Y = 0;
+				for( var i = 0; i < Children.Count; i++ )
 				{
-					if( !children[i].isVisible() )
+					if( !Children[i].IsVisible() )
 						continue;
 					
-		                        children[i].x += offsetX;
-		                        children[i].y += offsetY;
-					children[i].draw( graphics, parentAlpha );
-					children[i].x -= offsetX;
-					children[i].y -= offsetY;
+		                        Children[i].X += offsetX;
+		                        Children[i].Y += offsetY;
+					Children[i].Draw( graphics, parentAlpha );
+					Children[i].X -= offsetX;
+					Children[i].Y -= offsetY;
 				}
-				x = offsetX;
-				y = offsetY;
+				X = offsetX;
+				Y = offsetY;
 			}
 		}
 
 
-		public override void debugRender( Graphics graphics )
+		public override void DebugRender( Graphics graphics )
 		{
-			if( transform )
-				applyTransform( graphics, computeTransform() );
+			if( Transform )
+				ApplyTransform( graphics, ComputeTransform() );
 
-			debugRenderChildren( graphics, 1f );
+			DebugRenderChildren( graphics, 1f );
 
-			if( transform )
-				resetTransform( graphics );
+			if( Transform )
+				ResetTransform( graphics );
 
 			if( this is Button )
-				base.debugRender( graphics );
+				base.DebugRender( graphics );
 		}
 
 
-		public void debugRenderChildren( Graphics graphics, float parentAlpha )
+		public void DebugRenderChildren( Graphics graphics, float parentAlpha )
 		{
-			parentAlpha *= color.A;
-			if( transform )
+			parentAlpha *= Color.A;
+			if( Transform )
 			{
-				for( var i = 0; i < children.Count; i++ )
+				for( var i = 0; i < Children.Count; i++ )
 				{
-					if( !children[i].isVisible() )
+					if( !Children[i].IsVisible() )
 						continue;
 
-					if( !children[i].getDebug() && !( children[i] is Group ) )
+					if( !Children[i].GetDebug() && !( Children[i] is Group ) )
 						continue;
 
-					children[i].debugRender( graphics );
+					Children[i].DebugRender( graphics );
 				}
 			}
 			else
 			{
 				// No transform for this group, offset each child.
-				float offsetX = x, offsetY = y;
-				x = 0;
-				y = 0;
-				for( var i = 0; i < children.Count; i++ )
+				float offsetX = X, offsetY = Y;
+				X = 0;
+				Y = 0;
+				for( var i = 0; i < Children.Count; i++ )
 				{
-					if( !children[i].isVisible() )
+					if( !Children[i].IsVisible() )
 						continue;
 
-					if( !children[i].getDebug() && !( children[i] is Group ) )
+					if( !Children[i].GetDebug() && !( Children[i] is Group ) )
 						continue;
 
-					children[i].x += offsetX;
-					children[i].y += offsetY;
-					children[i].debugRender( graphics );
-					children[i].x -= offsetX;
-					children[i].y -= offsetY;
+					Children[i].X += offsetX;
+					Children[i].Y += offsetY;
+					Children[i].DebugRender( graphics );
+					Children[i].X -= offsetX;
+					Children[i].Y -= offsetY;
 				}
-				x = offsetX;
-				y = offsetY;
+				X = offsetX;
+				Y = offsetY;
 			}
 		}
 
@@ -260,32 +260,32 @@ namespace Nez.UI
 		/// Returns the transform for this group's coordinate system
 		/// </summary>
 		/// <returns>The transform.</returns>
-		protected Matrix2D computeTransform()
+		protected Matrix2D ComputeTransform()
 		{
-			var mat = Matrix2D.identity;
+			var mat = Matrix2D.Identity;
 
-			if( originX != 0 || originY != 0 )
-				mat = Matrix2D.multiply( mat, Matrix2D.createTranslation( -originX, -originY ) );
+			if( OriginX != 0 || OriginY != 0 )
+				mat = Matrix2D.Multiply( mat, Matrix2D.CreateTranslation( -OriginX, -OriginY ) );
 			
-			if( rotation != 0 )
-				mat = Matrix2D.multiply( mat, Matrix2D.createRotation( MathHelper.ToRadians( rotation ) ) );
+			if( Rotation != 0 )
+				mat = Matrix2D.Multiply( mat, Matrix2D.CreateRotation( MathHelper.ToRadians( Rotation ) ) );
 
-			if( scaleX != 1 || scaleY != 1 )
-				mat = Matrix2D.multiply( mat, Matrix2D.createScale( scaleX, scaleY ) );
+			if( ScaleX != 1 || ScaleY != 1 )
+				mat = Matrix2D.Multiply( mat, Matrix2D.CreateScale( ScaleX, ScaleY ) );
 
-			mat = Matrix2D.multiply( mat, Matrix2D.createTranslation( x + originX, y + originY ) );
+			mat = Matrix2D.Multiply( mat, Matrix2D.CreateTranslation( X + OriginX, Y + OriginY ) );
 
 			// Find the first parent that transforms
-			Group parentGroup = parent;
+			Group parentGroup = Parent;
 			while( parentGroup != null )
 			{
-				if( parentGroup.transform )
+				if( parentGroup.Transform )
 					break;
-				parentGroup = parentGroup.parent;
+				parentGroup = parentGroup.Parent;
 			}
 
 			if( parentGroup != null )
-				mat = Matrix2D.multiply( mat, parentGroup.computeTransform() );
+				mat = Matrix2D.Multiply( mat, parentGroup.ComputeTransform() );
 
 			return mat;
 		}
@@ -297,11 +297,11 @@ namespace Nez.UI
 		/// </summary>
 		/// <param name="graphics">Graphics.</param>
 		/// <param name="transform">Transform.</param>
-		protected void applyTransform( Graphics graphics, Matrix transform )
+		protected void ApplyTransform( Graphics graphics, Matrix transform )
 		{
-			_previousBatcherTransform = graphics.batcher.transformMatrix;
-			graphics.batcher.end();
-			graphics.batcher.begin( transform );
+			_previousBatcherTransform = graphics.Batcher.TransformMatrix;
+			graphics.Batcher.End();
+			graphics.Batcher.Begin( transform );
 		}
 
 
@@ -310,10 +310,10 @@ namespace Nez.UI
 		/// be flushed
 		/// </summary>
 		/// <param name="batch">Batch.</param>
-		protected void resetTransform( Graphics graphics )
+		protected void ResetTransform( Graphics graphics )
 		{
-			graphics.batcher.end();
-			graphics.batcher.begin( _previousBatcherTransform );
+			graphics.Batcher.End();
+			graphics.Batcher.Begin( _previousBatcherTransform );
 		}
 
 
@@ -322,17 +322,17 @@ namespace Nez.UI
 		/// </summary>
 		/// <param name="enabled">If set to <c>true</c> enabled.</param>
 		/// <param name="recursively">If set to <c>true</c> recursively.</param>
-		public void setDebug( bool enabled, bool recursively )
+		public void SetDebug( bool enabled, bool recursively )
 		{
 			_debug = enabled;
 			if( recursively )
 			{
-				foreach( var child in children )
+				foreach( var child in Children )
 				{
 					if( child is Group )
-						( (Group)child ).setDebug( enabled, recursively );
+						( (Group)child ).SetDebug( enabled, recursively );
 					else
-						child.setDebug( enabled );
+						child.SetDebug( enabled );
 				}
 			}
 		}
@@ -342,16 +342,16 @@ namespace Nez.UI
 		/// Calls {setDebug(true, true)
 		/// </summary>
 		/// <returns>The all.</returns>
-		public virtual Group debugAll()
+		public virtual Group DebugAll()
 		{
-			setDebug( true, true );
+			SetDebug( true, true );
 			return this;
 		}
 
 
 		#region ILayout
 
-		public override bool layoutEnabled
+		public override bool LayoutEnabled
 		{
 			get { return _layoutEnabled; }
 			set
@@ -360,25 +360,25 @@ namespace Nez.UI
 				{
 					_layoutEnabled = value;
 
-					setLayoutEnabled( this, _layoutEnabled );
+					SetLayoutEnabled( this, _layoutEnabled );
 					if( _layoutEnabled )
-						invalidateHierarchy();
+						InvalidateHierarchy();
 				}
 			}
 		}
 
 
-		public override void pack()
+		public override void Pack()
 		{
-			setSize( preferredWidth, preferredHeight );
-			validate();
+			SetSize( PreferredWidth, PreferredHeight );
+			Validate();
 
 			// Some situations require another layout. Eg, a wrapped label doesn't know its pref height until it knows its width, so it
 			// calls invalidateHierarchy() in layout() if its pref height has changed.
 			if( _needsLayout )
 			{
-				setSize( preferredWidth, preferredHeight );
-				validate();
+				SetSize( PreferredWidth, PreferredHeight );
+				Validate();
 			}
 		}
 

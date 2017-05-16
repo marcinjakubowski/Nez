@@ -12,7 +12,7 @@ namespace Nez
 		/// </summary>
 		/// <value>The blur amount.</value>
 		[Range( 0f, 6f, 0.2f )]
-		public float blurAmount
+		public float BlurAmount
 		{
 			get { return _blurAmount; }
 			set
@@ -24,7 +24,7 @@ namespace Nez
 						value = 0.001f;
 					
 					_blurAmount = value;
-					calculateSampleWeights();
+					CalculateSampleWeights();
 				}
 			}
 		}
@@ -33,7 +33,7 @@ namespace Nez
 		/// horizontal delta for the blur. Typically 1 / backbuffer width
 		/// </summary>
 		/// <value>The horizontal blur delta.</value>
-		public float horizontalBlurDelta
+		public float HorizontalBlurDelta
 		{
 			get { return _horizontalBlurDelta; }
 			set
@@ -41,7 +41,7 @@ namespace Nez
 				if( value != _horizontalBlurDelta )
 				{
 					_horizontalBlurDelta = value;
-					setBlurEffectParameters( _horizontalBlurDelta, 0, _horizontalSampleOffsets );
+					SetBlurEffectParameters( _horizontalBlurDelta, 0, _horizontalSampleOffsets );
 				}
 			}
 		}
@@ -50,7 +50,7 @@ namespace Nez
 		/// vertical delta for the blur. Typically 1 / backbuffer height
 		/// </summary>
 		/// <value>The vertical blur delta.</value>
-		public float verticalBlurDelta
+		public float VerticalBlurDelta
 		{
 			get { return _verticalBlurDelta; }
 			set
@@ -58,7 +58,7 @@ namespace Nez
 				if( value != _verticalBlurDelta )
 				{
 					_verticalBlurDelta = value;
-					setBlurEffectParameters( 0, _verticalBlurDelta, _verticalSampleOffsets );
+					SetBlurEffectParameters( 0, _verticalBlurDelta, _verticalSampleOffsets );
 				}
 			}
 		}
@@ -76,7 +76,7 @@ namespace Nez
 		EffectParameter _blurOffsetsParam;
 
 
-		public GaussianBlurEffect() : base( Core.graphicsDevice, EffectResource.gaussianBlurBytes )
+		public GaussianBlurEffect() : base( Core.CoreGraphicsDevice, EffectResource.GaussianBlurBytes )
 		{
 			_blurWeightsParam = Parameters["_sampleWeights"];
 			_blurOffsetsParam = Parameters["_sampleOffsets"];
@@ -94,14 +94,14 @@ namespace Nez
 			_horizontalSampleOffsets[0] = Vector2.Zero;
 
 			// we can calculate the sample weights just once since they are always the same for horizontal or vertical blur
-			calculateSampleWeights();
+			CalculateSampleWeights();
 		}
 
 
 		/// <summary>
 		/// prepares the Effect for performing a horizontal blur
 		/// </summary>
-		public void prepareForHorizontalBlur()
+		public void PrepareForHorizontalBlur()
 		{
 			_blurOffsetsParam.SetValue( _horizontalSampleOffsets );
 		}
@@ -110,7 +110,7 @@ namespace Nez
 		/// <summary>
 		/// prepares the Effect for performing a vertical blur
 		/// </summary>
-		public void prepareForVerticalBlur()
+		public void PrepareForVerticalBlur()
 		{
 			_blurOffsetsParam.SetValue( _verticalSampleOffsets );
 		}
@@ -119,7 +119,7 @@ namespace Nez
 		/// <summary>
 		/// computes sample weightings and texture coordinate offsets for one pass of a separable gaussian blur filter.
 		/// </summary>
-		void setBlurEffectParameters( float dx, float dy, Vector2[] offsets )
+		void SetBlurEffectParameters( float dx, float dy, Vector2[] offsets )
 		{
 			// Add pairs of additional sample taps, positioned along a line in both directions from the center.
 			for( var i = 0; i < _sampleCount / 2; i++ )
@@ -142,10 +142,10 @@ namespace Nez
 		/// <summary>
 		/// calculates the sample weights and passes them along to the shader
 		/// </summary>
-		void calculateSampleWeights()
+		void CalculateSampleWeights()
 		{
 			// The first sample always has a zero offset.
-			_sampleWeights[0] = computeGaussian( 0 );
+			_sampleWeights[0] = ComputeGaussian( 0 );
 
 			// Maintain a sum of all the weighting values.
 			var totalWeights = _sampleWeights[0];
@@ -154,7 +154,7 @@ namespace Nez
 			for( var i = 0; i < _sampleCount / 2; i++ )
 			{
 				// Store weights for the positive and negative taps.
-				var weight = computeGaussian( i + 1 );
+				var weight = ComputeGaussian( i + 1 );
 
 				_sampleWeights[i * 2 + 1] = weight;
 				_sampleWeights[i * 2 + 2] = weight;
@@ -175,7 +175,7 @@ namespace Nez
 		/// Evaluates a single point on the gaussian falloff curve.
 		/// Used for setting up the blur filter weightings.
 		/// </summary>
-		float computeGaussian( float n )
+		float ComputeGaussian( float n )
 		{
 			return (float)( ( 1.0 / Math.Sqrt( 2 * Math.PI * _blurAmount ) ) * Math.Exp( -( n * n ) / ( 2 * _blurAmount * _blurAmount ) ) );
 		}

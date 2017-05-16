@@ -33,23 +33,23 @@ namespace Nez
 					pos = Vector3.Transform( pos, vertTransform );
 					normal = Vector3.TransformNormal( normal, vertTransform );
 
-					addVertex( pos, color, normal );
+					AddVertex( pos, color, normal );
 
 					// and create indices for two triangles. 
 					int nextI = ( i + 1 ) % tessellation;
 					int nextJ = ( j + 1 ) % tessellation;
 
-					addIndex( i * tessellation + j );
-					addIndex( i * tessellation + nextJ );
-					addIndex( nextI * tessellation + j );
+					AddIndex( i * tessellation + j );
+					AddIndex( i * tessellation + nextJ );
+					AddIndex( nextI * tessellation + j );
 
-					addIndex( i * tessellation + nextJ );
-					addIndex( nextI * tessellation + nextJ );
-					addIndex( nextI * tessellation + j );
+					AddIndex( i * tessellation + nextJ );
+					AddIndex( nextI * tessellation + nextJ );
+					AddIndex( nextI * tessellation + j );
 				}
 			}
 
-			initializePrimitive();
+			InitializePrimitive();
 		}
 	}
 }

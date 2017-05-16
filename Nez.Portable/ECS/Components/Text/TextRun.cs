@@ -14,52 +14,52 @@ namespace Nez
 	{
 		struct CharDetails
 		{
-			public Texture2D texture;
-			public Vector3[] verts;
-			public Vector2[] texCoords;
-			public Color color;
+			public Texture2D Texture;
+			public Vector3[] Verts;
+			public Vector2[] TexCoords;
+			public Color Color;
 
-			public void initialize()
+			public void Initialize()
 			{
-				verts = new Vector3[4];
-				texCoords = new Vector2[4];
+				Verts = new Vector3[4];
+				TexCoords = new Vector2[4];
 			}
 		}
 
-		public float width { get { return _size.X; } }
-		public float height { get { return _size.Y; } }
-		public Vector2 origin { get { return _origin; } }
-		public float rotation;
-		public Vector2 position;
+		public float Width { get { return _size.X; } }
+		public float Height { get { return _size.Y; } }
+		public Vector2 Origin { get { return _origin; } }
+		public float Rotation;
+		public Vector2 Position;
 
 		/// <summary>
 		/// text to draw
 		/// </summary>
 		/// <value>The text.</value>
-		public string text
+		public string Text
 		{
 			get { return _text; }
-			set { setText( value ); }
+			set { SetText( value ); }
 		}
 
 		/// <summary>
 		/// horizontal alignment of the text
 		/// </summary>
 		/// <value>The horizontal origin.</value>
-		public HorizontalAlign horizontalOrigin
+		public HorizontalAlign HorizontalOrigin
 		{
 			get { return _horizontalAlign; }
-			set { setHorizontalAlign( value ); }
+			set { SetHorizontalAlign( value ); }
 		}
 
 		/// <summary>
 		/// vertical alignment of the text
 		/// </summary>
 		/// <value>The vertical origin.</value>
-		public VerticalAlign verticalOrigin
+		public VerticalAlign VerticalOrigin
 		{
 			get { return _verticalAlign; }
-			set { setVerticalAlign( value ); }
+			set { SetVerticalAlign( value ); }
 		}
 
 
@@ -73,8 +73,8 @@ namespace Nez
 		Vector2 _scale = Vector2.One;
 		CharDetails[] _charDetails;
 
-		static readonly float[] _cornerOffsetX = { 0.0f, 1.0f, 0.0f, 1.0f };
-		static readonly float[] _cornerOffsetY = { 0.0f, 0.0f, 1.0f, 1.0f };
+		static readonly float[] CornerOffsetX = { 0.0f, 1.0f, 0.0f, 1.0f };
+		static readonly float[] CornerOffsetY = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 
 		public TextRun( BitmapFont font )
@@ -87,49 +87,49 @@ namespace Nez
 
 		#region Fluent setters
 
-		public TextRun setFont( BitmapFont font )
+		public TextRun SetFont( BitmapFont font )
 		{
 			_font = font;
-			updateSize();
+			UpdateSize();
 			return this;
 		}
 
 
-		public TextRun setText( string text )
+		public TextRun SetText( string text )
 		{
 			_text = text;
-			updateSize();
-			updateCentering();
+			UpdateSize();
+			UpdateCentering();
 			return this;
 		}
 
 
-		public TextRun setHorizontalAlign( HorizontalAlign hAlign )
+		public TextRun SetHorizontalAlign( HorizontalAlign hAlign )
 		{
 			_horizontalAlign = hAlign;
-			updateCentering();
+			UpdateCentering();
 			return this;
 		}
 
 
-		public TextRun setVerticalAlign( VerticalAlign vAlign )
+		public TextRun SetVerticalAlign( VerticalAlign vAlign )
 		{
 			_verticalAlign = vAlign;
-			updateCentering();
+			UpdateCentering();
 			return this;
 		}
 
 		#endregion
 
 
-		void updateSize()
+		void UpdateSize()
 		{
-			_size = _font.measureString( _text ) * _scale;
-			updateCentering();
+			_size = _font.MeasureString( _text ) * _scale;
+			UpdateCentering();
 		}
 
 
-		void updateCentering()
+		void UpdateCentering()
 		{
 			var newOrigin = Vector2.Zero;
 
@@ -155,67 +155,67 @@ namespace Nez
 		/// compiles the text into raw verts/texture coordinates. This method must be called anytime text or any other properties are
 		/// changed.
 		/// </summary>
-		public void compile()
+		public void Compile()
 		{
 			_charDetails = new CharDetails[_text.Length];
 			BitmapFontRegion currentFontRegion = null;
 			var effects = (byte)SpriteEffects.None;
 
-			var _transformationMatrix = Matrix2D.identity;
-			var requiresTransformation = rotation != 0f || _scale != Vector2.One;
+			var transformationMatrix = Matrix2D.Identity;
+			var requiresTransformation = Rotation != 0f || _scale != Vector2.One;
 			if( requiresTransformation )
 			{
 				Matrix2D temp;
-				Matrix2D.createTranslation( -_origin.X, -_origin.Y, out _transformationMatrix );
-				Matrix2D.createScale( _scale.X, _scale.Y, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createRotation( rotation, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
-				Matrix2D.createTranslation( position.X, position.Y, out temp );
-				Matrix2D.multiply( ref _transformationMatrix, ref temp, out _transformationMatrix );
+				Matrix2D.CreateTranslation( -_origin.X, -_origin.Y, out transformationMatrix );
+				Matrix2D.CreateScale( _scale.X, _scale.Y, out temp );
+				Matrix2D.Multiply( ref transformationMatrix, ref temp, out transformationMatrix );
+				Matrix2D.CreateRotation( Rotation, out temp );
+				Matrix2D.Multiply( ref transformationMatrix, ref temp, out transformationMatrix );
+				Matrix2D.CreateTranslation( Position.X, Position.Y, out temp );
+				Matrix2D.Multiply( ref transformationMatrix, ref temp, out transformationMatrix );
 			}
 
-			var offset = requiresTransformation ? Vector2.Zero : position - _origin;
+			var offset = requiresTransformation ? Vector2.Zero : Position - _origin;
 
 			for( var i = 0; i < _text.Length; ++i )
 			{
-				_charDetails[i].initialize();
-				_charDetails[i].color = _color;
+				_charDetails[i].Initialize();
+				_charDetails[i].Color = _color;
 
 				var c = _text[i];
 				if( c == '\n' )
 				{
-					offset.X = requiresTransformation ? 0f : position.X - _origin.X;
-					offset.Y += _font.lineHeight;
+					offset.X = requiresTransformation ? 0f : Position.X - _origin.X;
+					offset.Y += _font.LineHeight;
 					currentFontRegion = null;
 					continue;
 				}
 
 				if( currentFontRegion != null )
-					offset.X += _font.spacing + currentFontRegion.xAdvance;
+					offset.X += _font.Spacing + currentFontRegion.XAdvance;
 
-				currentFontRegion = _font.fontRegionForChar( c, true );
+				currentFontRegion = _font.FontRegionForChar( c, true );
 				var p = offset;
-				p.X += currentFontRegion.xOffset;
-				p.Y += currentFontRegion.yOffset;
+				p.X += currentFontRegion.XOffset;
+				p.Y += currentFontRegion.YOffset;
 
 				// transform our point if we need to
 				if( requiresTransformation )
-					Vector2Ext.transform( ref p, ref _transformationMatrix, out p );
+					Vector2Ext.Transform( ref p, ref transformationMatrix, out p );
 
-				var destination = new Vector4( p.X, p.Y, currentFontRegion.width * _scale.X, currentFontRegion.height * _scale.Y );
-				_charDetails[i].texture = currentFontRegion.subtexture.texture2D;
+				var destination = new Vector4( p.X, p.Y, currentFontRegion.Width * _scale.X, currentFontRegion.Height * _scale.Y );
+				_charDetails[i].Texture = currentFontRegion.Subtexture.Texture2D;
 
 
 				// Batcher calculations
-				var sourceRectangle = currentFontRegion.subtexture.sourceRect;
+				var sourceRectangle = currentFontRegion.Subtexture.SourceRect;
 				float sourceX, sourceY, sourceW, sourceH;
 				var destW = destination.Z;
 				var destH = destination.W;
 
 				// calculate uvs
-				var inverseTexW = 1.0f / (float)currentFontRegion.subtexture.texture2D.Width;
-				var inverseTexH = 1.0f / (float)currentFontRegion.subtexture.texture2D.Height;
+				var inverseTexW = 1.0f / (float)currentFontRegion.Subtexture.Texture2D.Width;
+				var inverseTexH = 1.0f / (float)currentFontRegion.Subtexture.Texture2D.Height;
 
 				sourceX = sourceRectangle.X * inverseTexW;
 				sourceY = sourceRectangle.Y * inverseTexH;
@@ -227,10 +227,10 @@ namespace Nez
 				float rotationMatrix1Y;
 				float rotationMatrix2X;
 				float rotationMatrix2Y;
-				if( !Mathf.withinEpsilon( rotation, 0.0f ) )
+				if( !Mathf.WithinEpsilon( Rotation, 0.0f ) )
 				{
-					var sin = Mathf.sin( rotation );
-					var cos = Mathf.cos( rotation );
+					var sin = Mathf.Sin( Rotation );
+					var cos = Mathf.Cos( Rotation );
 					rotationMatrix1X = cos;
 					rotationMatrix1Y = sin;
 					rotationMatrix2X = -sin;
@@ -246,46 +246,46 @@ namespace Nez
 
 				// Calculate vertices, finally.
 				// top-left
-				_charDetails[i].verts[0].X = rotationMatrix2X + rotationMatrix1X + destination.X - 1;
-				_charDetails[i].verts[0].Y = rotationMatrix2Y + rotationMatrix1Y + destination.Y - 1;
+				_charDetails[i].Verts[0].X = rotationMatrix2X + rotationMatrix1X + destination.X - 1;
+				_charDetails[i].Verts[0].Y = rotationMatrix2Y + rotationMatrix1Y + destination.Y - 1;
 
 				// top-right
-				var cornerX = _cornerOffsetX[1] * destW;
-				var cornerY = _cornerOffsetY[1] * destH;
-				_charDetails[i].verts[1].X = (
+				var cornerX = CornerOffsetX[1] * destW;
+				var cornerY = CornerOffsetY[1] * destH;
+				_charDetails[i].Verts[1].X = (
 					( rotationMatrix2X * cornerY ) +
 					( rotationMatrix1X * cornerX ) +
 					destination.X
 				);
-				_charDetails[i].verts[1].Y = (
+				_charDetails[i].Verts[1].Y = (
 					( rotationMatrix2Y * cornerY ) +
 					( rotationMatrix1Y * cornerX ) +
 					destination.Y
 				);
 
 				// bottom-left
-				cornerX = _cornerOffsetX[2] * destW;
-				cornerY = _cornerOffsetY[2] * destH;
-				_charDetails[i].verts[2].X = (
+				cornerX = CornerOffsetX[2] * destW;
+				cornerY = CornerOffsetY[2] * destH;
+				_charDetails[i].Verts[2].X = (
 					( rotationMatrix2X * cornerY ) +
 					( rotationMatrix1X * cornerX ) +
 					destination.X
 				);
-				_charDetails[i].verts[2].Y = (
+				_charDetails[i].Verts[2].Y = (
 					( rotationMatrix2Y * cornerY ) +
 					( rotationMatrix1Y * cornerX ) +
 					destination.Y
 				);
 
 				// bottom-right
-				cornerX = _cornerOffsetX[3] * destW;
-				cornerY = _cornerOffsetY[3] * destH;
-				_charDetails[i].verts[3].X = (
+				cornerX = CornerOffsetX[3] * destW;
+				cornerY = CornerOffsetY[3] * destH;
+				_charDetails[i].Verts[3].X = (
 					( rotationMatrix2X * cornerY ) +
 					( rotationMatrix1X * cornerX ) +
 					destination.X
 				);
-				_charDetails[i].verts[3].Y = (
+				_charDetails[i].Verts[3].Y = (
 					( rotationMatrix2Y * cornerY ) +
 					( rotationMatrix1Y * cornerX ) +
 					destination.Y
@@ -293,22 +293,22 @@ namespace Nez
 
 
 				// texture coordintes
-				_charDetails[i].texCoords[0].X = ( _cornerOffsetX[0 ^ effects] * sourceW ) + sourceX;
-				_charDetails[i].texCoords[0].Y = ( _cornerOffsetY[0 ^ effects] * sourceH ) + sourceY;
-				_charDetails[i].texCoords[1].X = ( _cornerOffsetX[1 ^ effects] * sourceW ) + sourceX;
-				_charDetails[i].texCoords[1].Y = ( _cornerOffsetY[1 ^ effects] * sourceH ) + sourceY;
-				_charDetails[i].texCoords[2].X = ( _cornerOffsetX[2 ^ effects] * sourceW ) + sourceX;
-				_charDetails[i].texCoords[2].Y = ( _cornerOffsetY[2 ^ effects] * sourceH ) + sourceY;
-				_charDetails[i].texCoords[3].X = ( _cornerOffsetX[3 ^ effects] * sourceW ) + sourceX;
-				_charDetails[i].texCoords[3].Y = ( _cornerOffsetY[3 ^ effects] * sourceH ) + sourceY;
+				_charDetails[i].TexCoords[0].X = ( CornerOffsetX[0 ^ effects] * sourceW ) + sourceX;
+				_charDetails[i].TexCoords[0].Y = ( CornerOffsetY[0 ^ effects] * sourceH ) + sourceY;
+				_charDetails[i].TexCoords[1].X = ( CornerOffsetX[1 ^ effects] * sourceW ) + sourceX;
+				_charDetails[i].TexCoords[1].Y = ( CornerOffsetY[1 ^ effects] * sourceH ) + sourceY;
+				_charDetails[i].TexCoords[2].X = ( CornerOffsetX[2 ^ effects] * sourceW ) + sourceX;
+				_charDetails[i].TexCoords[2].Y = ( CornerOffsetY[2 ^ effects] * sourceH ) + sourceY;
+				_charDetails[i].TexCoords[3].X = ( CornerOffsetX[3 ^ effects] * sourceW ) + sourceX;
+				_charDetails[i].TexCoords[3].Y = ( CornerOffsetY[3 ^ effects] * sourceH ) + sourceY;
 			}
 		}
 
 
-		public void render( Graphics graphics )
+		public void Render( Graphics graphics )
 		{
 			for( var i = 0; i < _charDetails.Length; i++ )
-				graphics.batcher.drawRaw( _charDetails[i].texture, _charDetails[i].verts, _charDetails[i].texCoords, _charDetails[i].color );
+				graphics.Batcher.DrawRaw( _charDetails[i].Texture, _charDetails[i].Verts, _charDetails[i].TexCoords, _charDetails[i].Color );
 		}
 
 	}

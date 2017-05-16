@@ -12,15 +12,15 @@ namespace Nez
 	/// </summary>
 	public interface IFinalRenderDelegate
 	{
-		Scene scene { get; set; }
+		Scene Scene { get; set; }
 
-		void onAddedToScene();
+		void OnAddedToScene();
 
-		void onSceneBackBufferSizeChanged( int newWidth, int newHeight );
+		void OnSceneBackBufferSizeChanged( int newWidth, int newHeight );
 
-		void handleFinalRender( Color letterboxColor, RenderTarget2D source, Rectangle finalRenderDestinationRect, SamplerState samplerState );
+		void HandleFinalRender( Color letterboxColor, RenderTarget2D source, Rectangle finalRenderDestinationRect, SamplerState samplerState );
 
-		void unload();
+		void Unload();
 	}
 }
 

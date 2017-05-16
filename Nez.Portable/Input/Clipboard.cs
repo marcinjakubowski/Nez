@@ -12,32 +12,32 @@ namespace Nez
 		string _text;
 
 
-		public static string getContents()
+		public static string GetContents()
 		{
 			if( _instance == null )
 				_instance = new Clipboard();
-			return _instance.getContents();
+			return _instance.GetContents();
 		}
 
 
-		public static void setContents( string text )
+		public static void SetContents( string text )
 		{
 			if( _instance == null )
 				_instance = new Clipboard();
-			_instance.setContents( text );
+			_instance.SetContents( text );
 		}
 
 
 		
 		#region IClipboard implementation
 
-		string IClipboard.getContents()
+		string IClipboard.GetContents()
 		{
 			return _text;
 		}
 
 
-		void IClipboard.setContents( string text )
+		void IClipboard.SetContents( string text )
 		{
 			_text = text;
 		}

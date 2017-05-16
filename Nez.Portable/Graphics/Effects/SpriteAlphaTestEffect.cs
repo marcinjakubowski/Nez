@@ -19,7 +19,7 @@ namespace Nez
 		/// alpha value used for the comparison. Should be in the 0 - 1 range. Defaults to 0.5f.
 		/// </summary>
 		/// <value>The reference alpha.</value>
-		public float referenceAlpha
+		public float ReferenceAlpha
 		{
 			get { return _referenceAlpha; }
 			set
@@ -27,12 +27,12 @@ namespace Nez
 				if( _referenceAlpha != value )
 				{
 					_referenceAlpha = value;
-					updateEffectParameter();
+					UpdateEffectParameter();
 				}
 			}
 		}
 
-		public AlphaTestCompareFunction compareFunction
+		public AlphaTestCompareFunction CompareFunction
 		{
 			get { return _compareFunction; }
 			set
@@ -40,7 +40,7 @@ namespace Nez
 				if( _compareFunction != value )
 				{
 					_compareFunction = value;
-					updateEffectParameter();
+					UpdateEffectParameter();
 				}
 			}
 		}
@@ -51,14 +51,14 @@ namespace Nez
 		EffectParameter _alphaTestParam;
 
 
-		public SpriteAlphaTestEffect() : base( Core.graphicsDevice, EffectResource.spriteAlphaTestBytes )
+		public SpriteAlphaTestEffect() : base( Core.CoreGraphicsDevice, EffectResource.SpriteAlphaTestBytes )
 		{
 			_alphaTestParam = Parameters["_alphaTest"];
-			updateEffectParameter();
+			UpdateEffectParameter();
 		}
 
 
-		void updateEffectParameter()
+		void UpdateEffectParameter()
 		{
 			var value = new Vector3();
 

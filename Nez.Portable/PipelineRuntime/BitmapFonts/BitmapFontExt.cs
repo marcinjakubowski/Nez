@@ -23,7 +23,7 @@ namespace Nez
 		public static void DrawString( this SpriteBatch spriteBatch, BitmapFont bitmapFont, string text, Vector2 position, Color color )
 		{
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto(
+			bitmapFont.DrawInto(
 				spriteBatch, ref source, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f );
 		}
 
@@ -45,7 +45,7 @@ namespace Nez
 		{
 			var scaleVec = new Vector2( scale, scale );
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto( spriteBatch, ref source, position, color, rotation, origin, scaleVec, effects, layerDepth );
+			bitmapFont.DrawInto( spriteBatch, ref source, position, color, rotation, origin, scaleVec, effects, layerDepth );
 		}
 
 
@@ -65,7 +65,7 @@ namespace Nez
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth )
 		{
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto( spriteBatch, ref source, position, color, rotation, origin, scale, effects, layerDepth );
+			bitmapFont.DrawInto( spriteBatch, ref source, position, color, rotation, origin, scale, effects, layerDepth );
 		}
 
 
@@ -79,7 +79,7 @@ namespace Nez
 		public static void DrawString( this SpriteBatch spriteBatch, BitmapFont bitmapFont, StringBuilder text, Vector2 position, Color color )
 		{
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto( spriteBatch, ref source, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f );
+			bitmapFont.DrawInto( spriteBatch, ref source, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f );
 		}
 
 
@@ -101,7 +101,7 @@ namespace Nez
 		{
 			var scaleVec = new Vector2( scale, scale );
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto( spriteBatch, ref source, position, color, rotation, origin, scaleVec, effects, layerDepth );
+			bitmapFont.DrawInto( spriteBatch, ref source, position, color, rotation, origin, scaleVec, effects, layerDepth );
 		}
 
 
@@ -122,7 +122,7 @@ namespace Nez
 			float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth )
 		{
 			var source = new FontCharacterSource( text );
-			bitmapFont.drawInto( spriteBatch, ref source, position, color, rotation, origin, scale, effects, layerDepth );
+			bitmapFont.DrawInto( spriteBatch, ref source, position, color, rotation, origin, scale, effects, layerDepth );
 		}
 
 	}

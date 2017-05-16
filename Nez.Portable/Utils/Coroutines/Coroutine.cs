@@ -8,14 +8,14 @@
 		/// <summary>
 		/// stops the Coroutine
 		/// </summary>
-		void stop();
+		void Stop();
 
 		/// <summary>
 		/// sets whether the Coroutine should use deltaTime or unscaledDeltaTime for timing
 		/// </summary>
 		/// <returns>The use unscaled delta time.</returns>
 		/// <param name="useUnscaledDeltaTime">If set to <c>true</c> use unscaled delta time.</param>
-		ICoroutine setUseUnscaledDeltaTime( bool useUnscaledDeltaTime );
+		ICoroutine SetUseUnscaledDeltaTime( bool useUnscaledDeltaTime );
 	}
 
 
@@ -26,9 +26,9 @@
 		/// </summary>
 		/// <returns>The for seconds.</returns>
 		/// <param name="seconds">Seconds.</param>
-		public static object waitForSeconds( float seconds )
+		public static object WaitForSeconds( float seconds )
 		{
-			return WaitForSeconds.waiter.wait( seconds );
+			return Nez.WaitForSeconds.Waiter.Wait( seconds );
 		}
 	}
 
@@ -39,13 +39,13 @@
 	/// </summary>
 	class WaitForSeconds
 	{
-		internal static WaitForSeconds waiter = new WaitForSeconds();
-		internal float waitTime;
+		internal static WaitForSeconds Waiter = new WaitForSeconds();
+		internal float WaitTime;
 
-		internal WaitForSeconds wait( float seconds )
+		internal WaitForSeconds Wait( float seconds )
 		{
-			waiter.waitTime = seconds;
-			return waiter;
+			Waiter.WaitTime = seconds;
+			return Waiter;
 		}
 	}
 }

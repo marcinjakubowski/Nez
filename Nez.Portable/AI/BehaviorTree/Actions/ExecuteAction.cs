@@ -17,9 +17,9 @@ namespace Nez.AI.BehaviorTrees
 		}
 
 
-		public override TaskStatus update( T context )
+		public override TaskStatus Update( T context )
 		{
-			Assert.isNotNull( _action, "action must not be null" );
+			Assert.IsNotNull( _action, "action must not be null" );
 
 			return _action( context );
 		}

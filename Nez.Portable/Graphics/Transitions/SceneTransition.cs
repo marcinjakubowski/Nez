@@ -24,30 +24,30 @@ namespace Nez
 		/// <summary>
 		/// contains the last render of the previous Scene. Can be used to obscure the screen while loading a new Scene.
 		/// </summary>
-		public RenderTarget2D previousSceneRender;
+		public RenderTarget2D PreviousSceneRender;
 
 		/// <summary>
 		/// if true, Nez will render the previous scene into previousSceneRender so that you can use it with your transition 
 		/// </summary>
-		public bool wantsPreviousSceneRender;
+		public bool WantsPreviousSceneRender;
 
 		/// <summary>
 		/// if true, the next Scene will be loaded on a background thread. Note that if raw PNG files are used they cannot be loaded
 		/// on a background thread.
 		/// </summary>
-		public bool loadSceneOnBackgroundThread;
+		public bool LoadSceneOnBackgroundThread;
 
 		/// <summary>
 		/// function that should return the newly loaded scene
 		/// </summary>
-		protected Func<Scene> sceneLoadAction;
+		protected Func<Scene> SceneLoadAction;
 
 		/// <summary>
 		/// used internally to decide if the previous Scene should render into previousSceneRender. Does double duty to ensure that the
 		/// render only happens once.
 		/// </summary>
 		/// <value><c>true</c> if has previous scene render; otherwise, <c>false</c>.</value>
-		internal bool hasPreviousSceneRender
+		internal bool HasPreviousSceneRender
 		{
 			get
 			{
@@ -65,17 +65,17 @@ namespace Nez
 		/// called when loadNextScene is executing. This is useful when doing inter-Scene transitions so that you know when you can more the
 		/// Camera or reset any Entities
 		/// </summary>
-		public Action onScreenObscured;
+		public Action OnScreenObscured;
 
         /// <summary>
         /// called when the Transition has completed it's execution, so that other work can be called, such as Starting another transition.
         /// </summary>
-        public Action onTransitionCompleted;
+        public Action OnTransitionCompleted;
 
 		/// <summary>
 		/// flag indicating if this transition will load a new scene or not
 		/// </summary>
-		internal bool _loadsNewScene;
+		internal bool LoadsNewScene;
 
 		bool _hasPreviousSceneRender;
 
@@ -92,48 +92,48 @@ namespace Nez
 
 		protected SceneTransition( Func<Scene> sceneLoadAction, bool wantsPreviousSceneRender = true )
 		{
-			this.sceneLoadAction = sceneLoadAction;
-			this.wantsPreviousSceneRender = wantsPreviousSceneRender;
-			_loadsNewScene = sceneLoadAction != null;
+			this.SceneLoadAction = sceneLoadAction;
+			this.WantsPreviousSceneRender = wantsPreviousSceneRender;
+			LoadsNewScene = sceneLoadAction != null;
 
 			// create a RenderTarget if we need to for later
 			if( wantsPreviousSceneRender )
-				previousSceneRender = new RenderTarget2D( Core.graphicsDevice, Screen.width, Screen.height, false, Screen.backBufferFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents );
+				PreviousSceneRender = new RenderTarget2D( Core.CoreGraphicsDevice, Screen.Width, Screen.Height, false, Screen.BackBufferFormat, DepthFormat.None, 0, RenderTargetUsage.PreserveContents );
 		}
 
 
-		protected IEnumerator loadNextScene()
+		protected IEnumerator LoadNextScene()
 		{
 			// let the listener know the screen is obscured if we have one
-			if( onScreenObscured != null )
-				onScreenObscured();
+			if( OnScreenObscured != null )
+				OnScreenObscured();
 			
 			// if we arent loading a new scene we just set the flag as if we did so that 2 phase transitions complete
-			if( !_loadsNewScene )
+			if( !LoadsNewScene )
 			{
 				_isNewSceneLoaded = true;
 				yield break;
 			}
 			
-			if( loadSceneOnBackgroundThread )
+			if( LoadSceneOnBackgroundThread )
 			{
 				// load the Scene on a background thread
 				var syncContext = SynchronizationContext.Current;
 				Task.Run( () =>
 				{
-					var scene = sceneLoadAction();
+					var scene = SceneLoadAction();
 
 					// get back to the main thread before setting the new Scene active
 					syncContext.Post( d =>
 					{
-						Core.scene = scene;
+						Core.Scene = scene;
 						_isNewSceneLoaded = true;
 					}, null );
 				} );
 			}
 			else
 			{
-				Core.scene = sceneLoadAction();
+				Core.Scene = SceneLoadAction();
 				_isNewSceneLoaded = true;
 			}
 
@@ -147,11 +147,11 @@ namespace Nez
 		/// called after the previousSceneRender occurs for the first (and only) time. At this point you can load your new Scene after
 		/// yielding one frame (so the first render call happens before scene loading).
 		/// </summary>
-		public virtual IEnumerator onBeginTransition()
+		public virtual IEnumerator OnBeginTransition()
 		{
 			yield return null;
-			Core.scene = sceneLoadAction();
-			transitionComplete();
+			Core.Scene = SceneLoadAction();
+			TransitionComplete();
 		}
 
 
@@ -160,7 +160,7 @@ namespace Nez
 		/// clearing the framebuffer when a RenderTarget is used.
 		/// </summary>
 		/// <param name="graphics">Graphics.</param>
-		public virtual void preRender( Graphics graphics )
+		public virtual void PreRender( Graphics graphics )
 		{}
 
 
@@ -168,30 +168,30 @@ namespace Nez
 		/// do all of your rendering here
 		/// </summary>
 		/// <param name="graphics">Graphics.</param>
-		public virtual void render( Graphics graphics )
+		public virtual void Render( Graphics graphics )
 		{
-			Core.graphicsDevice.setRenderTarget( null );
-			graphics.batcher.begin( BlendState.Opaque, Core.defaultSamplerState, DepthStencilState.None, null );
-			graphics.batcher.draw( previousSceneRender, Vector2.Zero, Color.White );
-			graphics.batcher.end();
+			GraphicsDeviceExt.SetRenderTarget(Core.CoreGraphicsDevice, null );
+			graphics.Batcher.Begin( BlendState.Opaque, Core.DefaultSamplerState, DepthStencilState.None, null );
+			graphics.Batcher.Draw( PreviousSceneRender, Vector2.Zero, Color.White );
+			graphics.Batcher.End();
 		}
 
 
 		/// <summary>
 		/// this should be called when your transition is complete and the new Scene has been set. It will clean up
 		/// </summary>
-		protected virtual void transitionComplete()
+		protected virtual void TransitionComplete()
 		{
-			Core._instance._sceneTransition = null;
+			Core.Instance.SceneTransition = null;
 
-			if( previousSceneRender != null )
+			if( PreviousSceneRender != null )
 			{
-				previousSceneRender.Dispose();
-				previousSceneRender = null;
+				PreviousSceneRender.Dispose();
+				PreviousSceneRender = null;
 			}
 
-            if( onTransitionCompleted != null )
-                onTransitionCompleted();
+            if( OnTransitionCompleted != null )
+                OnTransitionCompleted();
 		}
 
 
@@ -201,7 +201,7 @@ namespace Nez
 		/// </summary>
 		/// <param name="duration">duration</param>
 		/// <param name="reverseDirection">if true, _progress will go from 1 to 0. If false, it goes form 0 to 1</param>
-		public IEnumerator tickEffectProgressProperty( Effect effect, float duration, EaseType easeType = EaseType.ExpoOut, bool reverseDirection = false )
+		public IEnumerator TickEffectProgressProperty( Effect effect, float duration, EaseType easeType = EaseType.ExpoOut, bool reverseDirection = false )
 		{
 			var start = reverseDirection ? 1f : 0f;
 			var end = reverseDirection ? 0f : 1f;
@@ -210,8 +210,8 @@ namespace Nez
 			var elapsed = 0f;
 			while( elapsed < duration )
 			{
-				elapsed += Time.deltaTime;
-				var step = Lerps.ease( easeType, start, end, elapsed, duration );
+				elapsed += Time.DeltaTime;
+				var step = Lerps.Ease( easeType, start, end, elapsed, duration );
 				progressParam.SetValue( step );
 
 				yield return null;

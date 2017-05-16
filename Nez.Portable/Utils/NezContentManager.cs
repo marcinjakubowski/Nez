@@ -27,7 +27,7 @@ namespace Nez.Systems
 		{}
 
 
-		public NezContentManager() : base( Core._instance.Services, Core._instance.Content.RootDirectory )
+		public NezContentManager() : base( Core.Instance.Services, Core.Instance.Content.RootDirectory )
 		{}
 
 
@@ -37,9 +37,9 @@ namespace Nez.Systems
 		/// </summary>
 		/// <returns>The effect.</returns>
 		/// <param name="name">Name.</param>
-		public Effect loadEffect( string name )
+		public Effect LoadEffect( string name )
 		{
-			return loadEffect<Effect>( name );
+			return LoadEffect<Effect>( name );
 		}
 
 
@@ -49,9 +49,9 @@ namespace Nez.Systems
 		/// </summary>
 		/// <returns>The nez effect.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T loadNezEffect<T>() where T : Effect, new()
+		public T LoadNezEffect<T>() where T : Effect, new()
 		{
-			var cacheKey = typeof( T ).Name + "-" + Utils.randomString( 5 );
+			var cacheKey = typeof( T ).Name + "-" + Utils.RandomString( 5 );
 			var effect = new T();
 			_loadedEffects[cacheKey] = effect;
 
@@ -61,34 +61,34 @@ namespace Nez.Systems
 
 		/// <summary>
 		/// loads an ogl effect directly from file and handles disposing of it when the ContentManager is disposed. Name should the the path
-		/// relative to the Content folder or including the Content folder. Effects must have a constructor that accepts GraphicsDevice and
+		/// relative to the Content folder or including the Content folder. Effects must have a constructor that accepts CoreGraphicsDevice and
 		/// byte[]. Note that this will return a unique instance if you attempt to load the same Effect twice to avoid Effect duplication.
 		/// </summary>
 		/// <returns>The effect.</returns>
 		/// <param name="name">Name.</param>
-		public T loadEffect<T>( string name ) where T : Effect
+		public T LoadEffect<T>( string name ) where T : Effect
 		{
 			// make sure the effect has the proper root directory
 			if( !name.StartsWith( RootDirectory ) )
 				name = RootDirectory + "/" + name;
 
-			var bytes = EffectResource.getFileResourceBytes( name );
+			var bytes = EffectResource.GetFileResourceBytes( name );
 
-			return loadEffect<T>( name, bytes );
+			return LoadEffect<T>( name, bytes );
 		}
 
 
 		/// <summary>
 		/// loads an ogl effect directly from its bytes and handles disposing of it when the ContentManager is disposed. Name should the the path
-		/// relative to the Content folder or including the Content folder. Effects must have a constructor that accepts GraphicsDevice and
+		/// relative to the Content folder or including the Content folder. Effects must have a constructor that accepts CoreGraphicsDevice and
 		/// byte[]. Note that this will return a unique instance if you attempt to load the same Effect twice to avoid Effect duplication.
 		/// </summary>
 		/// <returns>The effect.</returns>
 		/// <param name="name">Name.</param>
-		internal T loadEffect<T>( string name, byte[] effectCode ) where T : Effect
+		internal T LoadEffect<T>( string name, byte[] effectCode ) where T : Effect
 		{
-			var effect = Activator.CreateInstance( typeof( T ), Core.graphicsDevice, effectCode ) as T;
-			effect.Name = name + "-" + Utils.randomString( 5 );
+			var effect = Activator.CreateInstance( typeof( T ), Core.CoreGraphicsDevice, effectCode ) as T;
+			effect.Name = name + "-" + Utils.RandomString( 5 );
 			_loadedEffects[effect.Name] = effect;
 
 			return effect;
@@ -102,10 +102,10 @@ namespace Nez.Systems
 		/// </summary>
 		/// <returns>The mono game effect.</returns>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T loadMonoGameEffect<T>() where T : Effect
+		public T LoadMonoGameEffect<T>() where T : Effect
 		{
-			var effect = Activator.CreateInstance( typeof( T ), Core.graphicsDevice ) as T;
-			effect.Name = typeof( T ).Name + "-" + Utils.randomString( 5 );
+			var effect = Activator.CreateInstance( typeof( T ), Core.CoreGraphicsDevice ) as T;
+			effect.Name = typeof( T ).Name + "-" + Utils.RandomString( 5 );
 			_loadedEffects[effect.Name] = effect;
 
 			return effect;
@@ -118,7 +118,7 @@ namespace Nez.Systems
 		/// <param name="assetName">Asset name.</param>
 		/// <param name="onLoaded">On loaded.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public void loadAsync<T>( string assetName, Action<T> onLoaded = null )
+		public void LoadAsync<T>( string assetName, Action<T> onLoaded = null )
 		{
 			var syncContext = SynchronizationContext.Current;
 			Task.Run( () =>
@@ -145,7 +145,7 @@ namespace Nez.Systems
 		/// <param name="onLoaded">On loaded.</param>
 		/// <param name="context">Context.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public void loadAsync<T>( string assetName, Action<object,T> onLoaded = null, object context = null )
+		public void LoadAsync<T>( string assetName, Action<object,T> onLoaded = null, object context = null )
 		{
 			var syncContext = SynchronizationContext.Current;
 			Task.Run( () =>
@@ -169,7 +169,7 @@ namespace Nez.Systems
 		/// <param name="assetName">Asset name.</param>
 		/// <param name="onLoaded">On loaded.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public void loadAsync<T>( string[] assetNames, Action onLoaded = null )
+		public void LoadAsync<T>( string[] assetNames, Action onLoaded = null )
 		{
 			var syncContext = SynchronizationContext.Current;
 			Task.Run( () =>
@@ -195,9 +195,9 @@ namespace Nez.Systems
 		/// </summary>
 		/// <param name="assetName">Asset name.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public void unloadAsset<T>( string assetName ) where T : class, IDisposable
+		public void UnloadAsset<T>( string assetName ) where T : class, IDisposable
 		{
-			if( isAssetLoaded( assetName ) )
+			if( IsAssetLoaded( assetName ) )
 			{
 				try
 				{
@@ -237,7 +237,7 @@ namespace Nez.Systems
 				}
 				catch( Exception e )
 				{
-					Debug.error( "Could not unload asset {0}. {1}", assetName, e );
+					Debug.Error( "Could not unload asset {0}. {1}", assetName, e );
 				}
 			}
 		}
@@ -247,7 +247,7 @@ namespace Nez.Systems
 		/// unloads an Effect that was loaded via loadEffect, loadNezEffect or loadMonoGameEffect
 		/// </summary>
 		/// <param name="effectName">Effect.name</param>
-		public bool unloadEffect( string effectName )
+		public bool UnloadEffect( string effectName )
 		{
 			if( _loadedEffects.ContainsKey( effectName ) )
 			{
@@ -263,9 +263,9 @@ namespace Nez.Systems
 		/// unloads an Effect that was loaded via loadEffect, loadNezEffect or loadMonoGameEffect
 		/// </summary>
 		/// <param name="effectName">Effect.name</param>
-		public bool unloadEffect( Effect effect )
+		public bool UnloadEffect( Effect effect )
 		{
-			return unloadEffect( effect.Name );
+			return UnloadEffect( effect.Name );
 		}
 
 
@@ -274,7 +274,7 @@ namespace Nez.Systems
 		/// </summary>
 		/// <returns><c>true</c> if this instance is asset loaded the specified assetName; otherwise, <c>false</c>.</returns>
 		/// <param name="assetName">Asset name.</param>
-		public bool isAssetLoaded( string assetName )
+		public bool IsAssetLoaded( string assetName )
 		{
 			#if FNA
 			var fieldInfo = ReflectionUtils.getFieldInfo( this, "loadedAssets" );
@@ -289,7 +289,7 @@ namespace Nez.Systems
 		/// provides a string suitable for logging with all the currently loaded assets and effects
 		/// </summary>
 		/// <returns>The loaded assets.</returns>
-		internal string logLoadedAssets()
+		internal string LogLoadedAssets()
 		{
 			#if FNA
 			var fieldInfo = ReflectionUtils.getFieldInfo( this, "loadedAssets" );
@@ -345,7 +345,7 @@ namespace Nez.Systems
 		{
 			if( assetName.StartsWith( "nez://" ) )
 			{
-				var assembly = ReflectionUtils.getAssembly( this.GetType() );
+				var assembly = ReflectionUtils.GetAssembly( this.GetType() );
 
 				#if FNA
 				// for FNA, we will just search for the file by name since the assembly name will not be known at runtime

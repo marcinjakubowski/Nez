@@ -9,7 +9,7 @@ namespace Nez
 		/// <summary>
 		/// Intensity of the noise. Defaults to 1.
 		/// </summary>
-		public float noise
+		public float Noise
 		{
 			get { return _noise; }
 			set
@@ -26,7 +26,7 @@ namespace Nez
 		EffectParameter _noiseParam;
 
 
-		public NoiseEffect() : base( Core.graphicsDevice, EffectResource.noiseBytes )
+		public NoiseEffect() : base( Core.CoreGraphicsDevice, EffectResource.NoiseBytes )
 		{
 			_noiseParam = Parameters["noise"];
 			_noiseParam.SetValue( _noise );

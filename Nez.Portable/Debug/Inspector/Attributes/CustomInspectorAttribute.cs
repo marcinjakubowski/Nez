@@ -11,12 +11,12 @@ namespace Nez
 	[AttributeUsage( AttributeTargets.Class | AttributeTargets.Struct )]
 	public class CustomInspectorAttribute : Attribute
 	{
-		public Type inspectorType;
+		public Type InspectorType;
 
 
 		public CustomInspectorAttribute( Type inspectorType )
 		{
-			this.inspectorType = inspectorType;
+			this.InspectorType = inspectorType;
 		}
 	}
 }

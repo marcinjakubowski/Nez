@@ -8,7 +8,7 @@
 		/// <summary>
 		/// update is called just before Scene.update each frame
 		/// </summary>
-		void update();
+		void Update();
 	}
 }
 

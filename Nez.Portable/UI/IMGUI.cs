@@ -9,7 +9,7 @@ namespace Nez
 	/// IMGUI is a very simple class with only static methods designed to make sticking buttons, checkboxes, sliders and progress bars on screen
 	/// in quick and dirty fashion. It is not designed to be a full and proper UI system.
 	/// </summary>
-	public class IMGUI
+	public class Imgui
 	{
 		enum TextAlign
 		{
@@ -22,27 +22,27 @@ namespace Nez
 		static BitmapFont _font;
 
 		// constants
-		const float FONT_LINE_HEIGHT = 10;
-		const float ELEMENT_HEIGHT = 20;
-		const float SHORT_ELEMENT_HEIGHT = 15;
-		const float ELEMENT_PADDING = 10;
-		static Vector2 FONT_SCALE;
+		const float FontLineHeight = 10;
+		const float ElementHeight = 20;
+		const float ShortElementHeight = 15;
+		const float ElementPadding = 10;
+		static Vector2 _fontScale;
 
 		// colors
-		static Color FONT_COLOR = new Color( 255, 255, 255 );
-		static Color WINDOW_COLOR = new Color( 17, 17, 17 );
-		static Color BUTTON_COLOR = new Color( 78, 91, 98 );
-		static Color BUTTON_COLOR_ACTIVE = new Color( 168, 207, 115 );
-		static Color BUTTON_COLOR_DOWN = new Color( 244, 23, 135 );
-		static Color TOGGLE_BG = new Color( 63, 63, 63 );
-		static Color TOGGLE_BG_ACTIVE = new Color( 130, 130, 130 );
-		static Color TOGGLE_ON = new Color( 168, 207, 115 );
-		static Color TOGGLE_ON_ACTIVE = new Color( 244, 23, 135 );
-		static Color SLIDER_BG = new Color( 78, 91, 98 );
-		static Color SLIDER_THUMB_BG = new Color( 25, 144, 188 );
-		static Color SLIDER_THUMB_BG_ACTIVE = new Color( 168, 207, 115 );
-		static Color SLIDER_THUMB_BG_DOWN = new Color( 244, 23, 135 );
-		static Color HEADER_BG = new Color( 40, 46, 50 );
+		static Color _fontColor = new Color( 255, 255, 255 );
+		static Color _windowColor = new Color( 17, 17, 17 );
+		static Color _buttonColor = new Color( 78, 91, 98 );
+		static Color _buttonColorActive = new Color( 168, 207, 115 );
+		static Color _buttonColorDown = new Color( 244, 23, 135 );
+		static Color _toggleBg = new Color( 63, 63, 63 );
+		static Color _toggleBgActive = new Color( 130, 130, 130 );
+		static Color _toggleOn = new Color( 168, 207, 115 );
+		static Color _toggleOnActive = new Color( 244, 23, 135 );
+		static Color _sliderBg = new Color( 78, 91, 98 );
+		static Color _sliderThumbBg = new Color( 25, 144, 188 );
+		static Color _sliderThumbBgActive = new Color( 168, 207, 115 );
+		static Color _sliderThumbBgDown = new Color( 244, 23, 135 );
+		static Color _headerBg = new Color( 40, 46, 50 );
 
 		// state
 		static float _lastY;
@@ -54,22 +54,22 @@ namespace Nez
 		static Point _mouseInWorldCoords;
 
 
-		static IMGUI()
+		static Imgui()
 		{
-			_spriteBatch = new SpriteBatch( Core.graphicsDevice );
-			_font = Graphics.instance.bitmapFont;
+			_spriteBatch = new SpriteBatch( Core.CoreGraphicsDevice );
+			_font = Graphics.Instance.BitmapFont;
 
-			var scale = FONT_LINE_HEIGHT / _font.lineHeight;
-			FONT_SCALE = new Vector2( scale, scale );
+			var scale = FontLineHeight / _font.LineHeight;
+			_fontScale = new Vector2( scale, scale );
 		}
 
 
 		#region Helpers
 
-		static void drawString( string text, Color color, TextAlign align = TextAlign.Center, float elementHeight = ELEMENT_HEIGHT )
+		static void DrawString( string text, Color color, TextAlign align = TextAlign.Center, float elementHeight = ElementHeight )
 		{
 			// center align the text
-			var textSize = _font.measureString( text ) * FONT_SCALE.Y;
+			var textSize = _font.MeasureString( text ) * _fontScale.Y;
 			float x = _elementX;
 			switch( align )
 			{
@@ -81,29 +81,29 @@ namespace Nez
 					break;
 			}
 
-			var y = _lastY + ELEMENT_PADDING + ( elementHeight - FONT_LINE_HEIGHT ) * 0.5f;
+			var y = _lastY + ElementPadding + ( elementHeight - FontLineHeight ) * 0.5f;
 
-			_spriteBatch.DrawString( _font, text, new Vector2( x, y ), color, 0, Vector2.Zero, FONT_SCALE, SpriteEffects.None, 0 );
+			_spriteBatch.DrawString( _font, text, new Vector2( x, y ), color, 0, Vector2.Zero, _fontScale, SpriteEffects.None, 0 );
 		}
 
 
-		static bool isMouseOverElement()
+		static bool IsMouseOverElement()
 		{
-			var rect = new Rectangle( (int)_elementX, (int)_lastY + (int)ELEMENT_PADDING, (int)_elementWidth, (int)ELEMENT_HEIGHT );
+			var rect = new Rectangle( (int)_elementX, (int)_lastY + (int)ElementPadding, (int)_elementWidth, (int)ElementHeight );
 			return rect.Contains( _mouseInWorldCoords );
 		}
 
 
-		static bool isMouseBetween( float left, float right )
+		static bool IsMouseBetween( float left, float right )
 		{
-			var rect = new Rectangle( (int)left, (int)_lastY + (int)ELEMENT_PADDING, (int)right - (int)left, (int)ELEMENT_HEIGHT );
+			var rect = new Rectangle( (int)left, (int)_lastY + (int)ElementPadding, (int)right - (int)left, (int)ElementHeight );
 			return rect.Contains( _mouseInWorldCoords );
 		}
 
 
-		static void endElement( float elementHeight = ELEMENT_HEIGHT )
+		static void EndElement( float elementHeight = ElementHeight )
 		{
-			_lastY += elementHeight + ELEMENT_PADDING;
+			_lastY += elementHeight + ElementPadding;
 		}
 
 		#endregion
@@ -118,43 +118,43 @@ namespace Nez
 		/// <param name="width">Width.</param>
 		/// <param name="height">Height.</param>
 		/// <param name="useRawMousePosition">If set to <c>true</c> use raw mouse position.</param>
-		public static void beginWindow( float x, float y, float width, float height, bool useRawMousePosition = true )
+		public static void BeginWindow( float x, float y, float width, float height, bool useRawMousePosition = true )
 		{
 			_spriteBatch.Begin();
 
-			_spriteBatch.drawRect( x, y, width, height, WINDOW_COLOR );
+			_spriteBatch.DrawRect( x, y, width, height, _windowColor );
 
-			_elementX = x + ELEMENT_PADDING;
+			_elementX = x + ElementPadding;
 			_lastY = y;
 			_windowWidth = width;
 			_windowHeight = height;
-			_elementWidth = _windowWidth - 2f * ELEMENT_PADDING;
+			_elementWidth = _windowWidth - 2f * ElementPadding;
 
-			var mousePos = useRawMousePosition ? Input.rawMousePosition : Input.scaledMousePosition.ToPoint();
-			_mouseInWorldCoords = mousePos - new Point( Core.graphicsDevice.Viewport.X, Core.graphicsDevice.Viewport.Y );
+			var mousePos = useRawMousePosition ? Input.RawMousePosition : Input.ScaledMousePosition.ToPoint();
+			_mouseInWorldCoords = mousePos - new Point( Core.CoreGraphicsDevice.Viewport.X, Core.CoreGraphicsDevice.Viewport.Y );
 		}
 
 
-		public static void endWindow()
+		public static void EndWindow()
 		{
 			_spriteBatch.End();
 		}
 
 
-		public static bool button( string text )
+		public static bool Button( string text )
 		{
 			var ret = false;
 
-			var color = BUTTON_COLOR;
-			if( isMouseOverElement() )
+			var color = _buttonColor;
+			if( IsMouseOverElement() )
 			{
-				ret = Input.leftMouseButtonReleased;
-				color = Input.leftMouseButtonDown ? BUTTON_COLOR_DOWN : BUTTON_COLOR_ACTIVE;
+				ret = Input.LeftMouseButtonReleased;
+				color = Input.LeftMouseButtonDown ? _buttonColorDown : _buttonColorActive;
 			}
 
-			_spriteBatch.drawRect( _elementX, _lastY + ELEMENT_PADDING, _elementWidth, ELEMENT_HEIGHT, color );
-			drawString( text, FONT_COLOR );
-			endElement();
+			_spriteBatch.DrawRect( _elementX, _lastY + ElementPadding, _elementWidth, ElementHeight, color );
+			DrawString( text, _fontColor );
+			EndElement();
 
 			return ret;
 		}
@@ -165,33 +165,33 @@ namespace Nez
 		/// </summary>
 		/// <param name="text">Text.</param>
 		/// <param name="isChecked">If set to <c>true</c> is checked.</param>
-		public static bool toggle( string text, bool isChecked )
+		public static bool Toggle( string text, bool isChecked )
 		{
-			var toggleX = _elementX + _elementWidth - ELEMENT_HEIGHT;
-			var color = TOGGLE_BG;
-			var toggleCheckColor = TOGGLE_ON;
+			var toggleX = _elementX + _elementWidth - ElementHeight;
+			var color = _toggleBg;
+			var toggleCheckColor = _toggleOn;
 			var isToggleActive = false;
 
-			if( isMouseBetween( toggleX, toggleX + ELEMENT_HEIGHT ) )
+			if( IsMouseBetween( toggleX, toggleX + ElementHeight ) )
 			{
-				color = TOGGLE_BG_ACTIVE;
-				if( Input.leftMouseButtonDown )
+				color = _toggleBgActive;
+				if( Input.LeftMouseButtonDown )
 				{
 					isToggleActive = true;
-					toggleCheckColor = TOGGLE_ON_ACTIVE;
+					toggleCheckColor = _toggleOnActive;
 				}
 
-				if( Input.leftMouseButtonReleased )
+				if( Input.LeftMouseButtonReleased )
 					isChecked = !isChecked;
 			}
 
-			drawString( text, FONT_COLOR, TextAlign.Left );
-			_spriteBatch.drawRect( toggleX, _lastY + ELEMENT_PADDING, ELEMENT_HEIGHT, ELEMENT_HEIGHT, color );
+			DrawString( text, _fontColor, TextAlign.Left );
+			_spriteBatch.DrawRect( toggleX, _lastY + ElementPadding, ElementHeight, ElementHeight, color );
 
 			if( isChecked || isToggleActive )
-				_spriteBatch.drawRect( toggleX + 3, _lastY + ELEMENT_PADDING + 3, ELEMENT_HEIGHT - 6, ELEMENT_HEIGHT - 6, toggleCheckColor );
+				_spriteBatch.DrawRect( toggleX + 3, _lastY + ElementPadding + 3, ElementHeight - 6, ElementHeight - 6, toggleCheckColor );
 
-			endElement();
+			EndElement();
 
 			return isChecked;
 		}
@@ -201,31 +201,31 @@ namespace Nez
 		/// value should be between 0 and 1
 		/// </summary>
 		/// <param name="value">Value.</param>
-		public static float slider( float value, string name = "" )
+		public static float Slider( float value, string name = "" )
 		{
-			var workingWidth = _elementWidth - SHORT_ELEMENT_HEIGHT;
+			var workingWidth = _elementWidth - ShortElementHeight;
 			var thumbPos = workingWidth * value;
-			var color = SLIDER_THUMB_BG;
+			var color = _sliderThumbBg;
 
-			if( isMouseOverElement() )
+			if( IsMouseOverElement() )
 			{
-				if( Input.leftMouseButtonDown )
+				if( Input.LeftMouseButtonDown )
 				{
-					var localMouseX = _mouseInWorldCoords.X - _elementX - SHORT_ELEMENT_HEIGHT * 0.5f;
+					var localMouseX = _mouseInWorldCoords.X - _elementX - ShortElementHeight * 0.5f;
 					value = MathHelper.Clamp( localMouseX / workingWidth, 0, 1 );
 					thumbPos = workingWidth * value;
-					color = SLIDER_THUMB_BG_DOWN;
+					color = _sliderThumbBgDown;
 				}
 				else
 				{
-					color = SLIDER_THUMB_BG_ACTIVE;
+					color = _sliderThumbBgActive;
 				}
 			}
 				
-			_spriteBatch.drawRect( _elementX, _lastY + ELEMENT_PADDING, _elementWidth, SHORT_ELEMENT_HEIGHT, SLIDER_BG );
-			_spriteBatch.drawRect( _elementX + thumbPos, _lastY + ELEMENT_PADDING, SHORT_ELEMENT_HEIGHT, SHORT_ELEMENT_HEIGHT, color );
-			drawString( name + value.ToString( "F" ), FONT_COLOR, TextAlign.Center, SHORT_ELEMENT_HEIGHT );
-			endElement();
+			_spriteBatch.DrawRect( _elementX, _lastY + ElementPadding, _elementWidth, ShortElementHeight, _sliderBg );
+			_spriteBatch.DrawRect( _elementX + thumbPos, _lastY + ElementPadding, ShortElementHeight, ShortElementHeight, color );
+			DrawString( name + value.ToString( "F" ), _fontColor, TextAlign.Center, ShortElementHeight );
+			EndElement();
 
 			return value;
 		}
@@ -236,30 +236,30 @@ namespace Nez
 		/// </summary>
 		/// <returns>The bar.</returns>
 		/// <param name="value">Value.</param>
-		public static float progressBar( float value )
+		public static float ProgressBar( float value )
 		{
 			var thumbPos = _elementWidth * value;
-			var color = SLIDER_THUMB_BG;
+			var color = _sliderThumbBg;
 
-			if( isMouseOverElement() )
+			if( IsMouseOverElement() )
 			{
-				if( Input.leftMouseButtonDown )
+				if( Input.LeftMouseButtonDown )
 				{
 					var localMouseX = _mouseInWorldCoords.X - _elementX;
 					value = MathHelper.Clamp( localMouseX / _elementWidth, 0, 1 );
 					thumbPos = _elementWidth * value;
-					color = SLIDER_THUMB_BG_DOWN;
+					color = _sliderThumbBgDown;
 				}
 				else
 				{
-					color = SLIDER_THUMB_BG_ACTIVE;
+					color = _sliderThumbBgActive;
 				}
 			}
 
-			_spriteBatch.drawRect( _elementX, _lastY + ELEMENT_PADDING, _elementWidth, ELEMENT_HEIGHT, SLIDER_BG );
-			_spriteBatch.drawRect( _elementX, _lastY + ELEMENT_PADDING, thumbPos, ELEMENT_HEIGHT, color );
-			drawString( value.ToString( "F" ), FONT_COLOR );
-			endElement();
+			_spriteBatch.DrawRect( _elementX, _lastY + ElementPadding, _elementWidth, ElementHeight, _sliderBg );
+			_spriteBatch.DrawRect( _elementX, _lastY + ElementPadding, thumbPos, ElementHeight, color );
+			DrawString( value.ToString( "F" ), _fontColor );
+			EndElement();
 
 			return value;
 		}
@@ -269,12 +269,12 @@ namespace Nez
 		/// creates a full width header with text
 		/// </summary>
 		/// <param name="text">Text.</param>
-		public static void header( string text )
+		public static void Header( string text )
 		{
 			// expand the header to full width and use a shorter element height
-			_spriteBatch.drawRect( _elementX - ELEMENT_PADDING, _lastY + ELEMENT_PADDING, _elementWidth + ELEMENT_PADDING * 2, SHORT_ELEMENT_HEIGHT, HEADER_BG );
-			drawString( text, FONT_COLOR, TextAlign.Center, SHORT_ELEMENT_HEIGHT );
-			endElement( SHORT_ELEMENT_HEIGHT );
+			_spriteBatch.DrawRect( _elementX - ElementPadding, _lastY + ElementPadding, _elementWidth + ElementPadding * 2, ShortElementHeight, _headerBg );
+			DrawString( text, _fontColor, TextAlign.Center, ShortElementHeight );
+			EndElement( ShortElementHeight );
 		}
 
 
@@ -282,7 +282,7 @@ namespace Nez
 		/// adds some vertical space
 		/// </summary>
 		/// <param name="verticalSpace">Vertical space.</param>
-		public static void space( float verticalSpace )
+		public static void Space( float verticalSpace )
 		{
 			_lastY += verticalSpace;
 		}

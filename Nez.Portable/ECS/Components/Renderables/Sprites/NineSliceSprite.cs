@@ -8,7 +8,7 @@ namespace Nez
 {
 	public class NineSliceSprite : Sprite
 	{
-		public new float width
+		public new float Width
 		{
 			get { return _finalRenderRect.Width; }
 			set
@@ -18,7 +18,7 @@ namespace Nez
 			}
 		}
 
-		public new float height
+		public new float Height
 		{
 			get { return _finalRenderRect.Height; }
 			set
@@ -28,15 +28,15 @@ namespace Nez
 			}
 		}
 
-		public override RectangleF bounds
+		public override RectangleF Bounds
 		{
 			get
 			{
 				if( _areBoundsDirty )
 				{
-					_bounds.location = entity.transform.position + _localOffset;
-					_bounds.width = width;
-					_bounds.height = height;
+					_bounds.Location = Entity.Transform.Position + _localOffset;
+					_bounds.Width = Width;
+					_bounds.Height = Height;
 					_areBoundsDirty = false;
 				}
 
@@ -44,7 +44,7 @@ namespace Nez
 			}
 		}
 
-		public new NinePatchSubtexture subtexture;
+		public new NinePatchSubtexture Subtexture;
 
 
 		/// <summary>
@@ -57,7 +57,7 @@ namespace Nez
 
 		public NineSliceSprite( NinePatchSubtexture subtexture ) : base( subtexture )
 		{
-			this.subtexture = subtexture;
+			this.Subtexture = subtexture;
 		}
 
 
@@ -69,15 +69,15 @@ namespace Nez
 		{}
 
 
-		public override void render( Graphics graphics, Camera camera )
+		public override void Render( Graphics graphics, Camera camera )
 		{
 			if( _destRectsDirty )
 			{
-				subtexture.generateNinePatchRects( _finalRenderRect, _destRects, subtexture.top, subtexture.bottom, subtexture.right, subtexture.left );
+				Subtexture.GenerateNinePatchRects( _finalRenderRect, _destRects, Subtexture.Top, Subtexture.Bottom, Subtexture.Right, Subtexture.Left );
 				_destRectsDirty = false;
 			}
 
-			var pos = ( entity.transform.position + _localOffset ).ToPoint();
+			var pos = ( Entity.Transform.Position + _localOffset ).ToPoint();
 
 			for( var i = 0; i < 9; i++ )
 			{
@@ -85,7 +85,7 @@ namespace Nez
 				var dest = _destRects[i];
 				dest.X += pos.X;
 				dest.Y += pos.Y;
-				graphics.batcher.draw( subtexture, dest, subtexture.ninePatchRects[i], color );
+				graphics.Batcher.Draw( Subtexture, dest, Subtexture.NinePatchRects[i], Color );
 			}
 		}
 	}

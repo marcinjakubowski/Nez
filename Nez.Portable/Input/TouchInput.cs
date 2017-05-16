@@ -12,27 +12,27 @@ namespace Nez
 	public class TouchInput
 	{
 		#if !FNA
-		public bool isConnected
+		public bool IsConnected
 		{
 			get { return _isConnected; }
 		}
 
-		public TouchCollection currentTouches
+		public TouchCollection CurrentTouches
 		{
 			get { return _currentTouches; }
 		}
 
-		public TouchCollection previousTouches
+		public TouchCollection PreviousTouches
 		{
 			get { return _previousTouches; }
 		}
 
-		public List<GestureSample> previousGestures
+		public List<GestureSample> PreviousGestures
 		{
 			get { return _previousGestures; }
 		}
 
-		public List<GestureSample> currentGestures
+		public List<GestureSample> CurrentGestures
 		{
 			get { return _currentGestures; }
 		}
@@ -48,17 +48,17 @@ namespace Nez
 		#pragma warning restore 0649
 
 
-		void onGraphicsDeviceReset()
+		void OnGraphicsDeviceReset()
 		{
 			#if !FNA
-			TouchPanel.DisplayWidth = Core.graphicsDevice.Viewport.Width;
-			TouchPanel.DisplayHeight = Core.graphicsDevice.Viewport.Height;
-			TouchPanel.DisplayOrientation = Core.graphicsDevice.PresentationParameters.DisplayOrientation;
+			TouchPanel.DisplayWidth = Core.CoreGraphicsDevice.Viewport.Width;
+			TouchPanel.DisplayHeight = Core.CoreGraphicsDevice.Viewport.Height;
+			TouchPanel.DisplayOrientation = Core.CoreGraphicsDevice.PresentationParameters.DisplayOrientation;
 			#endif
 		}
 
 
-		internal void update()
+		internal void Update()
 		{
 			if( !_isConnected )
 				return;
@@ -75,7 +75,7 @@ namespace Nez
 		}
 
 
-		public void enableTouchSupport()
+		public void EnableTouchSupport()
 		{
 			#if !FNA
             _isConnected = TouchPanel.GetCapabilities().IsConnected;
@@ -83,9 +83,9 @@ namespace Nez
 
 			if( _isConnected )
 			{
-				Core.emitter.addObserver( CoreEvents.GraphicsDeviceReset, onGraphicsDeviceReset );
-				Core.emitter.addObserver( CoreEvents.OrientationChanged, onGraphicsDeviceReset );
-				onGraphicsDeviceReset();
+				Core.Emitter.AddObserver( CoreEvents.GraphicsDeviceReset, OnGraphicsDeviceReset );
+				Core.Emitter.AddObserver( CoreEvents.OrientationChanged, OnGraphicsDeviceReset );
+				OnGraphicsDeviceReset();
 			}
 		}
 

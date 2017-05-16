@@ -10,13 +10,13 @@ namespace Nez
 		/// size in pixels of the crosshatch. Should be an even number because the half size is also required. Defaults to 16.
 		/// </summary>
 		/// <value>The size of the cross hatch.</value>
-		public int crosshatchSize
+		public int CrosshatchSize
 		{
 			get { return _crosshatchSize; }
 			set
 			{
 				// ensure we have an even number
-				if( !Mathf.isEven( value ) )
+				if( !Mathf.IsEven( value ) )
 					value += 1;
 				
 				if( _crosshatchSize != value )
@@ -31,7 +31,7 @@ namespace Nez
 		EffectParameter _crosshatchSizeParam;
 
 		
-		public CrosshatchEffect() : base( Core.graphicsDevice, EffectResource.crosshatchBytes )
+		public CrosshatchEffect() : base( Core.CoreGraphicsDevice, EffectResource.CrosshatchBytes )
 		{
 			_crosshatchSizeParam = Parameters["crossHatchSize"];
 			_crosshatchSizeParam.SetValue( _crosshatchSize );

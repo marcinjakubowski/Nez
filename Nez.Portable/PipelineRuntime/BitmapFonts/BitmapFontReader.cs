@@ -66,11 +66,11 @@ namespace Nez.BitmapFonts
             
 			return new BitmapFont( regions, lineHeight )
 			{
-				padTop = padTop,
-				padBottom = padBottom,
-				padRight = padRight,
-				padLeft = padLeft,
-				descent = descent
+				PadTop = padTop,
+				PadBottom = padBottom,
+				PadRight = padRight,
+				PadLeft = padLeft,
+				Descent = descent
 			};
 		}
 	}

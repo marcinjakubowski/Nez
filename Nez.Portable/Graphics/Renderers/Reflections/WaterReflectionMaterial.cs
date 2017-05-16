@@ -26,19 +26,19 @@ namespace Nez
 		{}
 
 
-		public override void onPreRender( Camera camera )
+		public override void OnPreRender( Camera camera )
 		{
-			Core.graphicsDevice.GetRenderTargets( _renderTargetBinding );
+			Core.CoreGraphicsDevice.GetRenderTargets( _renderTargetBinding );
 			var boundRenderTarget = _renderTargetBinding[0].RenderTarget as RenderTarget2D;
 
-			// only update the Shader when the renderTarget changes. it will be swapped out whenever the GraphicsDevice resets.
+			// only update the Shader when the renderTarget changes. it will be swapped out whenever the CoreGraphicsDevice resets.
 			if( _renderTarget == null || _renderTarget != boundRenderTarget )
 			{
 				_renderTarget = boundRenderTarget;
-				effect.renderTexture = boundRenderTarget;
+				Effect.RenderTexture = boundRenderTarget;
 			}
 
-			effect.matrixTransform = camera.viewProjectionMatrix;
+			Effect.MatrixTransform = camera.ViewProjectionMatrix;
 		}
 	}
 }

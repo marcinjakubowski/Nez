@@ -13,40 +13,40 @@ namespace Nez.Console
 {
 	public partial class DebugConsole
 	{
-		public static DebugConsole instance;
+		public static DebugConsole Instance;
 
 		/// <summary>
 		/// controls the scale of the console
 		/// </summary>
-		public static float renderScale = 1f;
+		public static float RenderScale = 1f;
 
 		/// <summary>
 		/// bind any custom Actions you would like to function keys
 		/// </summary>
 		Action[] _functionKeyActions;
 
-		const float UNDERSCORE_TIME = 0.5f;
-		const float REPEAT_DELAY = 0.5f;
-		const float REPEAT_EVERY = 1 / 30f;
-		const float OPACITY = 0.65f;
+		const float UnderscoreTime = 0.5f;
+		const float RepeatDelay = 0.5f;
+		const float RepeatEvery = 1 / 30f;
+		const float Opacity = 0.65f;
 
 		// render constants
-		const int LINE_HEIGHT = 10;
-		const int TEXT_PADDING_X = 5;
-		const int TEXT_PADDING_Y = 4;
+		const int LineHeight = 10;
+		const int TextPaddingX = 5;
+		const int TextPaddingY = 4;
 
 		/// <summary>
 		/// separation of the command entry and history boxes
 		/// </summary>
-		const int COMMAND_HISTORY_PADDING = 10;
+		const int CommandHistoryPadding = 10;
 
 		/// <summary>
 		/// global padding on the left/right of the console
 		/// </summary>
-		const int HORIZONTAL_PADDING = 10;
+		const int HorizontalPadding = 10;
 
-		bool enabled = true;
-		internal bool isOpen;
+		bool _enabled = true;
+		internal bool IsOpen;
 		Dictionary<string,CommandInfo> _commands;
 		List<string> _sorted;
 
@@ -64,13 +64,13 @@ namespace Nez.Console
 		Keys? _repeatKey = null;
 		bool _canOpen;
 		#if DEBUG
-		internal RuntimeInspector _runtimeInspector;
+		internal RuntimeInspector RuntimeInspector;
 		#endif
 
 
 		static DebugConsole()
 		{
-			instance = new DebugConsole();
+			Instance = new DebugConsole();
 		}
 
 
@@ -82,59 +82,59 @@ namespace Nez.Console
 			_sorted = new List<string>();
 			_functionKeyActions = new Action[12];
 
-			buildCommandsList();
+			BuildCommandsList();
 		}
 
 
-		public void log( Exception e )
+		public void Log( Exception e )
 		{
-			log( e.Message );
+			Log( e.Message );
 
 			var str = e.StackTrace;
 			var parts = str.Split( new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries );
 			foreach( var line in parts )
 			{
 				var lineWithoutPath = Regex.Replace( line, @"in\s\/.*?\/.*?(\w+\.cs)", "$1" );
-				log( lineWithoutPath );
+				Log( lineWithoutPath );
 			}
 		}
 
 
-		public void log( string format, params object[] args )
+		public void Log( string format, params object[] args )
 		{
-			log( string.Format( format, args ) );
+			Log( string.Format( format, args ) );
 		}
 
 
-		public void log( object obj )
+		public void Log( object obj )
 		{
-			log( obj.ToString() );
+			Log( obj.ToString() );
 		}
 
 
-		public void log( string str )
+		public void Log( string str )
 		{
 			// split up multi-line logs and log each line seperately
 			var parts = str.Split( new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries );
 			if( parts.Length > 1 )
 			{
 				foreach( var line in parts )
-					log( line );
+					Log( line );
 				return;
 			}
 
 			// Split the string if you overlow horizontally
-			var maxWidth = Core.graphicsDevice.PresentationParameters.BackBufferWidth - 40;
-			var screenHeight = Core.graphicsDevice.PresentationParameters.BackBufferHeight;
+			var maxWidth = Core.CoreGraphicsDevice.PresentationParameters.BackBufferWidth - 40;
+			var screenHeight = Core.CoreGraphicsDevice.PresentationParameters.BackBufferHeight;
 
-			while( Graphics.instance.bitmapFont.measureString( str ).X * renderScale > maxWidth )
+			while( Graphics.Instance.BitmapFont.MeasureString( str ).X * RenderScale > maxWidth )
 			{
 				var split = -1;
 				for( var i = 0; i < str.Length; i++ )
 				{
 					if( str[i] == ' ' )
 					{
-						if( Graphics.instance.bitmapFont.measureString( str.Substring( 0, i ) ).X * renderScale <= maxWidth )
+						if( Graphics.Instance.BitmapFont.MeasureString( str.Substring( 0, i ) ).X * RenderScale <= maxWidth )
 							split = i;
 						else
 							break;
@@ -159,42 +159,42 @@ namespace Nez.Console
 
 		#region Updating and Rendering
 
-		internal void update()
+		internal void Update()
 		{
-			if( isOpen )
-				updateOpen();
-			else if( enabled )
-				updateClosed();
+			if( IsOpen )
+				UpdateOpen();
+			else if( _enabled )
+				UpdateClosed();
 		}
 
 
-		void updateClosed()
+		void UpdateClosed()
 		{
 			if( !_canOpen )
 			{
 				_canOpen = true;
 			}
-			else if( Input.isKeyPressed( Keys.OemTilde, Keys.Oem8 ) )
+			else if( Input.IsKeyPressed( Keys.OemTilde, Keys.Oem8 ) )
 			{
-				isOpen = true;
+				IsOpen = true;
 				_currentState = Keyboard.GetState();
 			}
 
 			for( var i = 0; i < _functionKeyActions.Length; i++ )
-				if( Input.isKeyPressed( (Keys)( Keys.F1 + i ) ) )
-					executeFunctionKeyAction( i );
+				if( Input.IsKeyPressed( (Keys)( Keys.F1 + i ) ) )
+					ExecuteFunctionKeyAction( i );
 		}
 
 
-		void updateOpen()
+		void UpdateOpen()
 		{
 			_oldState = _currentState;
 			_currentState = Keyboard.GetState();
 
-			_underscoreCounter += Time.deltaTime;
-			while( _underscoreCounter >= UNDERSCORE_TIME )
+			_underscoreCounter += Time.DeltaTime;
+			while( _underscoreCounter >= UnderscoreTime )
 			{
-				_underscoreCounter -= UNDERSCORE_TIME;
+				_underscoreCounter -= UnderscoreTime;
 				_underscore = !_underscore;
 			}
 
@@ -202,12 +202,12 @@ namespace Nez.Console
 			{
 				if( _currentState[_repeatKey.Value] == KeyState.Down )
 				{
-					_repeatCounter += Time.deltaTime;
+					_repeatCounter += Time.DeltaTime;
 
-					while( _repeatCounter >= REPEAT_DELAY )
+					while( _repeatCounter >= RepeatDelay )
 					{
-						handleKey( _repeatKey.Value );
-						_repeatCounter -= REPEAT_EVERY;
+						HandleKey( _repeatKey.Value );
+						_repeatCounter -= RepeatEvery;
 					}
 				}
 				else
@@ -218,14 +218,14 @@ namespace Nez.Console
 			{
 				if( _oldState[key] == KeyState.Up )
 				{
-					handleKey( key );
+					HandleKey( key );
 					break;
 				}
 			}
 		}
 
 
-		void handleKey( Keys key )
+		void HandleKey( Keys key )
 		{
 			if( key != Keys.Tab && key != Keys.LeftShift && key != Keys.RightShift && key != Keys.RightAlt && key != Keys.LeftAlt && key != Keys.RightControl && key != Keys.LeftControl )
 				_tabIndex = -1;
@@ -241,7 +241,7 @@ namespace Nez.Console
 				default:
 					if( key.ToString().Length == 1 )
 					{
-						if( InputUtils.isShiftDown() )
+						if( InputUtils.IsShiftDown() )
 							_currentText += key.ToString();
 						else
 							_currentText += key.ToString().ToLower();
@@ -249,121 +249,121 @@ namespace Nez.Console
 				break;
 
 				case( Keys.D1 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '!';
 					else
 						_currentText += '1';
 				break;
 				case( Keys.D2 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '@';
 					else
 						_currentText += '2';
 				break;
 				case( Keys.D3 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '#';
 					else
 						_currentText += '3';
 				break;
 				case( Keys.D4 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '$';
 					else
 						_currentText += '4';
 				break;
 				case( Keys.D5 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '%';
 					else
 						_currentText += '5';
 				break;
 				case( Keys.D6 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '^';
 					else
 						_currentText += '6';
 				break;
 				case( Keys.D7 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '&';
 					else
 						_currentText += '7';
 				break;
 				case( Keys.D8 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '*';
 					else
 						_currentText += '8';
 				break;
 				case( Keys.D9 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '(';
 					else
 						_currentText += '9';
 				break;
 				case( Keys.D0 ):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += ')';
 					else
 						_currentText += '0';
 				break;
 				case( Keys.OemComma):
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '<';
 					else
 						_currentText += ',';
 				break;
 				case Keys.OemPeriod:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '>';
 					else
 						_currentText += '.';
 				break;
 				case Keys.OemQuestion:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '?';
 					else
 						_currentText += '/';
 				break;
 				case Keys.OemSemicolon:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += ':';
 					else
 						_currentText += ';';
 				break;
 				case Keys.OemQuotes:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '"';
 					else
 						_currentText += '\'';
 				break;
 				case Keys.OemBackslash:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '|';
 					else
 						_currentText += '\\';
 				break;
 				case Keys.OemOpenBrackets:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '{';
 					else
 						_currentText += '[';
 				break;
 				case Keys.OemCloseBrackets:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '}';
 					else
 						_currentText += ']';
 				break;
 				case Keys.OemMinus:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '_';
 					else
 						_currentText += '-';
 				break;
 				case Keys.OemPlus:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 						_currentText += '+';
 					else
 						_currentText += '=';
@@ -399,18 +399,18 @@ namespace Nez.Console
 				break;
 
 				case Keys.Tab:
-					if( InputUtils.isShiftDown() )
+					if( InputUtils.IsShiftDown() )
 					{
 						if( _tabIndex == -1 )
 						{
 							_tabSearch = _currentText;
-							findLastTab();
+							FindLastTab();
 						}
 						else
 						{
 							_tabIndex--;
 							if( _tabIndex < 0 || ( _tabSearch != "" && _sorted[_tabIndex].IndexOf( _tabSearch ) != 0 ) )
-								findLastTab();
+								FindLastTab();
 						}
 					}
 					else
@@ -418,13 +418,13 @@ namespace Nez.Console
 						if( _tabIndex == -1 )
 						{
 							_tabSearch = _currentText;
-							findFirstTab();
+							FindFirstTab();
 						}
 						else
 						{
 							_tabIndex++;
 							if( _tabIndex >= _sorted.Count || ( _tabSearch != "" && _sorted[_tabIndex].IndexOf( _tabSearch ) != 0 ) )
-								findFirstTab();
+								FindFirstTab();
 						}
 					}
 					if( _tabIndex != -1 )
@@ -443,23 +443,23 @@ namespace Nez.Console
 				case Keys.F10:
 				case Keys.F11:
 				case Keys.F12:
-					executeFunctionKeyAction( (int)( key - Keys.F1 ) );
+					ExecuteFunctionKeyAction( (int)( key - Keys.F1 ) );
 				break;
 
 				case Keys.Enter:
 					if( _currentText.Length > 0 )
-						enterCommand();
+						EnterCommand();
 				break;
 
 				case Keys.Oem8:
 				case Keys.OemTilde:
-					isOpen = _canOpen = false;
+					IsOpen = _canOpen = false;
 				break;
 			}
 		}
 
 
-		void enterCommand()
+		void EnterCommand()
 		{
 			var data = _currentText.Split( new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries );
 			if( _commandHistory.Count == 0 || _commandHistory[0] != _currentText )
@@ -471,11 +471,11 @@ namespace Nez.Console
 			string[] args = new string[data.Length - 1];
 			for( int i = 1; i < data.Length; i++ )
 				args[i - 1] = data[i];
-			executeCommand( data[0].ToLower(), args );
+			ExecuteCommand( data[0].ToLower(), args );
 		}
 
 
-		void findFirstTab()
+		void FindFirstTab()
 		{
 			for( int i = 0; i < _sorted.Count; i++ )
 			{
@@ -488,7 +488,7 @@ namespace Nez.Console
 		}
 
 
-		void findLastTab()
+		void FindLastTab()
 		{
 			for( int i = 0; i < _sorted.Count; i++ )
 				if( _tabSearch == "" || _sorted[i].IndexOf( _tabSearch ) == 0 )
@@ -496,60 +496,60 @@ namespace Nez.Console
 		}
 
 
-		internal void render()
+		internal void Render()
 		{
 			#if DEBUG
-			if( _runtimeInspector != null )
+			if( RuntimeInspector != null )
 			{
-				_runtimeInspector.update();
-				_runtimeInspector.render();
+				RuntimeInspector.Update();
+				RuntimeInspector.Render();
 			}
 			#endif
 
-			if( !isOpen )
+			if( !IsOpen )
 				return;
 
-			var screenWidth = Screen.width;
-			var screenHeight = Screen.height;
-			var workingWidth = screenWidth - 2 * HORIZONTAL_PADDING;
+			var screenWidth = Screen.Width;
+			var screenHeight = Screen.Height;
+			var workingWidth = screenWidth - 2 * HorizontalPadding;
 
-			Graphics.instance.batcher.begin();
+			Graphics.Instance.Batcher.Begin();
 
 			// setup the rect that encompases the command entry section
-			var commandEntryRect = RectangleExt.fromFloats( HORIZONTAL_PADDING, screenHeight - LINE_HEIGHT * renderScale, workingWidth, LINE_HEIGHT * renderScale );
+			var commandEntryRect = RectangleExt.FromFloats( HorizontalPadding, screenHeight - LineHeight * RenderScale, workingWidth, LineHeight * RenderScale );
 
 			// take into account text padding. move our location up a bit and expand the Rect to accommodate
-			commandEntryRect.Location -= new Point( 0, TEXT_PADDING_Y * 2 );
-			commandEntryRect.Height += TEXT_PADDING_Y * 2;
+			commandEntryRect.Location -= new Point( 0, TextPaddingY * 2 );
+			commandEntryRect.Height += TextPaddingY * 2;
 
-			Graphics.instance.batcher.drawRect( commandEntryRect, Color.Black * OPACITY );
+			Graphics.Instance.Batcher.DrawRect( commandEntryRect, Color.Black * Opacity );
 			var commandLineString = "> " + _currentText;
 			if( _underscore )
 				commandLineString += "_";
 
-			var commandTextPosition = commandEntryRect.Location.ToVector2() + new Vector2( TEXT_PADDING_X, TEXT_PADDING_Y );
-			Graphics.instance.batcher.drawString( Graphics.instance.bitmapFont, commandLineString, commandTextPosition, Color.White, 0, Vector2.Zero, new Vector2( renderScale ), SpriteEffects.None, 0 );
+			var commandTextPosition = commandEntryRect.Location.ToVector2() + new Vector2( TextPaddingX, TextPaddingY );
+			Graphics.Instance.Batcher.DrawString( Graphics.Instance.BitmapFont, commandLineString, commandTextPosition, Color.White, 0, Vector2.Zero, new Vector2( RenderScale ), SpriteEffects.None, 0 );
 
 			if( _drawCommands.Count > 0 )
 			{
 				// start with the total height of the text then add in padding. We have an extra padding because we pad each line and the top/bottom
-				var height = LINE_HEIGHT * renderScale * _drawCommands.Count;
-				height += ( _drawCommands.Count + 1 ) * TEXT_PADDING_Y;
+				var height = LineHeight * RenderScale * _drawCommands.Count;
+				height += ( _drawCommands.Count + 1 ) * TextPaddingY;
 
-				var topOfHistoryRect = commandEntryRect.Y - height - COMMAND_HISTORY_PADDING;
-				Graphics.instance.batcher.drawRect( HORIZONTAL_PADDING, topOfHistoryRect, workingWidth, height, Color.Black * OPACITY );
+				var topOfHistoryRect = commandEntryRect.Y - height - CommandHistoryPadding;
+				Graphics.Instance.Batcher.DrawRect( HorizontalPadding, topOfHistoryRect, workingWidth, height, Color.Black * Opacity );
 
-				var yPosFirstLine = topOfHistoryRect + height - TEXT_PADDING_Y - LINE_HEIGHT * renderScale;
+				var yPosFirstLine = topOfHistoryRect + height - TextPaddingY - LineHeight * RenderScale;
 				for( var i = 0; i < _drawCommands.Count; i++ )
 				{
-					var yPosCurrentLineAddition = ( i * LINE_HEIGHT * renderScale ) + ( i * TEXT_PADDING_Y );
-					var position = new Vector2( HORIZONTAL_PADDING + TEXT_PADDING_X, yPosFirstLine - yPosCurrentLineAddition );
+					var yPosCurrentLineAddition = ( i * LineHeight * RenderScale ) + ( i * TextPaddingY );
+					var position = new Vector2( HorizontalPadding + TextPaddingX, yPosFirstLine - yPosCurrentLineAddition );
 					var color = _drawCommands[i].IndexOf( ">" ) == 0 ? Color.Yellow : Color.White;
-					Graphics.instance.batcher.drawString( Graphics.instance.bitmapFont, _drawCommands[i], position, color, 0, Vector2.Zero, new Vector2( renderScale ), SpriteEffects.None, 0 );
+					Graphics.Instance.Batcher.DrawString( Graphics.Instance.BitmapFont, _drawCommands[i], position, color, 0, Vector2.Zero, new Vector2( RenderScale ), SpriteEffects.None, 0 );
 				}
 			}
 
-			Graphics.instance.batcher.end();
+			Graphics.Instance.Batcher.End();
 		}
 
 #endregion
@@ -557,25 +557,25 @@ namespace Nez.Console
 
 		#region Execute
 
-		void executeCommand( string command, string[] args )
+		void ExecuteCommand( string command, string[] args )
 		{
 			if( _commands.ContainsKey( command ) )
-				_commands[command].action( args );
+				_commands[command].Action( args );
 			else
-				log( "Command '" + command + "' not found! Type 'help' for list of commands" );
+				Log( "Command '" + command + "' not found! Type 'help' for list of commands" );
 		}
 
 
-		void executeFunctionKeyAction( int num )
+		void ExecuteFunctionKeyAction( int num )
 		{
 			if( _functionKeyActions[num] != null )
 				_functionKeyActions[num]();
 		}
 
 
-		public static void bindActionToFunctionKey( int functionKey, Action action )
+		public static void BindActionToFunctionKey( int functionKey, Action action )
 		{
-			instance._functionKeyActions[functionKey - 1] = action;
+			Instance._functionKeyActions[functionKey - 1] = action;
 		}
 
 		#endregion
@@ -583,10 +583,10 @@ namespace Nez.Console
 
 		#region Parse Commands
 
-		void buildCommandsList()
+		void BuildCommandsList()
 		{
 			// this will get us the Nez assembly
-			processAssembly( typeof( DebugConsole ).GetTypeInfo().Assembly );
+			ProcessAssembly( typeof( DebugConsole ).GetTypeInfo().Assembly );
 
 			// this will get us the current executables assembly in 99.9% of cases
 			// for now we will let the next section handle loading this. If it doesnt work out we'll uncomment this
@@ -598,7 +598,7 @@ namespace Nez.Console
 				// hit in a release build.
 				var appDomainType = typeof( string ).GetTypeInfo().Assembly.GetType( "System.AppDomain" );
 				var domain = appDomainType.GetRuntimeProperty( "CurrentDomain" ).GetMethod.Invoke( null, new object[]{} );
-				var assembliesMethod = ReflectionUtils.getMethodInfo( domain, "GetAssemblies" );
+				var assembliesMethod = ReflectionUtils.GetMethodInfo( domain, "GetAssemblies" );
 				// not sure about arguments, detect in runtime
 				var methodCallParams = assembliesMethod.GetParameters().Length == 0 ? new object[] { } : new object[] { false };
 				var assemblies = assembliesMethod.Invoke( domain, methodCallParams ) as Assembly[];
@@ -607,15 +607,15 @@ namespace Nez.Console
 				foreach( var assembly in assemblies )
 				{
 					var name = assembly.GetName().Name;
-					if( name.StartsWith( "System." ) || ignoredAssemblies.contains( name ) )
+					if( name.StartsWith( "System." ) || ignoredAssemblies.Contains( name ) )
 						continue;
 
-					processAssembly( assembly );
+					ProcessAssembly( assembly );
 				}
 			}
 			catch( Exception e )
 			{
-				Debug.log( "DebugConsole pooped itself trying to get all the loaded assemblies. {0}", e );
+				Debug.Log( "DebugConsole pooped itself trying to get all the loaded assemblies. {0}", e );
 			}
 
 
@@ -626,7 +626,7 @@ namespace Nez.Console
 		}
 
 
-		void processAssembly( Assembly assembly )
+		void ProcessAssembly( Assembly assembly )
 		{
 			foreach( var type in assembly.DefinedTypes )
 			{
@@ -635,17 +635,17 @@ namespace Nez.Console
 					CommandAttribute attr = null;
 					var attrs = method.GetCustomAttributes( typeof( CommandAttribute ), false )
 						.Where( a => a is CommandAttribute );
-					if( attrs.count() > 0 )
+					if( EnumerableExt.Count(attrs) > 0 )
 						attr = attrs.First() as CommandAttribute;
 
 					if( attr != null )
-						processMethod( method, attr );
+						ProcessMethod( method, attr );
 				}
 			}
 		}
 
 
-		void processMethod( MethodInfo method, CommandAttribute attr )
+		void ProcessMethod( MethodInfo method, CommandAttribute attr )
 		{
 			if( !method.IsStatic )
 			{
@@ -654,7 +654,7 @@ namespace Nez.Console
 			else
 			{
 				var info = new CommandInfo();
-				info.help = attr.help;  
+				info.Help = attr.Help;  
 
 				var parameters = method.GetParameters();
 				var defaults = new object[parameters.Length];                 
@@ -696,11 +696,11 @@ namespace Nez.Console
 				}
 
 				if( usage.Length == 0 )
-					info.usage = "";
+					info.Usage = "";
 				else
-					info.usage = "[" + string.Join( " ", usage ) + "]";
+					info.Usage = "[" + string.Join( " ", usage ) + "]";
 
-				info.action = args =>
+				info.Action = args =>
 				{
 					if( parameters.Length == 0 )
 					{
@@ -713,13 +713,13 @@ namespace Nez.Console
 						for( var i = 0; i < param.Length && i < args.Length; i++ )
 						{
 							if( parameters[i].ParameterType == typeof( string ) )
-								param[i] = argString( args[i] );
+								param[i] = ArgString( args[i] );
 							else if( parameters[i].ParameterType == typeof( int ) )
-								param[i] = argInt( args[i] );
+								param[i] = ArgInt( args[i] );
 							else if( parameters[i].ParameterType == typeof( float ) )
-								param[i] = argFloat( args[i] );
+								param[i] = ArgFloat( args[i] );
 							else if( parameters[i].ParameterType == typeof( bool ) )
-								param[i] = argBool( args[i] );
+								param[i] = ArgBool( args[i] );
 						}
 
 						try
@@ -728,27 +728,27 @@ namespace Nez.Console
 						}
 						catch( Exception e )
 						{
-							log( e );
+							Log( e );
 						}
 					}
 				};
 
-				_commands[attr.name] = info;
+				_commands[attr.Name] = info;
 			}
 		}
 
 
 		struct CommandInfo
 		{
-			public Action<string[]> action;
-			public string help;
-			public string usage;
+			public Action<string[]> Action;
+			public string Help;
+			public string Usage;
 		}
 
 
 		#region Parsing Arguments
 
-		static string argString( string arg )
+		static string ArgString( string arg )
 		{
 			if( arg == null )
 				return "";
@@ -757,7 +757,7 @@ namespace Nez.Console
 		}
 
 
-		static bool argBool( string arg )
+		static bool ArgBool( string arg )
 		{
 			if( arg != null )
 				return !( arg == "0" || arg.ToLower() == "false" || arg.ToLower() == "f" );
@@ -766,7 +766,7 @@ namespace Nez.Console
 		}
 
 
-		static int argInt( string arg )
+		static int ArgInt( string arg )
 		{
 			try
 			{
@@ -779,7 +779,7 @@ namespace Nez.Console
 		}
 
 
-		static float argFloat( string arg )
+		static float ArgFloat( string arg )
 		{
 			try
 			{

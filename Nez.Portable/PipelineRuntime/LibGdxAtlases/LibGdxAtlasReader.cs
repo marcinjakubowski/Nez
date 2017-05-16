@@ -16,7 +16,7 @@ namespace Nez.LibGdxAtlases
 			var numPages = reader.ReadInt32();
 			for( var p = 0; p < numPages; p++ )
 			{
-				var assetName = reader.getRelativeAssetPath( reader.ReadString() );
+				var assetName = reader.GetRelativeAssetPath( reader.ReadString() );
 				var texture = reader.ContentManager.Load<Texture2D>( assetName );
 
 				var regionCount = reader.ReadInt32();
@@ -41,18 +41,18 @@ namespace Nez.LibGdxAtlases
 					var hasPads = reader.ReadBoolean();
 					if( hasPads )
 					{
-						( (NinePatchSubtexture)subtextures[i] ).hasPadding = true;
-						( (NinePatchSubtexture)subtextures[i] ).padLeft = reader.ReadInt32();
-						( (NinePatchSubtexture)subtextures[i] ).padRight = reader.ReadInt32();
-						( (NinePatchSubtexture)subtextures[i] ).padTop = reader.ReadInt32();
-						( (NinePatchSubtexture)subtextures[i] ).padBottom = reader.ReadInt32();
+						( (NinePatchSubtexture)subtextures[i] ).HasPadding = true;
+						( (NinePatchSubtexture)subtextures[i] ).PadLeft = reader.ReadInt32();
+						( (NinePatchSubtexture)subtextures[i] ).PadRight = reader.ReadInt32();
+						( (NinePatchSubtexture)subtextures[i] ).PadTop = reader.ReadInt32();
+						( (NinePatchSubtexture)subtextures[i] ).PadBottom = reader.ReadInt32();
 					}
 
 					regionNames[i] = name;
 				}
 
 				var atlas = new TextureAtlas( regionNames, subtextures );
-				atlasContainer.atlases.Add( atlas );
+				atlasContainer.Atlases.Add( atlas );
 			}
 
 			return atlasContainer;

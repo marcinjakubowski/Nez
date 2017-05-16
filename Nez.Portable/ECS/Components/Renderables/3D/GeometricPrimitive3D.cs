@@ -18,13 +18,13 @@ namespace Nez
 
 		#region Initialization and configuration
 
-		protected void addVertex( Vector3 position, Color color, Vector3 normal )
+		protected void AddVertex( Vector3 position, Color color, Vector3 normal )
 		{
 			_vertices.Add( new VertexPositionColorNormal( position, color, normal ) );
 		}
 
 
-		protected void addIndex( int index )
+		protected void AddIndex( int index )
 		{
 			_indices.Add( (ushort)index );
 		}
@@ -33,23 +33,23 @@ namespace Nez
 		/// <summary>
 		/// Once all the geometry has been specified by calling AddVertex and AddIndex, this method copies the vertex and index data into
 		/// GPU format buffers, ready for efficient rendering.
-		protected void initializePrimitive()
+		protected void InitializePrimitive()
 		{
 			// create a vertex buffer, and copy our vertex data into it.
-			_vertexBuffer = new VertexBuffer( Core.graphicsDevice, typeof( VertexPositionColorNormal ), _vertices.Count, BufferUsage.None );
+			_vertexBuffer = new VertexBuffer( Core.CoreGraphicsDevice, typeof( VertexPositionColorNormal ), _vertices.Count, BufferUsage.None );
 			_vertexBuffer.SetData( _vertices.ToArray() );
 
 			// create an index buffer, and copy our index data into it.
-			_indexBuffer = new IndexBuffer( Core.graphicsDevice, typeof( ushort ), _indices.Count, BufferUsage.None );
+			_indexBuffer = new IndexBuffer( Core.CoreGraphicsDevice, typeof( ushort ), _indices.Count, BufferUsage.None );
 			_indexBuffer.SetData( _indices.ToArray() );
 		}
 
 
-		public override void onAddedToEntity()
+		public override void OnAddedToEntity()
 		{
-			base.onAddedToEntity();
+			base.OnAddedToEntity();
 
-			_basicEffect = entity.scene.content.loadMonoGameEffect<BasicEffect>();
+			_basicEffect = Entity.Scene.Content.LoadMonoGameEffect<BasicEffect>();
 			_basicEffect.VertexColorEnabled = true;
 			_basicEffect.EnableDefaultLighting();
 		}
@@ -96,27 +96,27 @@ namespace Nez
 		#endregion
 
 
-		public override void render( Graphics graphics, Camera camera )
+		public override void Render( Graphics graphics, Camera camera )
 		{
 			// flush the 2D batch so we render appropriately depth-wise
-			graphics.batcher.flushBatch();
+			graphics.Batcher.FlushBatch();
 
-			Core.graphicsDevice.BlendState = BlendState.Opaque;
-			Core.graphicsDevice.DepthStencilState = DepthStencilState.Default;
+			Core.CoreGraphicsDevice.BlendState = BlendState.Opaque;
+			Core.CoreGraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
 			// Set BasicEffect parameters.
-			_basicEffect.World = worldMatrix;
-			_basicEffect.View = camera.viewMatrix3D;
-			_basicEffect.Projection = camera.projectionMatrix3D;
-			_basicEffect.DiffuseColor = color.ToVector3();
+			_basicEffect.World = WorldMatrix;
+			_basicEffect.View = camera.ViewMatrix3D;
+			_basicEffect.Projection = camera.ProjectionMatrix3D;
+			_basicEffect.DiffuseColor = Color.ToVector3();
 
 			// Set our vertex declaration, vertex buffer, and index buffer.
-			Core.graphicsDevice.SetVertexBuffer( _vertexBuffer );
-			Core.graphicsDevice.Indices = _indexBuffer;
+			Core.CoreGraphicsDevice.SetVertexBuffer( _vertexBuffer );
+			Core.CoreGraphicsDevice.Indices = _indexBuffer;
 
 			_basicEffect.CurrentTechnique.Passes[0].Apply();
 			var primitiveCount = _indices.Count / 3;
-			Core.graphicsDevice.DrawIndexedPrimitives( PrimitiveType.TriangleList, 0, 0, primitiveCount );
+			Core.CoreGraphicsDevice.DrawIndexedPrimitives( PrimitiveType.TriangleList, 0, 0, primitiveCount );
 		}
 
 	}

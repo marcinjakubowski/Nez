@@ -9,11 +9,11 @@ namespace Nez
 	[AttributeUsage( AttributeTargets.Property | AttributeTargets.Field )]
 	public class TooltipAttribute : InspectableAttribute
 	{
-		public string tooltip;
+		public string Tooltip;
 
 		public TooltipAttribute( string tooltip )
 		{
-			this.tooltip = tooltip;
+			this.Tooltip = tooltip;
 		}
 	}
 }

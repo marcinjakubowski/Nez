@@ -7,9 +7,9 @@
 	/// </summary>
 	public class SpriteMime : RenderableComponent
 	{
-		public override float width { get { return _spriteToMime.width; } }
-		public override float height { get { return _spriteToMime.height; } }
-		public override RectangleF bounds { get { return _spriteToMime.bounds; } }
+		public override float Width { get { return _spriteToMime.Width; } }
+		public override float Height { get { return _spriteToMime.Height; } }
+		public override RectangleF Bounds { get { return _spriteToMime.Bounds; } }
 
 		Sprite _spriteToMime;
 
@@ -24,16 +24,16 @@
 		}
 
 
-		public override void onAddedToEntity()
+		public override void OnAddedToEntity()
 		{
 			if( _spriteToMime == null )
-				_spriteToMime = this.getComponent<Sprite>();
+				_spriteToMime = this.GetComponent<Sprite>();
 		}
 
 
-		public override void render( Graphics graphics, Camera camera )
+		public override void Render( Graphics graphics, Camera camera )
 		{
-			graphics.batcher.draw( _spriteToMime.subtexture, entity.transform.position + _localOffset, color, entity.transform.rotation, _spriteToMime.origin, entity.transform.scale, _spriteToMime.spriteEffects, _layerDepth );
+			graphics.Batcher.Draw( _spriteToMime.Subtexture, Entity.Transform.Position + _localOffset, Color, Entity.Transform.Rotation, _spriteToMime.Origin, Entity.Transform.Scale, _spriteToMime.SpriteEffects, _layerDepth );
 		}
 	}
 }

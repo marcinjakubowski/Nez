@@ -5,7 +5,7 @@ namespace Nez.Overlap2D
 {
 	public class O2DCompositeItem : O2DMainItem
 	{
-		public O2DComposite composite;
+		public O2DComposite Composite;
 
 
 		/// <summary>
@@ -20,9 +20,9 @@ namespace Nez.Overlap2D
 		/// <param name="zIndexMaxComp">Z index max comp.</param>
 		/// <param name="child">Child.</param>
 		/// <param name="zIndexMaxChild">Z index max child.</param>
-		public float layerDepthForChild( float zIndexMaxComp, O2DMainItem child, float zIndexMaxChild = 100 )
+		public float LayerDepthForChild( float zIndexMaxComp, O2DMainItem child, float zIndexMaxChild = 100 )
 		{
-			return calculateLayerDepth( zIndexMaxComp ) - ( 1 - child.calculateLayerDepth( zIndexMaxChild ) );
+			return CalculateLayerDepth( zIndexMaxComp ) - ( 1 - child.CalculateLayerDepth( zIndexMaxChild ) );
 		}
 	}
 }

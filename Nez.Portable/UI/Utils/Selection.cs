@@ -6,15 +6,15 @@ namespace Nez.UI
 {
 	public class Selection<T> where T : class
 	{
-		Element element;
-		protected List<T> selected = new List<T>();
-		List<T> old = new List<T>();
+		Element _element;
+		protected List<T> Selected = new List<T>();
+		List<T> _old = new List<T>();
 		protected bool _isDisabled;
-		bool toggle;
-		protected bool multiple;
-		protected bool required;
-		bool programmaticChangeEvents = true;
-		T lastSelected;
+		bool _toggle;
+		protected bool Multiple;
+		protected bool Required;
+		bool _programmaticChangeEvents = true;
+		T _lastSelected;
 
 
 		/// <summary>
@@ -22,9 +22,9 @@ namespace Nez.UI
 		/// </summary>
 		/// <returns>The element.</returns>
 		/// <param name="element">element.</param>
-		public Element setElement( Element element )
+		public Element SetElement( Element element )
 		{
-			this.element = element;
+			this._element = element;
 			return element;
 		}
 
@@ -34,100 +34,100 @@ namespace Nez.UI
 		/// This is typically invoked by user interaction.
 		/// </summary>
 		/// <param name="item">Item.</param>
-		public virtual void choose( T item )
+		public virtual void Choose( T item )
 		{
-			Assert.isNotNull( item, "item cannot be null" );
+			Assert.IsNotNull( item, "item cannot be null" );
 			if( _isDisabled )
 				return;
-			snapshot();
+			Snapshot();
 
 			try
 			{
-				if( ( toggle || ( !required && selected.Count == 1 ) || InputUtils.isControlDown() ) && selected.Contains( item ) )
+				if( ( _toggle || ( !Required && Selected.Count == 1 ) || InputUtils.IsControlDown() ) && Selected.Contains( item ) )
 				{
-					if( required && selected.Count == 1 )
+					if( Required && Selected.Count == 1 )
 						return;
-					selected.Remove( item );
-					lastSelected = null;
+					Selected.Remove( item );
+					_lastSelected = null;
 				}
 				else
 				{
 					bool modified = false;
-					if( !multiple || ( !toggle && !InputUtils.isControlDown() ) )
+					if( !Multiple || ( !_toggle && !InputUtils.IsControlDown() ) )
 					{
-						if( selected.Count == 1 && selected.Contains( item ) )
+						if( Selected.Count == 1 && Selected.Contains( item ) )
 							return;
-						modified = selected.Count > 0;
-						selected.Clear();
+						modified = Selected.Count > 0;
+						Selected.Clear();
 					}
 
-					if( !selected.addIfNotPresent( item ) && !modified )
+					if( !Selected.AddIfNotPresent( item ) && !modified )
 						return;
-					lastSelected = item;
+					_lastSelected = item;
 				}
 
-				if( fireChangeEvent() )
-					revert();
+				if( FireChangeEvent() )
+					Revert();
 				else
-					changed();
+					Changed();
 			}
 			finally
 			{
-				cleanup();
+				Cleanup();
 			}
 		}
 
 
-		public bool hasItems()
+		public bool HasItems()
 		{
-			return selected.Count > 0;
+			return Selected.Count > 0;
 		}
 
 
-		public bool isEmpty()
+		public bool IsEmpty()
 		{
-			return selected.Count == 0;
+			return Selected.Count == 0;
 		}
 
 
-		public int size()
+		public int Size()
 		{
-			return selected.Count;
+			return Selected.Count;
 		}
 
 
-		public List<T> items()
+		public List<T> Items()
 		{
-			return selected;
+			return Selected;
 		}
 
 
 		/// <summary>
 		/// Returns the first selected item, or null
 		/// </summary>
-		public T first()
+		public T First()
 		{
-			return selected.FirstOrDefault();
+			return Selected.FirstOrDefault();
 		}
 
 
-		protected void snapshot()
+		protected void Snapshot()
 		{
-			old.Clear();
-			old.AddRange( selected );
+			_old.Clear();
+			_old.AddRange( Selected );
 		}
 
 
-		protected void revert()
+		protected void Revert()
 		{
-			selected.Clear();
-			selected.AddRange( old );
+			Selected.Clear();
+			Selected.AddRange( _old );
 		}
 
 
-		protected void cleanup()
+		protected void Cleanup()
 		{
-			old.Clear();
+			_old.Clear();
 		}
 
 
@@ -135,57 +135,57 @@ namespace Nez.UI
 		/// Sets the selection to only the specified item
 		/// </summary>
 		/// <param name="item">Item.</param>
-		public Selection<T> set( T item )
+		public Selection<T> Set( T item )
 		{
-			Assert.isNotNull( item, "item cannot be null." );
+			Assert.IsNotNull( item, "item cannot be null." );
 
-			if( selected.Count == 1 && selected.First() == item )
+			if( Selected.Count == 1 && Selected.First() == item )
 				return this;
 
-			snapshot();
-			selected.Clear();
-			selected.Add( item );
+			Snapshot();
+			Selected.Clear();
+			Selected.Add( item );
 
-			if( programmaticChangeEvents && fireChangeEvent() )
+			if( _programmaticChangeEvents && FireChangeEvent() )
 			{
-				revert();
+				Revert();
 			}
 			else
 			{
-				lastSelected = item;
-				changed();
+				_lastSelected = item;
+				Changed();
 			}
-			cleanup();
+			Cleanup();
 			return this;
 		}
 
 
-		public Selection<T> setAll( List<T> items )
+		public Selection<T> SetAll( List<T> items )
 		{
 			var added = false;
-			snapshot();
-			lastSelected = null;
-			selected.Clear();
+			Snapshot();
+			_lastSelected = null;
+			Selected.Clear();
 			for( var i = 0; i < items.Count; i++ )
 			{
 				var item = items[i];
-				Assert.isNotNull( item, "item cannot be null" );
-				added = selected.addIfNotPresent( item );
+				Assert.IsNotNull( item, "item cannot be null" );
+				added = Selected.AddIfNotPresent( item );
 			}
 
 			if( added )
 			{
-				if( programmaticChangeEvents && fireChangeEvent() )
+				if( _programmaticChangeEvents && FireChangeEvent() )
 				{
-					revert();
+					Revert();
 				}
 				else if( items.Count > 0 )
 				{
-					lastSelected = items.Last();
-					changed();
+					_lastSelected = items.Last();
+					Changed();
 				}
 			}
-			cleanup();
+			Cleanup();
 			return this;
 		}
 
@@ -194,119 +194,119 @@ namespace Nez.UI
 		/// Adds the item to the selection
 		/// </summary>
 		/// <param name="item">Item.</param>
-		public void add( T item )
+		public void Add( T item )
 		{
-			Assert.isNotNull( item, "item cannot be null" );
-			if( !selected.addIfNotPresent( item ) )
+			Assert.IsNotNull( item, "item cannot be null" );
+			if( !Selected.AddIfNotPresent( item ) )
 				return;
 
-			if( programmaticChangeEvents && fireChangeEvent() )
+			if( _programmaticChangeEvents && FireChangeEvent() )
 			{
-				selected.Remove( item );
+				Selected.Remove( item );
 			}
 			else
 			{
-				lastSelected = item;
-				changed();
+				_lastSelected = item;
+				Changed();
 			}
 		}
 
 
-		public void addAll( List<T> items )
+		public void AddAll( List<T> items )
 		{
 			var added = false;
-			snapshot();
+			Snapshot();
 			for( var i = 0; i < items.Count; i++ )
 			{
 				var item = items[i];
-				Assert.isNotNull( item, "item cannot be null" );
-				added = selected.addIfNotPresent( item );
+				Assert.IsNotNull( item, "item cannot be null" );
+				added = Selected.AddIfNotPresent( item );
 			}
 			if( added )
 			{
-				if( programmaticChangeEvents && fireChangeEvent() )
+				if( _programmaticChangeEvents && FireChangeEvent() )
 				{
-					revert();
+					Revert();
 				}
 				else
 				{
-					lastSelected = items.LastOrDefault();
-					changed();
+					_lastSelected = items.LastOrDefault();
+					Changed();
 				}
 			}
-			cleanup();
+			Cleanup();
 		}
 
 
-		public void remove( T item )
+		public void Remove( T item )
 		{
-			Assert.isNotNull( item, "item cannot be null" );
-			if( !selected.Remove( item ) )
+			Assert.IsNotNull( item, "item cannot be null" );
+			if( !Selected.Remove( item ) )
 				return;
 
-			if( programmaticChangeEvents && fireChangeEvent() )
+			if( _programmaticChangeEvents && FireChangeEvent() )
 			{
-				selected.Add( item );
+				Selected.Add( item );
 			}
 			else
 			{
-				lastSelected = null;
-				changed();
+				_lastSelected = null;
+				Changed();
 			}
 		}
 
 
-		public void removeAll( List<T> items )
+		public void RemoveAll( List<T> items )
 		{
 			var removed = false;
-			snapshot();
+			Snapshot();
 			for( var i = 0; i < items.Count; i++ )
 			{
 				var item = items[i];
-				Assert.isNotNull( item, "item cannot be null" );
-				removed = selected.Remove( item );
+				Assert.IsNotNull( item, "item cannot be null" );
+				removed = Selected.Remove( item );
 			}
 
 			if( removed )
 			{
-				if( programmaticChangeEvents && fireChangeEvent() )
+				if( _programmaticChangeEvents && FireChangeEvent() )
 				{
-					revert();
+					Revert();
 				}
 				else
 				{
-					lastSelected = null;
-					changed();
+					_lastSelected = null;
+					Changed();
 				}
 			}
-			cleanup();
+			Cleanup();
 		}
 
 
-		public void clear()
+		public void Clear()
 		{
-			if( selected.Count == 0 )
+			if( Selected.Count == 0 )
 				return;
 
-			snapshot();
-			selected.Clear();
-			if( programmaticChangeEvents && fireChangeEvent() )
+			Snapshot();
+			Selected.Clear();
+			if( _programmaticChangeEvents && FireChangeEvent() )
 			{
-				revert();
+				Revert();
 			}
 			else
 			{
-				lastSelected = null;
-				changed();
+				_lastSelected = null;
+				Changed();
 			}
-			cleanup();
+			Cleanup();
 		}
 
 
 		/// <summary>
 		/// Called after the selection changes. The default implementation does nothing.
 		/// </summary>
-		protected virtual void changed()
+		protected virtual void Changed()
 		{}
 
 
@@ -314,9 +314,9 @@ namespace Nez.UI
 		/// Fires a change event on the selection's Element, if any. Called internally when the selection changes, depending on
 		/// setProgrammaticChangeEvents(bool)
 		/// </summary>
-		public bool fireChangeEvent()
+		public bool FireChangeEvent()
 		{
-			if( element == null )
+			if( _element == null )
 				return false;
 
 			// TODO: if actual events are ever used switch over to this
@@ -331,11 +331,11 @@ namespace Nez.UI
 		}
 
 
-		public bool contains( T item )
+		public bool Contains( T item )
 		{
 			if( item == null )
 				return false;
-			return selected.Contains( item );
+			return Selected.Contains( item );
 		}
 
 
@@ -343,12 +343,12 @@ namespace Nez.UI
 		/// Makes a best effort to return the last item selected, else returns an arbitrary item or null if the selection is empty.
 		/// </summary>
 		/// <returns>The last selected.</returns>
-		public T getLastSelected()
+		public T GetLastSelected()
 		{
-			if( lastSelected != null )
-				return lastSelected;
+			if( _lastSelected != null )
+				return _lastSelected;
 
-			return selected.FirstOrDefault();
+			return Selected.FirstOrDefault();
 		}
 
 
@@ -356,22 +356,22 @@ namespace Nez.UI
 		/// If true, prevents choose(Object) from changing the selection. Default is false.
 		/// </summary>
 		/// <param name="isDisabled">Is disabled.</param>
-		public Selection<T> setDisabled( bool isDisabled )
+		public Selection<T> SetDisabled( bool isDisabled )
 		{
 			_isDisabled = isDisabled;
 			return this;
 		}
 
 
-		public bool isDisabled()
+		public bool IsDisabled()
 		{
 			return _isDisabled;
 		}
 
 
-		public bool getToggle()
+		public bool GetToggle()
 		{
-			return toggle;
+			return _toggle;
 		}
 
 
@@ -379,16 +379,16 @@ namespace Nez.UI
 		/// If true, prevents choose(Object) from clearing the selection. Default is false.
 		/// </summary>
 		/// <param name="toggle">Toggle.</param>
-		public Selection<T> setToggle( bool toggle )
+		public Selection<T> SetToggle( bool toggle )
 		{
-			this.toggle = toggle;
+			this._toggle = toggle;
 			return this;
 		}
 
 
-		public bool getMultiple()
+		public bool GetMultiple()
 		{
-			return multiple;
+			return Multiple;
 		}
 
 
@@ -396,16 +396,16 @@ namespace Nez.UI
 		/// If true, allows choose(Object) to select multiple items. Default is false.
 		/// </summary>
 		/// <param name="multiple">Multiple.</param>
-		public Selection<T> setMultiple( bool multiple )
+		public Selection<T> SetMultiple( bool multiple )
 		{
-			this.multiple = multiple;
+			this.Multiple = multiple;
 			return this;
 		}
 
 
-		public bool getRequired()
+		public bool GetRequired()
 		{
-			return required;
+			return Required;
 		}
 
 
@@ -413,9 +413,9 @@ namespace Nez.UI
 		/// If true, prevents choose(Object) from selecting none. Default is false.
 		/// </summary>
 		/// <param name="required">Required.</param>
-		public Selection<T> setRequired( bool required )
+		public Selection<T> SetRequired( bool required )
 		{
-			this.required = required;
+			this.Required = required;
 			return this;
 		}
 
@@ -424,16 +424,16 @@ namespace Nez.UI
 		/// If false, only choose(Object) will fire a change event. Default is true.
 		/// </summary>
 		/// <param name="programmaticChangeEvents">Programmatic change events.</param>
-		public Selection<T> setProgrammaticChangeEvents( bool programmaticChangeEvents )
+		public Selection<T> SetProgrammaticChangeEvents( bool programmaticChangeEvents )
 		{
-			this.programmaticChangeEvents = programmaticChangeEvents;
+			this._programmaticChangeEvents = programmaticChangeEvents;
 			return this;
 		}
 
 
 		public string toString()
 		{
-			return selected.ToString();
+			return Selected.ToString();
 		}
 
 	}

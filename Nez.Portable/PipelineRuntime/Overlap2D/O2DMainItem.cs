@@ -7,32 +7,32 @@ namespace Nez.Overlap2D
 {
 	public class O2DMainItem
 	{
-		public int uniqueId;
-		public string itemIdentifier;
-		public string itemName;
-		public string customVars;
-		public float x;
-		public float y;
-		public float scaleX;
-		public float scaleY;
-		public float originX;
-		public float originY;
-		public float rotation;
-		public int zIndex;
+		public int UniqueId;
+		public string ItemIdentifier;
+		public string ItemName;
+		public string CustomVars;
+		public float X;
+		public float Y;
+		public float ScaleX;
+		public float ScaleY;
+		public float OriginX;
+		public float OriginY;
+		public float Rotation;
+		public int ZIndex;
 
 		/// <summary>
 		/// layerDepth is calculated by the Pipeline processor. It is derrived by getting the max zIndex and converting it to the MonoGame
 		/// 0 - 1 range. If sorting issues arise the CompositeItemVO.calculateLayerDepthForChild method is where to look. The default value
 		/// probably just needs to be increased a bit.
 		/// </summary>
-		public float layerDepth;
+		public float LayerDepth;
 
 		/// <summary>
 		/// renderLayer is derived from the layer name set in Overlap2D. If the layer name contains an integer that value will be parsed and set.
 		/// </summary>
-		public int renderLayer;
-		public string layerName;
-		public Color tint;
+		public int RenderLayer;
+		public string LayerName;
+		public Color Tint;
 
 		Dictionary<string,string> _customVarsDict;
 
@@ -43,7 +43,7 @@ namespace Nez.Overlap2D
 		/// <returns>The for image size.</returns>
 		/// <param name="width">Width.</param>
 		/// <param name="height">Height.</param>
-		public Vector2 orginForImageSize( float width, float height )
+		public Vector2 OrginForImageSize( float width, float height )
 		{
 			var origin = new Vector2( 0, height );
 			return origin; 
@@ -55,25 +55,25 @@ namespace Nez.Overlap2D
 		/// </summary>
 		/// <returns>The depth.</returns>
 		/// <param name="zIndexMax">Z index max.</param>
-		public float calculateLayerDepth( float zIndexMax )
+		public float CalculateLayerDepth( float zIndexMax )
 		{
-			return ( zIndexMax - (float)zIndex ) / zIndexMax;
+			return ( zIndexMax - (float)ZIndex ) / zIndexMax;
 		}
 
 
-		public Dictionary<string,string> getCustomVars()
+		public Dictionary<string,string> GetCustomVars()
 		{
 			if( _customVarsDict == null )
-				parseCustomVars();
+				ParseCustomVars();
 
 			return _customVarsDict;
 		}
 
 
-		public string getCustomVarString( string key )
+		public string GetCustomVarString( string key )
 		{
 			if( _customVarsDict == null )
-				parseCustomVars();
+				ParseCustomVars();
 
 			string value = null;
 			_customVarsDict.TryGetValue( key, out value );
@@ -82,10 +82,10 @@ namespace Nez.Overlap2D
 		}
 
 
-		public float getCustomVarFloat( string key, float defaultValue = 0f )
+		public float GetCustomVarFloat( string key, float defaultValue = 0f )
 		{
 			if( _customVarsDict == null )
-				parseCustomVars();
+				ParseCustomVars();
 
 			string value = null;
 			if( _customVarsDict.TryGetValue( key, out value ) )
@@ -95,10 +95,10 @@ namespace Nez.Overlap2D
 		}
 
 
-		public int getCustomVarInt( string key, int defaultValue = 0 )
+		public int GetCustomVarInt( string key, int defaultValue = 0 )
 		{
 			if( _customVarsDict == null )
-				parseCustomVars();
+				ParseCustomVars();
 
 			string value = null;
 			if( _customVarsDict.TryGetValue( key, out value ) )
@@ -108,10 +108,10 @@ namespace Nez.Overlap2D
 		}
 
 
-		public bool getCustomVarBool( string key, bool defaultValue = true )
+		public bool GetCustomVarBool( string key, bool defaultValue = true )
 		{
 			if( _customVarsDict == null )
-				parseCustomVars();
+				ParseCustomVars();
 
 			string value = null;
 			if( _customVarsDict.TryGetValue( key, out value ) )
@@ -121,11 +121,11 @@ namespace Nez.Overlap2D
 		}
 
 
-		void parseCustomVars()
+		void ParseCustomVars()
 		{
 			_customVarsDict = new Dictionary<string,string>();
 
-			var vars = customVars.Split( ';' );
+			var vars = CustomVars.Split( ';' );
 			for( int i = 0; i < vars.Length; i++ )
 			{
 				var tmp = vars[i].Split( ':' );

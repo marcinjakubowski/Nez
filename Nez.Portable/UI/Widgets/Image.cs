@@ -12,16 +12,16 @@ namespace Nez.UI
 		int _align;
 
 		IDrawable _drawable;
-		float imageX, imageY, imageWidth, imageHeight;
+		float _imageX, _imageY, _imageWidth, _imageHeight;
 
 
-		public Image( IDrawable drawable, Scaling scaling = Scaling.Stretch, int align = AlignInternal.center )
+		public Image( IDrawable drawable, Scaling scaling = Scaling.Stretch, int align = AlignInternal.Center )
 		{
-			setDrawable( drawable );
+			SetDrawable( drawable );
 			_scaling = scaling;
 			_align = align;
-			setSize( preferredWidth, preferredHeight );
-			touchable = Touchable.Disabled;
+			SetSize( PreferredWidth, PreferredHeight );
+			Touchable = Touchable.Disabled;
 		}
 
 
@@ -29,30 +29,30 @@ namespace Nez.UI
 		{}
 
 
-		public Image( Subtexture subtexture, Scaling scaling = Scaling.Stretch, int align = AlignInternal.center ) : this( new SubtextureDrawable( subtexture ), scaling, align )
+		public Image( Subtexture subtexture, Scaling scaling = Scaling.Stretch, int align = AlignInternal.Center ) : this( new SubtextureDrawable( subtexture ), scaling, align )
 		{
 		}
 
 
-		public Image( Texture2D texture, Scaling scaling = Scaling.Stretch, int align = AlignInternal.center ) : this( new Subtexture( texture ), scaling, align )
+		public Image( Texture2D texture, Scaling scaling = Scaling.Stretch, int align = AlignInternal.Center ) : this( new Subtexture( texture ), scaling, align )
 		{
 		}
 
 
 		#region Configuration
 
-		public Image setDrawable( IDrawable drawable )
+		public Image SetDrawable( IDrawable drawable )
 		{
 			if( _drawable != drawable )
 			{
 				if( _drawable != null )
 				{
-					if( preferredWidth != drawable.minWidth || preferredHeight != drawable.minHeight )
-						invalidateHierarchy();
+					if( PreferredWidth != drawable.MinWidth || PreferredHeight != drawable.MinHeight )
+						InvalidateHierarchy();
 				}
 				else
 				{
-					invalidateHierarchy();
+					InvalidateHierarchy();
 				}
 				_drawable = drawable;
 			}
@@ -65,14 +65,14 @@ namespace Nez.UI
 		/// 
 		/// </summary>
 		/// <param name="alignment">Alignment.</param>
-		public Image setAlignment( Align alignment )
+		public Image SetAlignment( Align alignment )
 		{
 			_align = (int)alignment;
 			return this;
 		}
 
 
-		public Image setScaling( Scaling scaling )
+		public Image SetScaling( Scaling scaling )
 		{
 			_scaling = scaling;
 			return this;
@@ -81,11 +81,11 @@ namespace Nez.UI
 		#endregion
 
 
-		public override void draw( Graphics graphics, float parentAlpha )
+		public override void Draw( Graphics graphics, float parentAlpha )
 		{
-			validate();
+			Validate();
 
-			var col = new Color( color.R, color.G, color.B, color.A * parentAlpha );
+			var col = new Color( Color.R, Color.G, Color.B, Color.A * parentAlpha );
 
 //			if( drawable instanceof TransformDrawable )
 //			{
@@ -99,48 +99,48 @@ namespace Nez.UI
 //			}
 
 			if( _drawable != null )
-				_drawable.draw( graphics, x + imageX, y + imageY, imageWidth * scaleX, imageHeight * scaleY, col );
+				_drawable.Draw( graphics, X + _imageX, Y + _imageY, _imageWidth * ScaleX, _imageHeight * ScaleY, col );
 		}
 
 
-		public override void layout()
+		public override void Layout()
 		{
 			if( _drawable == null )
 				return;
 			
-			var regionWidth = _drawable.minWidth;
-			var regionHeight = _drawable.minHeight;
+			var regionWidth = _drawable.MinWidth;
+			var regionHeight = _drawable.MinHeight;
 
-			var size = _scaling.apply( regionWidth, regionHeight, width, height );
-			imageWidth = size.X;
-			imageHeight = size.Y;
+			var size = _scaling.Apply( regionWidth, regionHeight, Width, Height );
+			_imageWidth = size.X;
+			_imageHeight = size.Y;
 
-			if( ( _align & AlignInternal.left ) != 0 )
-				imageX = 0;
-			else if( ( _align & AlignInternal.right ) != 0 )
-				imageX = (int)( width - imageWidth );
+			if( ( _align & AlignInternal.Left ) != 0 )
+				_imageX = 0;
+			else if( ( _align & AlignInternal.Right ) != 0 )
+				_imageX = (int)( Width - _imageWidth );
 			else
-				imageX = (int)( width / 2 - imageWidth / 2 );
+				_imageX = (int)( Width / 2 - _imageWidth / 2 );
 
-			if( ( _align & AlignInternal.top ) != 0 )
-				imageY = (int)( height - imageHeight );
-			else if( ( _align & AlignInternal.bottom ) != 0 )
-				imageY = 0;
+			if( ( _align & AlignInternal.Top ) != 0 )
+				_imageY = (int)( Height - _imageHeight );
+			else if( ( _align & AlignInternal.Bottom ) != 0 )
+				_imageY = 0;
 			else
-				imageY = (int)( height / 2 - imageHeight / 2 );
+				_imageY = (int)( Height / 2 - _imageHeight / 2 );
 		}
 
 
 		#region ILayout
 
-		public override float preferredWidth
+		public override float PreferredWidth
 		{
-			get { return _drawable != null ? _drawable.minWidth : 0; }
+			get { return _drawable != null ? _drawable.MinWidth : 0; }
 		}
 
-		public override float preferredHeight
+		public override float PreferredHeight
 		{
-			get { return _drawable != null ? _drawable.minHeight : 0; }
+			get { return _drawable != null ? _drawable.MinHeight : 0; }
 		}
 
 		#endregion

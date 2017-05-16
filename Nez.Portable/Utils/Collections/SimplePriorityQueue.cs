@@ -18,13 +18,13 @@ namespace System.Collections.Generic
 		}
 
 
-		const int INITIAL_QUEUE_SIZE = 10;
+		const int InitialQueueSize = 10;
 		readonly PriorityQueue<SimpleNode> _queue;
 
 
 		public SimplePriorityQueue()
 		{
-			_queue = new PriorityQueue<SimpleNode>( INITIAL_QUEUE_SIZE );
+			_queue = new PriorityQueue<SimpleNode>( InitialQueueSize );
 		}
 
 		/// <summary>

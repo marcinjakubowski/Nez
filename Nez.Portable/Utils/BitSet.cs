@@ -71,14 +71,14 @@ namespace Nez
 		/// <summary>
 		/// A common mask.
 		/// </summary>
-		const int LONG_MASK = 0x3f;
+		const int LongMask = 0x3f;
 
 		/// <summary>
 		/// The actual bits.
 		/// @serial the i'th bit is in bits[i/64] at position i%64 (where position
 		/// 0 is the least significant).
 		/// </summary>
-		long[] bits;
+		long[] _bits;
 
 
 		/// <summary>
@@ -96,12 +96,12 @@ namespace Nez
 		/// <param name="nbits">nbits the initial size of the bit set</param>
 		public BitSet( int nbits )
 		{
-			Assert.isFalse( nbits < 0, "nbits may not be negative" );
+			Assert.IsFalse( nbits < 0, "nbits may not be negative" );
 
 			var length = (uint)nbits >> 6;
-			if( ( nbits & LONG_MASK ) != 0 )
+			if( ( nbits & LongMask ) != 0 )
 				length++;
-			bits = new long[length];
+			_bits = new long[length];
 		}
 
 
@@ -111,15 +111,15 @@ namespace Nez
 		/// of the two sets.  The result is stored into this bit set.
 		/// </summary>
 		/// <param name="bs">the second bit set</param>
-		public void and( BitSet bs )
+		public void And( BitSet bs )
 		{
-			var max = Math.Min( bits.Length, bs.bits.Length );
+			var max = Math.Min( _bits.Length, bs._bits.Length );
 			int i;
 			for( i = 0; i < max; ++i )
-				bits[i] &= bs.bits[i];
+				_bits[i] &= bs._bits[i];
 			
-			while( i < bits.Length )
-				bits[i++] = 0;
+			while( i < _bits.Length )
+				_bits[i++] = 0;
 		}
 
 
@@ -131,23 +131,23 @@ namespace Nez
 		/// effectively the set difference of the two.
 		/// </summary>
 		/// <param name="bs">the second bit set</param>
-		public void andNot( BitSet bs )
+		public void AndNot( BitSet bs )
 		{
-			var i = Math.Min( bits.Length, bs.bits.Length );
+			var i = Math.Min( _bits.Length, bs._bits.Length );
 			while( --i >= 0 )
-				bits[i] &= ~bs.bits[i];
+				_bits[i] &= ~bs._bits[i];
 		}
 
 
 		/// <summary>
 		/// Returns the number of bits set to true.
 		/// </summary>
-		public int cardinality()
+		public int Cardinality()
 		{
 			uint card = 0;
-			for( var i = bits.Length - 1; i >= 0; i-- )
+			for( var i = _bits.Length - 1; i >= 0; i-- )
 			{
-				var a = bits[i];
+				var a = _bits[i];
 				// Take care of common cases.
 				if( a == 0 )
 					continue;
@@ -173,10 +173,10 @@ namespace Nez
 		/// <summary>
 		/// Sets all bits in the set to false.
 		/// </summary>
-		public void clear()
+		public void Clear()
 		{
-			for( var i = 0; i < bits.Length; i++ )
-				bits[i] = 0;
+			for( var i = 0; i < _bits.Length; i++ )
+				_bits[i] = 0;
 		}
 
 
@@ -186,11 +186,11 @@ namespace Nez
 		/// this method does nothing.
 		/// </summary>
 		/// <param name="pos">a non-negative integer</param>
-		public void clear( int pos )
+		public void Clear( int pos )
 		{
 			int offset = pos >> 6;
-			ensure( offset );
-			bits[offset] &= ~( 1L << pos );
+			Ensure( offset );
+			_bits[offset] &= ~( 1L << pos );
 		}
 
 
@@ -199,7 +199,7 @@ namespace Nez
 		/// </summary>
 		/// <param name="from">the start range (inclusive)</param>
 		/// <param name="to">the end range (exclusive)</param>
-		public void clear( int from, int to )
+		public void Clear( int from, int to )
 		{
 			if( from < 0 || from > to )
 				throw new ArgumentOutOfRangeException();
@@ -207,19 +207,19 @@ namespace Nez
 			if( from == to )
 				return;
 			
-			var lo_offset = (uint)from >> 6;
-			var hi_offset = (uint)to >> 6;
-			ensure( (int)hi_offset );
-			if( lo_offset == hi_offset )
+			var loOffset = (uint)from >> 6;
+			var hiOffset = (uint)to >> 6;
+			Ensure( (int)hiOffset );
+			if( loOffset == hiOffset )
 			{
-				bits[hi_offset] &= ( ( 1L << from ) - 1 ) | ( -1L << to );
+				_bits[hiOffset] &= ( ( 1L << from ) - 1 ) | ( -1L << to );
 				return;
 			}
 
-			bits[lo_offset] &= ( 1L << from ) - 1;
-			bits[hi_offset] &= -1L << to;
-			for( int i = (int)lo_offset + 1; i < hi_offset; i++ )
-				bits[i] = 0;
+			_bits[loOffset] &= ( 1L << from ) - 1;
+			_bits[hiOffset] &= -1L << to;
+			for( int i = (int)loOffset + 1; i < hiOffset; i++ )
+				_bits[i] = 0;
 		}
 
 
@@ -229,12 +229,12 @@ namespace Nez
 		/// this bit set changes.
 		/// </summary>
 		/// <returns>the clone of this object.</returns>
-		public object clone()
+		public object Clone()
 		{
 			try
 			{
 				var bs = new BitSet();
-				bs.bits = (long[])bits.Clone();
+				bs._bits = (long[])_bits.Clone();
 				return bs;
 			}
 			catch
@@ -249,11 +249,11 @@ namespace Nez
 		/// Sets the bit at the index to the opposite value.
 		/// </summary>
 		/// <param name="index">the index of the bit</param>
-		public void flip( int index )
+		public void Flip( int index )
 		{
 			var offset = index >> 6;
-			ensure( offset );
-			bits[offset] ^= 1L << index;
+			Ensure( offset );
+			_bits[offset] ^= 1L << index;
 		}
 
 
@@ -262,7 +262,7 @@ namespace Nez
 		/// </summary>
 		/// <param name="from">the low index (inclusive)</param>
 		/// <param name="to">the high index (exclusive)</param>
-		public void flip( int from, int to )
+		public void Flip( int from, int to )
 		{
 			if( from < 0 || from > to )
 				throw new ArgumentOutOfRangeException();
@@ -270,19 +270,19 @@ namespace Nez
 			if( from == to )
 				return;
 			
-			var lo_offset = (uint)from >> 6;
-			var hi_offset = (uint)to >> 6;
-			ensure( (int)hi_offset );
-			if( lo_offset == hi_offset )
+			var loOffset = (uint)from >> 6;
+			var hiOffset = (uint)to >> 6;
+			Ensure( (int)hiOffset );
+			if( loOffset == hiOffset )
 			{
-				bits[hi_offset] ^= ( -1L << from ) & ( ( 1L << to ) - 1 );
+				_bits[hiOffset] ^= ( -1L << from ) & ( ( 1L << to ) - 1 );
 				return;
 			}
 
-			bits[lo_offset] ^= -1L << from;
-			bits[hi_offset] ^= ( 1L << to ) - 1;
-			for( int i = (int)lo_offset + 1; i < hi_offset; i++ )
-				bits[i] ^= -1;
+			_bits[loOffset] ^= -1L << from;
+			_bits[hiOffset] ^= ( 1L << to ) - 1;
+			for( int i = (int)loOffset + 1; i < hiOffset; i++ )
+				_bits[i] ^= -1;
 		}
 
 
@@ -292,13 +292,13 @@ namespace Nez
 		/// </summary>
 		/// <param name="pos">a non-negative integer</param>
 		/// <returns>the value of the bit at the specified position</returns>
-		public Boolean get( int pos )
+		public Boolean Get( int pos )
 		{
 			int offset = pos >> 6;
-			if( offset >= bits.Length )
+			if( offset >= _bits.Length )
 				return false;
 			
-			return ( bits[offset] & ( 1L << pos ) ) != 0;
+			return ( _bits[offset] & ( 1L << pos ) ) != 0;
 		}
 
 
@@ -309,38 +309,38 @@ namespace Nez
 		/// <param name="from">the low index (inclusive)</param>
 		/// <param name="to">the high index (exclusive)</param>
 		/// <returns></returns>
-		public BitSet get( int from, int to )
+		public BitSet Get( int from, int to )
 		{
 			if( from < 0 || from > to )
 				throw new ArgumentOutOfRangeException();
 			
 			var bs = new BitSet( to - from );
-			var lo_offset = (uint)from >> 6;
-			if( lo_offset >= bits.Length || to == from )
+			var loOffset = (uint)from >> 6;
+			if( loOffset >= _bits.Length || to == from )
 				return bs;
 
-			var lo_bit = from & LONG_MASK;
-			var hi_offset = (uint)to >> 6;
-			if( lo_bit == 0 )
+			var loBit = from & LongMask;
+			var hiOffset = (uint)to >> 6;
+			if( loBit == 0 )
 			{
-				var len = Math.Min( hi_offset - lo_offset + 1, (uint)bits.Length - lo_offset );
-				Array.Copy( bits, (int)lo_offset, bs.bits, 0, (int)len );
-				if( hi_offset < bits.Length )
-					bs.bits[hi_offset - lo_offset] &= ( 1L << to ) - 1;
+				var len = Math.Min( hiOffset - loOffset + 1, (uint)_bits.Length - loOffset );
+				Array.Copy( _bits, (int)loOffset, bs._bits, 0, (int)len );
+				if( hiOffset < _bits.Length )
+					bs._bits[hiOffset - loOffset] &= ( 1L << to ) - 1;
 				return bs;
 			}
 
-			var len2 = Math.Min( hi_offset, (uint)bits.Length - 1 );
-			var reverse = 64 - lo_bit;
+			var len2 = Math.Min( hiOffset, (uint)_bits.Length - 1 );
+			var reverse = 64 - loBit;
 			int i;
-			for( i = 0; lo_offset < len2; lo_offset++, i++ )
-				bs.bits[i] = ( ( bits[lo_offset] >> lo_bit ) | ( bits[lo_offset + 1] << reverse ) );
+			for( i = 0; loOffset < len2; loOffset++, i++ )
+				bs._bits[i] = ( ( _bits[loOffset] >> loBit ) | ( _bits[loOffset + 1] << reverse ) );
 			
-			if( ( to & LONG_MASK ) > lo_bit )
-				bs.bits[i++] = bits[lo_offset] >> lo_bit;
+			if( ( to & LongMask ) > loBit )
+				bs._bits[i++] = _bits[loOffset] >> loBit;
 			
-			if( hi_offset < bits.Length )
-				bs.bits[i - 1] &= ( 1L << ( to - from ) ) - 1;
+			if( hiOffset < _bits.Length )
+				bs._bits[i - 1] &= ( 1L << ( to - from ) ) - 1;
 			
 			return bs;
 		}
@@ -352,12 +352,12 @@ namespace Nez
 		/// </summary>
 		/// <param name="set">the set to check for intersection</param>
 		/// <returns>true if the sets intersect</returns>
-		public bool intersects( BitSet set )
+		public bool Intersects( BitSet set )
 		{
-			var i = Math.Min( bits.Length, set.bits.Length );
+			var i = Math.Min( _bits.Length, set._bits.Length );
 			while( --i >= 0 )
 			{
-				if( ( bits[i] & set.bits[i] ) != 0 )
+				if( ( _bits[i] & set._bits[i] ) != 0 )
 					return true;
 			}
 			return false;
@@ -368,11 +368,11 @@ namespace Nez
 		/// Returns true if this set contains no true bits.
 		/// </summary>
 		/// <returns>true if all bits are false</returns>
-		public bool isEmpty()
+		public bool IsEmpty()
 		{
-			for( var i = bits.Length - 1; i >= 0; i-- )
+			for( var i = _bits.Length - 1; i >= 0; i-- )
 			{
-				if( bits[i] != 0 )
+				if( _bits[i] != 0 )
 					return false;
 			}
 			return true;
@@ -386,13 +386,13 @@ namespace Nez
 		/// 
 		/// Returns the index of the highest set bit plus one.
 		/// </summary>
-		public int length
+		public int Length
 		{
 			get
 			{
 				// Set i to highest index that contains a non-zero value.
 				int i;
-				for( i = bits.Length - 1; i >= 0 && bits[i] == 0; --i )
+				for( i = _bits.Length - 1; i >= 0 && _bits[i] == 0; --i )
 				{}
 
 				// if i < 0 all bits are cleared.
@@ -400,7 +400,7 @@ namespace Nez
 					return 0;
 
 				// Now determine the exact length.
-				var b = bits[i];
+				var b = _bits[i];
 				var len = ( i + 1 ) * 64;
 
 				// b >= 0 checks if the highest bit is zero.
@@ -421,9 +421,9 @@ namespace Nez
 		/// 
 		/// Returns the number of bits currently used.
 		/// </summary>
-		public int size
+		public int Size
 		{
-			get { return bits.Length * 64; }
+			get { return _bits.Length * 64; }
 		}
 
 
@@ -433,13 +433,13 @@ namespace Nez
 		/// </summary>
 		/// <param name="from">the start location</param>
 		/// <returns>the first false bit</returns>
-		public int nextClearBit( int from )
+		public int NextClearBit( int from )
 		{
 			var offset = from >> 6;
 			var mask = 1L << from;
-			while( offset < bits.Length )
+			while( offset < _bits.Length )
 			{
-				long h = bits[offset];
+				long h = _bits[offset];
 				do
 				{
 					if( ( h & mask ) == 0 )
@@ -469,13 +469,13 @@ namespace Nez
 		/// </summary>
 		/// <param name="from">the start location</param>
 		/// <returns>the first true bit, or -1</returns>
-		public int nextSetBit( int from )
+		public int NextSetBit( int from )
 		{
 			var offset = from >> 6;
 			var mask = 1L << from;
-			while( offset < bits.Length )
+			while( offset < _bits.Length )
 			{
-				long h = bits[offset];
+				long h = _bits[offset];
 				do
 				{
 					if( ( h & mask ) != 0 )
@@ -499,11 +499,11 @@ namespace Nez
 		/// is automatically increased as necessary.
 		/// </summary>
 		/// <param name="pos">a non-negative integer.</param>
-		public void set( int pos )
+		public void Set( int pos )
 		{
 			var offset = pos >> 6;
-			ensure( offset );
-			bits[offset] |= 1L << pos;
+			Ensure( offset );
+			_bits[offset] |= 1L << pos;
 		}
 
 
@@ -513,12 +513,12 @@ namespace Nez
 		/// </summary>
 		/// <param name="index">the position to set</param>
 		/// <param name="value">the value to set it to</param>
-		public void set( int index, bool value )
+		public void Set( int index, bool value )
 		{
 			if( value )
-				this.set( index );
+				this.Set( index );
 			else
-				this.clear( index );
+				this.Clear( index );
 		}
 
 
@@ -527,7 +527,7 @@ namespace Nez
 		/// </summary>
 		/// <param name="from">the start range (inclusive)</param>
 		/// <param name="to">the end range (exclusive)</param>
-		public void set( int from, int to )
+		public void Set( int from, int to )
 		{
 			if( from < 0 || from > to )
 				throw new ArgumentOutOfRangeException();
@@ -535,20 +535,20 @@ namespace Nez
 			if( from == to )
 				return;
 			
-			var lo_offset = (uint)from >> 6;
-			var hi_offset = (uint)to >> 6;
-			ensure( (int)hi_offset );
-			if( lo_offset == hi_offset )
+			var loOffset = (uint)from >> 6;
+			var hiOffset = (uint)to >> 6;
+			Ensure( (int)hiOffset );
+			if( loOffset == hiOffset )
 			{
-				bits[hi_offset] |= ( -1L << from ) & ( ( 1L << to ) - 1 );
+				_bits[hiOffset] |= ( -1L << from ) & ( ( 1L << to ) - 1 );
 				return;
 			}
 
-			bits[lo_offset] |= -1L << from;
-			bits[hi_offset] |= ( 1L << to ) - 1;
+			_bits[loOffset] |= -1L << from;
+			_bits[hiOffset] |= ( 1L << to ) - 1;
 
-			for( int i = (int)lo_offset + 1; i < hi_offset; i++ )
-				bits[i] = -1;
+			for( int i = (int)loOffset + 1; i < hiOffset; i++ )
+				_bits[i] = -1;
 		}
 
 
@@ -559,12 +559,12 @@ namespace Nez
 		/// <param name="from">the start range (inclusive)</param>
 		/// <param name="to">the end range (exclusive)</param>
 		/// <param name="value">the value to set it to</param>
-		public void set( int from, int to, bool value )
+		public void Set( int from, int to, bool value )
 		{
 			if( value )
-				this.set( from, to );
+				this.Set( from, to );
 			else
-				this.clear( from, to );
+				this.Clear( from, to );
 		}
 
 
@@ -576,11 +576,11 @@ namespace Nez
 		/// which grows as necessary.
 		/// </summary>
 		/// <param name="bs">the second bit set</param>
-		public void xor( BitSet bs )
+		public void Xor( BitSet bs )
 		{
-			ensure( bs.bits.Length - 1 );
-			for( int i = bs.bits.Length - 1; i >= 0; i-- )
-				bits[i] ^= bs.bits[i];
+			Ensure( bs._bits.Length - 1 );
+			for( int i = bs._bits.Length - 1; i >= 0; i-- )
+				_bits[i] ^= bs._bits[i];
 		}
 
 
@@ -591,11 +591,11 @@ namespace Nez
 		/// grows as necessary.
 		/// </summary>
 		/// <param name="bs">the second bit set</param>
-		public void or( BitSet bs )
+		public void Or( BitSet bs )
 		{
-			ensure( bs.bits.Length - 1 );
-			for( var i = bs.bits.Length - 1; i >= 0; i-- )
-				bits[i] |= bs.bits[i];
+			Ensure( bs._bits.Length - 1 );
+			for( var i = bs._bits.Length - 1; i >= 0; i-- )
+				_bits[i] |= bs._bits[i];
 		}
 
 
@@ -603,23 +603,23 @@ namespace Nez
 		/// Make sure the vector is big enough.
 		/// </summary>
 		/// <param name="lastElt">the size needed for the bits array</param>
-		private void ensure( int lastElt )
+		private void Ensure( int lastElt )
 		{
-			if( lastElt >= bits.Length )
+			if( lastElt >= _bits.Length )
 			{
 				var nd = new long[lastElt + 1];
-				Array.Copy( bits, 0, nd, 0, bits.Length );
-				bits = nd;
+				Array.Copy( _bits, 0, nd, 0, _bits.Length );
+				_bits = nd;
 			}
 		}
 
 
 		// This is used by EnumSet for efficiency.
-		public bool containsAll( BitSet other )
+		public bool ContainsAll( BitSet other )
 		{
-			for( int i = other.bits.Length - 1; i >= 0; i-- )
+			for( int i = other._bits.Length - 1; i >= 0; i-- )
 			{
-				if( ( bits[i] & other.bits[i] ) != other.bits[i] )
+				if( ( _bits[i] & other._bits[i] ) != other._bits[i] )
 					return false;
 			}
 
@@ -661,8 +661,8 @@ namespace Nez
 		public override int GetHashCode()
 		{
 			long h = 1234;
-			for( int i = bits.Length; i > 0; )
-				h ^= i * bits[--i];
+			for( int i = _bits.Length; i > 0; )
+				h ^= i * _bits[--i];
 			return (int)( ( h >> 32 ) ^ h );
 		}
 
@@ -679,18 +679,18 @@ namespace Nez
 				return false;
 
 			var bs = (BitSet)obj;
-			var max = Math.Min( bits.Length, bs.bits.Length );
+			var max = Math.Min( _bits.Length, bs._bits.Length );
 			int i;
 			for( i = 0; i < max; ++i )
-				if( bits[i] != bs.bits[i] )
+				if( _bits[i] != bs._bits[i] )
 					return false;
 			// If one is larger, check to make sure all extra bits are 0.
-			for( int j = i; j < bits.Length; ++j )
-				if( bits[j] != 0 )
+			for( int j = i; j < _bits.Length; ++j )
+				if( _bits[j] != 0 )
 					return false;
 
-			for( int j = i; j < bs.bits.Length; ++j )
-				if( bs.bits[j] != 0 )
+			for( int j = i; j < bs._bits.Length; ++j )
+				if( bs._bits[j] != 0 )
 					return false;
 
 			return true;
@@ -708,10 +708,10 @@ namespace Nez
 		{
 			var r = new StringBuilder( "{" );
 			var first = true;
-			for( var i = 0; i < bits.Length; ++i )
+			for( var i = 0; i < _bits.Length; ++i )
 			{
 				var bit = 1;
-				var word = bits[i];
+				var word = _bits[i];
 				if( word == 0 )
 					continue;
 

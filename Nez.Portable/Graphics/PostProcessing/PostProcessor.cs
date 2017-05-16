@@ -13,39 +13,39 @@ namespace Nez
 		/// <summary>
 		/// Step is Enabled or not.
 		/// </summary>
-		public bool enabled;
+		public bool Enabled;
 
 		/// <summary>
 		/// specifies the order in which the Renderers will be called by the scene
 		/// </summary>
-		public readonly int executionOrder = 0;
+		public readonly int ExecutionOrder = 0;
 
 		/// <summary>
 		/// the Scene this PostProcessor resides in
 		/// </summary>
-		public Scene scene;
+		public Scene Scene;
 
 		/// <summary>
 		/// The effect used to render with
 		/// </summary>
-		public Effect effect;
+		public Effect Effect;
 
 		/// <summary>
 		/// SamplerState used for the drawFullscreenQuad method
 		/// </summary>
-		public SamplerState samplerState = Core.defaultSamplerState;
+		public SamplerState SamplerState = Core.DefaultSamplerState;
 
 		/// <summary>
 		/// BlendState used by the drawFullsceenQuad method
 		/// </summary>
-		public BlendState blendState = BlendState.Opaque;
+		public BlendState BlendState = BlendState.Opaque;
 
 
 		public PostProcessor( int executionOrder, Effect effect = null )
 		{
-			enabled = true;
-			this.executionOrder = executionOrder;
-			this.effect = effect;
+			Enabled = true;
+			this.ExecutionOrder = executionOrder;
+			this.Effect = effect;
 		}
 
 
@@ -53,7 +53,7 @@ namespace Nez
 		/// called when the PostProcessor is added to the scene. The scene field is not valid until this is called
 		/// </summary>
 		/// <param name="scene">Scene.</param>
-		public virtual void onAddedToScene()
+		public virtual void OnAddedToScene()
 		{}
 
 
@@ -64,7 +64,7 @@ namespace Nez
 		/// </summary>
 		/// <param name="newWidth">New width.</param>
 		/// <param name="newHeight">New height.</param>
-		public virtual void onSceneBackBufferSizeChanged( int newWidth, int newHeight )
+		public virtual void OnSceneBackBufferSizeChanged( int newWidth, int newHeight )
 		{}
 
 
@@ -78,43 +78,43 @@ namespace Nez
 		/// </summary>
 		/// <param name="source">Source.</param>
 		/// <param name="destination">Destination.</param>
-		public virtual void process( RenderTarget2D source, RenderTarget2D destination )
+		public virtual void Process( RenderTarget2D source, RenderTarget2D destination )
 		{
-			drawFullscreenQuad( source, destination, effect );
+			DrawFullscreenQuad( source, destination, Effect );
 		}
 
 
 		/// <summary>
 		/// called when a scene is ended. use this for cleanup.
 		/// </summary>
-		public virtual void unload()
+		public virtual void Unload()
 		{}
 
 
 		/// <summary>
 		/// helper for drawing a texture into a rendertarget, optionally using a custom shader to apply postprocessing effects.
 		/// </summary>
-		protected void drawFullscreenQuad( Texture2D texture, RenderTarget2D renderTarget, Effect effect = null )
+		protected void DrawFullscreenQuad( Texture2D texture, RenderTarget2D renderTarget, Effect effect = null )
 		{
-			Core.graphicsDevice.setRenderTarget( renderTarget );
-			drawFullscreenQuad( texture, renderTarget.Width, renderTarget.Height, effect );
+			GraphicsDeviceExt.SetRenderTarget(Core.CoreGraphicsDevice, renderTarget );
+			DrawFullscreenQuad( texture, renderTarget.Width, renderTarget.Height, effect );
 		}
 
 
 		/// <summary>
 		/// helper for drawing a texture into the current rendertarget, optionally using a custom shader to apply postprocessing effects.
 		/// </summary>
-		protected void drawFullscreenQuad( Texture2D texture, int width, int height, Effect effect )
+		protected void DrawFullscreenQuad( Texture2D texture, int width, int height, Effect effect )
 		{
-			Graphics.instance.batcher.begin( blendState, samplerState, DepthStencilState.None, RasterizerState.CullNone, effect );
-			Graphics.instance.batcher.draw( texture, new Rectangle( 0, 0, width, height ), Color.White );
-			Graphics.instance.batcher.end();
+			Graphics.Instance.Batcher.Begin( BlendState, SamplerState, DepthStencilState.None, RasterizerState.CullNone, effect );
+			Graphics.Instance.Batcher.Draw( texture, new Rectangle( 0, 0, width, height ), Color.White );
+			Graphics.Instance.Batcher.End();
 		}
 
 
 		public int CompareTo( PostProcessor other )
 		{
-			return executionOrder.CompareTo( other.executionOrder );
+			return ExecutionOrder.CompareTo( other.ExecutionOrder );
 		}
 
 	}

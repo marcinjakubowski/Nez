@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Nez.IEnumerableExtensions
 {
-	public static class IEnumerableExt
+	public static class EnumerableExt
 	{
 		/// <summary>
 		/// Jon Skeet's excellent reimplementation of LINQ Count.
@@ -13,9 +13,9 @@ namespace Nez.IEnumerableExtensions
 		/// <typeparam name="TSource">The source type.</typeparam>
 		/// <param name="source">The source IEnumerable.</param>
 		/// <returns>The number of items in the source.</returns>
-		public static int count<TSource>( this IEnumerable<TSource> source )
+		public static int Count<TSource>( this IEnumerable<TSource> source )
 		{
-			Assert.isNotNull( source, "source cannot be null" );
+			Assert.IsNotNull( source, "source cannot be null" );
 
 			// Optimization for ICollection<T> 
 			var genericCollection = source as ICollection<TSource>;

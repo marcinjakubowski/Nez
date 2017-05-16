@@ -13,62 +13,62 @@ namespace Nez.UI
 	{
 		#region ILayout
 
-		public override float minWidth
+		public override float MinWidth
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _minWidth;
 			}
 		}
 
-		public override float minHeight
+		public override float MinHeight
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _minHeight;
 			}
 		}
 
-		public override float preferredWidth
+		public override float PreferredWidth
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _prefWidth;
 			}
 		}
 
-		public override float preferredHeight
+		public override float PreferredHeight
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _prefHeight;
 			}
 		}
 
-		public override float maxWidth
+		public override float MaxWidth
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _maxWidth;
 			}
 		}
 
-		public override float maxHeight
+		public override float MaxHeight
 		{
 			get
 			{
-				if( sizeInvalid )
-					computeSize();
+				if( _sizeInvalid )
+					ComputeSize();
 				return _maxHeight;
 			}
 		}
@@ -77,27 +77,27 @@ namespace Nez.UI
 
 		#endregion
 
-		bool sizeInvalid = true;
+		bool _sizeInvalid = true;
 
 
 		public Stack()
 		{
-			transform = false;
-			setSize( 150, 150 );
-			touchable = Touchable.ChildrenOnly;
+			Transform = false;
+			SetSize( 150, 150 );
+			Touchable = Touchable.ChildrenOnly;
 		}
 
 
-		public override void invalidate()
+		public override void Invalidate()
 		{
-			base.invalidate();
-			sizeInvalid = true;
+			base.Invalidate();
+			_sizeInvalid = true;
 		}
 
 
-		private void computeSize()
+		private void ComputeSize()
 		{
-			sizeInvalid = false;
+			_sizeInvalid = false;
 			_prefWidth = 0;
 			_prefHeight = 0;
 			_minWidth = 0;
@@ -105,26 +105,26 @@ namespace Nez.UI
 			_maxWidth = 0;
 			_maxHeight = 0;
 
-			for( int i = 0, n = children.Count; i < n; i++ )
+			for( int i = 0, n = Children.Count; i < n; i++ )
 			{
-				var child = children[i];
+				var child = Children[i];
 				float childMaxWidth, childMaxHeight;
 				if( child is ILayout )
 				{
 					var layout = (ILayout)child;
-					_prefWidth = Math.Max( _prefWidth, layout.preferredWidth );
-					_prefHeight = Math.Max( _prefHeight, layout.preferredHeight );
-					_minWidth = Math.Max( _minWidth, layout.minWidth );
-					_minHeight = Math.Max( _minHeight, layout.minHeight );
-					childMaxWidth = layout.maxWidth;
-					childMaxHeight = layout.maxHeight;
+					_prefWidth = Math.Max( _prefWidth, layout.PreferredWidth );
+					_prefHeight = Math.Max( _prefHeight, layout.PreferredHeight );
+					_minWidth = Math.Max( _minWidth, layout.MinWidth );
+					_minHeight = Math.Max( _minHeight, layout.MinHeight );
+					childMaxWidth = layout.MaxWidth;
+					childMaxHeight = layout.MaxHeight;
 				}
 				else
 				{
-					_prefWidth = Math.Max( _prefWidth, child.width );
-					_prefHeight = Math.Max( _prefHeight, child.height );
-					_minWidth = Math.Max( _minWidth, child.width );
-					_minHeight = Math.Max( _minHeight, child.height );
+					_prefWidth = Math.Max( _prefWidth, child.Width );
+					_prefHeight = Math.Max( _prefHeight, child.Height );
+					_minWidth = Math.Max( _minWidth, child.Width );
+					_minHeight = Math.Max( _minHeight, child.Height );
 					childMaxWidth = 0;
 					childMaxHeight = 0;
 				}
@@ -137,23 +137,23 @@ namespace Nez.UI
 		}
 
 
-		public T add<T>( T element ) where T : Element
+		public T Add<T>( T element ) where T : Element
 		{
-			return addElement( element );
+			return AddElement( element );
 		}
 
 
-		public override void layout()
+		public override void Layout()
 		{
-			if( sizeInvalid )
-				computeSize();
+			if( _sizeInvalid )
+				ComputeSize();
 			
-			for( int i = 0, n = children.Count; i < n; i++ )
+			for( int i = 0, n = Children.Count; i < n; i++ )
 			{
-				Element child = children[i];
-				child.setBounds( 0, 0, width, height );
+				Element child = Children[i];
+				child.SetBounds( 0, 0, Width, Height );
 				if( child is ILayout )
-					( (ILayout)child ).validate();
+					( (ILayout)child ).Validate();
 			}
 		}
 

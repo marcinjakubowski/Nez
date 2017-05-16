@@ -54,42 +54,42 @@ namespace Nez.Analysis
 		/// <summary>
 		/// Max bar count.
 		/// </summary>
-		const int maxBars = 8;
+		const int MaxBars = 8;
 
 		/// <summary>
 		/// Maximum sample number for each bar.
 		/// </summary>
-		const int maxSamples = 256;
+		const int MaxSamples = 256;
 
 		/// <summary>
 		/// Maximum nest calls for each bar.
 		/// </summary>
-		const int maxNestCall = 32;
+		const int MaxNestCall = 32;
 
 		/// <summary>
 		/// Maximum display frames.
 		/// </summary>
-		const int maxSampleFrames = 4;
+		const int MaxSampleFrames = 4;
 
 		/// <summary>
 		/// Duration (in frame count) for take snap shot of log.
 		/// </summary>
-		const int logSnapDuration = 120;
+		const int LogSnapDuration = 120;
 
 		/// <summary>
 		/// Height(in pixels) of bar.
 		/// </summary>
-		const int barHeight = 8;
+		const int BarHeight = 8;
 
 		/// <summary>
 		/// Padding(in pixels) of bar.
 		/// </summary>
-		const int barPadding = 2;
+		const int BarPadding = 2;
 
 		/// <summary>
 		/// Delay frame count for auto display frame adjustment.
 		/// </summary>
-		const int autoAdjustDelay = 30;
+		const int AutoAdjustDelay = 30;
 
 		#endregion
 
@@ -99,31 +99,31 @@ namespace Nez.Analysis
 		/// <summary>
 		/// Gets/Set log display or no.
 		/// </summary>
-		public bool showLog = false;
+		public bool ShowLog = false;
 
 		/// <summary>
 		/// Gets/Sets target sample frames.
 		/// </summary>
-		public int targetSampleFrames;
+		public int TargetSampleFrames;
 
 		/// <summary>
 		/// Gets/Sets timer ruler width.
 		/// </summary>
-		public int width;
+		public int Width;
 
-		public bool enabled = true;
+		public bool Enabled = true;
 
-		public static TimeRuler instance;
+		public static TimeRuler Instance;
 		
 		/// <summary>
 		/// Marker structure.
 		/// </summary>
 		private struct Marker
 		{
-			public int markerId;
-			public float beginTime;
-			public float endTime;
-			public Color color;
+			public int MarkerId;
+			public float BeginTime;
+			public float EndTime;
+			public Color Color;
 		}
 
 
@@ -133,12 +133,12 @@ namespace Nez.Analysis
 		private class MarkerCollection
 		{
 			// Marker collection.
-			public Marker[] markers = new Marker[maxSamples];
-			public int markCount;
+			public Marker[] Markers = new Marker[MaxSamples];
+			public int MarkCount;
 
 			// Marker nest information.
-			public int[] markerNests = new int[maxNestCall];
-			public int nestCount;
+			public int[] MarkerNests = new int[MaxNestCall];
+			public int NestCount;
 		}
 
 
@@ -147,15 +147,15 @@ namespace Nez.Analysis
 		/// </summary>
 		private class FrameLog
 		{
-			public MarkerCollection[] bars;
+			public MarkerCollection[] Bars;
 
 
 			public FrameLog()
 			{
 				// Initialize markers.
-				bars = new MarkerCollection[maxBars];
-				for( int i = 0; i < maxBars; ++i )
-					bars[i] = new MarkerCollection();
+				Bars = new MarkerCollection[MaxBars];
+				for( int i = 0; i < MaxBars; ++i )
+					Bars[i] = new MarkerCollection();
 			}
 		}
 
@@ -166,15 +166,15 @@ namespace Nez.Analysis
 		private class MarkerInfo
 		{
 			// Name of marker.
-			public string name;
+			public string Name;
 
 			// Marker log.
-			public MarkerLog[] logs = new MarkerLog[maxBars];
+			public MarkerLog[] Logs = new MarkerLog[MaxBars];
 
 
 			public MarkerInfo( string name )
 			{
-				this.name = name;
+				this.Name = name;
 			}
 		}
 
@@ -184,52 +184,52 @@ namespace Nez.Analysis
 		/// </summary>
 		private struct MarkerLog
 		{
-			public float snapMin;
-			public float snapMax;
-			public float snapAvg;
-			public float min;
-			public float max;
-			public float avg;
-			public int samples;
-			public Color color;
-			public bool initialized;
+			public float SnapMin;
+			public float SnapMax;
+			public float SnapAvg;
+			public float Min;
+			public float Max;
+			public float Avg;
+			public int Samples;
+			public Color Color;
+			public bool Initialized;
 		}
 
 		// Logs for each frames.
-		FrameLog[] logs;
+		FrameLog[] _logs;
 
 		// Previous frame log.
-		FrameLog prevLog;
+		FrameLog _prevLog;
 
 		// Current log.
-		FrameLog curLog;
+		FrameLog _curLog;
 
 		// Current frame count.
-		int frameCount;
+		int _frameCount;
 
 		// Stopwatch for measure the time.
-		Stopwatch stopwatch = new Stopwatch();
+		Stopwatch _stopwatch = new Stopwatch();
 
 		// Marker information array.
-		List<MarkerInfo> markers = new List<MarkerInfo>();
+		List<MarkerInfo> _markers = new List<MarkerInfo>();
 
 		// Dictionary that maps from marker name to marker id.
-		Dictionary<string, int> markerNameToIdMap = new Dictionary<string, int>();
+		Dictionary<string, int> _markerNameToIdMap = new Dictionary<string, int>();
 
 		// Display frame adjust counter.
-		int frameAdjust;
+		int _frameAdjust;
 
 		// Current display frame count.
-		int sampleFrames;
+		int _sampleFrames;
 
 		// Marker log string.
-		StringBuilder logString = new StringBuilder( 512 );
+		StringBuilder _logString = new StringBuilder( 512 );
 
 		// You want to call StartFrame at beginning of Game.Update method.
 		// But Game.Update gets calls multiple time when game runs slow in fixed time step mode.
 		// In this case, we should ignore StartFrame call.
 		// To do this, we just keep tracking of number of StartFrame calls until Draw gets called.
-		int updateCount;
+		int _updateCount;
 
 
 		// TimerRuler draw position.
@@ -242,39 +242,39 @@ namespace Nez.Analysis
 
 		static TimeRuler()
 		{
-			instance = new TimeRuler();
+			Instance = new TimeRuler();
 		}
 
 
 		public TimeRuler()
 		{
 			// Initialize Parameters.
-			logs = new FrameLog[2];
-			for( int i = 0; i < logs.Length; ++i )
-				logs[i] = new FrameLog();
+			_logs = new FrameLog[2];
+			for( int i = 0; i < _logs.Length; ++i )
+				_logs[i] = new FrameLog();
 
-			sampleFrames = targetSampleFrames = 1;
+			_sampleFrames = TargetSampleFrames = 1;
 
-			width = (int)( Core.graphicsDevice.Viewport.Width * 0.8f );
+			Width = (int)( Core.CoreGraphicsDevice.Viewport.Width * 0.8f );
 
-			Core.emitter.addObserver( CoreEvents.GraphicsDeviceReset, onGraphicsDeviceReset );
-			onGraphicsDeviceReset();
+			Core.Emitter.AddObserver( CoreEvents.GraphicsDeviceReset, OnGraphicsDeviceReset );
+			OnGraphicsDeviceReset();
 		}
 
 
-		void onGraphicsDeviceReset()
+		void OnGraphicsDeviceReset()
 		{
-			var layout = new Layout( Core.graphicsDevice.Viewport );
-			_position = layout.place( new Vector2( width, barHeight ), 0, 0.01f, Alignment.BottomCenter );
+			var layout = new Layout( Core.CoreGraphicsDevice.Viewport );
+			_position = layout.Place( new Vector2( Width, BarHeight ), 0, 0.01f, Alignment.BottomCenter );
 		}
 
 
 		[Command( "timeruler", "Toggles the display of the TimerRuler on/off" )]
-		static void toggleTimeRuler()
+		static void ToggleTimeRuler()
 		{
-			instance.showLog = !instance.showLog;
-			DebugConsole.instance.log( "TimeRuler enabled: " + ( instance.showLog ? "yes" : "no" ) );
-			DebugConsole.instance.isOpen = false;
+			Instance.ShowLog = !Instance.ShowLog;
+			DebugConsole.Instance.Log( "TimeRuler enabled: " + ( Instance.ShowLog ? "yes" : "no" ) );
+			DebugConsole.Instance.IsOpen = false;
 		}
 	
 		#endregion
@@ -286,87 +286,87 @@ namespace Nez.Analysis
 		/// Start new frame.
 		/// </summary>
 		[Conditional( "DEBUG" )]
-		public void startFrame()
+		public void StartFrame()
 		{
 			lock( this )
 			{
 				// We skip reset frame when this method gets called multiple times.
-				var count = Interlocked.Increment( ref updateCount );
-				if( enabled && ( 1 < count && count < maxSampleFrames ) )
+				var count = Interlocked.Increment( ref _updateCount );
+				if( Enabled && ( 1 < count && count < MaxSampleFrames ) )
 					return;
 
 				// Update current frame log.
-				prevLog = logs[frameCount++ & 0x1];
-				curLog = logs[frameCount & 0x1];
+				_prevLog = _logs[_frameCount++ & 0x1];
+				_curLog = _logs[_frameCount & 0x1];
 
-				var endFrameTime = (float)stopwatch.elapsed.TotalMilliseconds;
+				var endFrameTime = (float)_stopwatch.Elapsed.TotalMilliseconds;
 
 				// Update marker and create a log.
-				for( var barIdx = 0; barIdx < prevLog.bars.Length; ++barIdx )
+				for( var barIdx = 0; barIdx < _prevLog.Bars.Length; ++barIdx )
 				{
-					var prevBar = prevLog.bars[barIdx];
-					var nextBar = curLog.bars[barIdx];
+					var prevBar = _prevLog.Bars[barIdx];
+					var nextBar = _curLog.Bars[barIdx];
 
 					// Re-open marker that didn't get called EndMark in previous frame.
-					for( var nest = 0; nest < prevBar.nestCount; ++nest )
+					for( var nest = 0; nest < prevBar.NestCount; ++nest )
 					{
-						var markerIdx = prevBar.markerNests[nest];
+						var markerIdx = prevBar.MarkerNests[nest];
 
-						prevBar.markers[markerIdx].endTime = endFrameTime;
+						prevBar.Markers[markerIdx].EndTime = endFrameTime;
 
-						nextBar.markerNests[nest] = nest;
-						nextBar.markers[nest].markerId =
-                            prevBar.markers[markerIdx].markerId;
-						nextBar.markers[nest].beginTime = 0;
-						nextBar.markers[nest].endTime = -1;
-						nextBar.markers[nest].color = prevBar.markers[markerIdx].color;
+						nextBar.MarkerNests[nest] = nest;
+						nextBar.Markers[nest].MarkerId =
+                            prevBar.Markers[markerIdx].MarkerId;
+						nextBar.Markers[nest].BeginTime = 0;
+						nextBar.Markers[nest].EndTime = -1;
+						nextBar.Markers[nest].Color = prevBar.Markers[markerIdx].Color;
 					}
 
 					// Update marker log.
-					for( var markerIdx = 0; markerIdx < prevBar.markCount; ++markerIdx )
+					for( var markerIdx = 0; markerIdx < prevBar.MarkCount; ++markerIdx )
 					{
-						var duration = prevBar.markers[markerIdx].endTime -
-						                                   prevBar.markers[markerIdx].beginTime;
+						var duration = prevBar.Markers[markerIdx].EndTime -
+						                                   prevBar.Markers[markerIdx].BeginTime;
 
-						int markerId = prevBar.markers[markerIdx].markerId;
-						MarkerInfo m = markers[markerId];
+						int markerId = prevBar.Markers[markerIdx].MarkerId;
+						MarkerInfo m = _markers[markerId];
 
-						m.logs[barIdx].color = prevBar.markers[markerIdx].color;
+						m.Logs[barIdx].Color = prevBar.Markers[markerIdx].Color;
 
-						if( !m.logs[barIdx].initialized )
+						if( !m.Logs[barIdx].Initialized )
 						{
 							// First frame process.
-							m.logs[barIdx].min = duration;
-							m.logs[barIdx].max = duration;
-							m.logs[barIdx].avg = duration;
+							m.Logs[barIdx].Min = duration;
+							m.Logs[barIdx].Max = duration;
+							m.Logs[barIdx].Avg = duration;
 
-							m.logs[barIdx].initialized = true;
+							m.Logs[barIdx].Initialized = true;
 						}
 						else
 						{
 							// Process after first frame.
-							m.logs[barIdx].min = Math.Min( m.logs[barIdx].min, duration );
-							m.logs[barIdx].max = Math.Min( m.logs[barIdx].max, duration );
-							m.logs[barIdx].avg += duration;
-							m.logs[barIdx].avg *= 0.5f;
+							m.Logs[barIdx].Min = Math.Min( m.Logs[barIdx].Min, duration );
+							m.Logs[barIdx].Max = Math.Min( m.Logs[barIdx].Max, duration );
+							m.Logs[barIdx].Avg += duration;
+							m.Logs[barIdx].Avg *= 0.5f;
 
-							if( m.logs[barIdx].samples++ >= logSnapDuration )
+							if( m.Logs[barIdx].Samples++ >= LogSnapDuration )
 							{
-								m.logs[barIdx].snapMin = m.logs[barIdx].min;
-								m.logs[barIdx].snapMax = m.logs[barIdx].max;
-								m.logs[barIdx].snapAvg = m.logs[barIdx].avg;
-								m.logs[barIdx].samples = 0;
+								m.Logs[barIdx].SnapMin = m.Logs[barIdx].Min;
+								m.Logs[barIdx].SnapMax = m.Logs[barIdx].Max;
+								m.Logs[barIdx].SnapAvg = m.Logs[barIdx].Avg;
+								m.Logs[barIdx].Samples = 0;
 							}
 						}
 					}
 
-					nextBar.markCount = prevBar.nestCount;
-					nextBar.nestCount = prevBar.nestCount;
+					nextBar.MarkCount = prevBar.NestCount;
+					nextBar.NestCount = prevBar.NestCount;
 				}
 
 				// Start measuring.
-				stopwatch.reset();
-				stopwatch.start();
+				_stopwatch.Reset();
+				_stopwatch.Start();
 			}
 		}
 
@@ -377,9 +377,9 @@ namespace Nez.Analysis
 		/// <param name="markerName">name of marker.</param>
 		/// <param name="color">color/param>
 		[Conditional( "DEBUG" )]
-		public void beginMark( string markerName, Color color )
+		public void BeginMark( string markerName, Color color )
 		{
-			beginMark( 0, markerName, color );
+			BeginMark( 0, markerName, color );
 		}
 
 
@@ -390,16 +390,16 @@ namespace Nez.Analysis
 		/// <param name="markerName">name of marker.</param>
 		/// <param name="color">color/param>
 		[Conditional( "DEBUG" )]
-		public void beginMark( int barIndex, string markerName, Color color )
+		public void BeginMark( int barIndex, string markerName, Color color )
 		{
 			lock( this )
 			{
-				if( barIndex < 0 || barIndex >= maxBars )
+				if( barIndex < 0 || barIndex >= MaxBars )
 					throw new ArgumentOutOfRangeException( "barIndex" );
 
-				var bar = curLog.bars[barIndex];
+				var bar = _curLog.Bars[barIndex];
 
-				if( bar.markCount >= maxSamples )
+				if( bar.MarkCount >= MaxSamples )
 				{
 					throw new OverflowException(
 						"Exceeded sample count.\n" +
@@ -407,7 +407,7 @@ namespace Nez.Analysis
 						"lower sample count." );
 				}
 
-				if( bar.nestCount >= maxNestCall )
+				if( bar.NestCount >= MaxNestCall )
 				{
 					throw new OverflowException(
 						"Exceeded nest count.\n" +
@@ -417,25 +417,25 @@ namespace Nez.Analysis
 
 				// Gets registered marker.
 				int markerId;
-				if( !markerNameToIdMap.TryGetValue( markerName, out markerId ) )
+				if( !_markerNameToIdMap.TryGetValue( markerName, out markerId ) )
 				{
 					// Register this if this marker is not registered.
-					markerId = markers.Count;
-					markerNameToIdMap.Add( markerName, markerId );
-					markers.Add( new MarkerInfo( markerName ) );
+					markerId = _markers.Count;
+					_markerNameToIdMap.Add( markerName, markerId );
+					_markers.Add( new MarkerInfo( markerName ) );
 				}
 
 				// Start measuring.
-				bar.markerNests[bar.nestCount++] = bar.markCount;
+				bar.MarkerNests[bar.NestCount++] = bar.MarkCount;
 
 				// Fill marker parameters.
-				bar.markers[bar.markCount].markerId = markerId;
-				bar.markers[bar.markCount].color = color;
-				bar.markers[bar.markCount].beginTime = (float)stopwatch.elapsed.TotalMilliseconds;
+				bar.Markers[bar.MarkCount].MarkerId = markerId;
+				bar.Markers[bar.MarkCount].Color = color;
+				bar.Markers[bar.MarkCount].BeginTime = (float)_stopwatch.Elapsed.TotalMilliseconds;
 
-				bar.markers[bar.markCount].endTime = -1;
+				bar.Markers[bar.MarkCount].EndTime = -1;
 
-				bar.markCount++;
+				bar.MarkCount++;
 			}
 		}
 
@@ -445,9 +445,9 @@ namespace Nez.Analysis
 		/// </summary>
 		/// <param name="markerName">Name of marker.</param>
 		[Conditional( "DEBUG" )]
-		public void endMark( string markerName )
+		public void EndMark( string markerName )
 		{
-			endMark( 0, markerName );
+			EndMark( 0, markerName );
 		}
 
 
@@ -457,22 +457,22 @@ namespace Nez.Analysis
 		/// <param name="barIndex">Index of bar.</param>
 		/// <param name="markerName">Name of marker.</param>
 		[Conditional( "DEBUG" )]
-		public void endMark( int barIndex, string markerName )
+		public void EndMark( int barIndex, string markerName )
 		{
 			lock( this )
 			{
-				if( barIndex < 0 || barIndex >= maxBars )
+				if( barIndex < 0 || barIndex >= MaxBars )
 					throw new ArgumentOutOfRangeException( "barIndex" );
 
-				var bar = curLog.bars[barIndex];
+				var bar = _curLog.Bars[barIndex];
 
-				if( bar.nestCount <= 0 )
+				if( bar.NestCount <= 0 )
 				{
 					throw new InvalidOperationException( "Call BeingMark method before calling EndMark method." );
 				}
 
 				int markerId;
-				if( !markerNameToIdMap.TryGetValue( markerName, out markerId ) )
+				if( !_markerNameToIdMap.TryGetValue( markerName, out markerId ) )
 				{
 					throw new InvalidOperationException(
 						String.Format( "Maker '{0}' is not registered." +
@@ -480,8 +480,8 @@ namespace Nez.Analysis
 							markerName ) );
 				}
 
-				var markerIdx = bar.markerNests[--bar.nestCount];
-				if( bar.markers[markerIdx].markerId != markerId )
+				var markerIdx = bar.MarkerNests[--bar.NestCount];
+				if( bar.Markers[markerIdx].MarkerId != markerId )
 				{
 					throw new InvalidOperationException(
 						"Incorrect call order of BeginMark/EndMark method." +
@@ -490,7 +490,7 @@ namespace Nez.Analysis
 						"BeginMark(A), BeginMark(B), EndMark(A), EndMark(B)." );
 				}
 
-				bar.markers[markerIdx].endTime = (float)stopwatch.elapsed.TotalMilliseconds;
+				bar.Markers[markerIdx].EndTime = (float)_stopwatch.Elapsed.TotalMilliseconds;
 			}
 		}
 
@@ -501,15 +501,15 @@ namespace Nez.Analysis
 		/// <param name="barIndex">Index of bar</param>
 		/// <param name="markerName">name of marker</param>
 		/// <returns>average spending time in ms.</returns>
-		public float getAverageTime( int barIndex, string markerName )
+		public float GetAverageTime( int barIndex, string markerName )
 		{
-			if( barIndex < 0 || barIndex >= maxBars )
+			if( barIndex < 0 || barIndex >= MaxBars )
 				throw new ArgumentOutOfRangeException( "barIndex" );
 
 			var result = 0f;
 			int markerId;
-			if( markerNameToIdMap.TryGetValue( markerName, out markerId ) )
-				result = markers[markerId].logs[barIndex].avg;
+			if( _markerNameToIdMap.TryGetValue( markerName, out markerId ) )
+				result = _markers[markerId].Logs[barIndex].Avg;
 
 			return result;
 		}
@@ -519,24 +519,24 @@ namespace Nez.Analysis
 		/// Reset marker log.
 		/// </summary>
 		[Conditional( "DEBUG" )]
-		public void resetLog()
+		public void ResetLog()
 		{
 			lock( this )
 			{
-				foreach( var markerInfo in markers )
+				foreach( var markerInfo in _markers )
 				{
-					for( var i = 0; i < markerInfo.logs.Length; ++i )
+					for( var i = 0; i < markerInfo.Logs.Length; ++i )
 					{
-						markerInfo.logs[i].initialized = false;
-						markerInfo.logs[i].snapMin = 0;
-						markerInfo.logs[i].snapMax = 0;
-						markerInfo.logs[i].snapAvg = 0;
+						markerInfo.Logs[i].Initialized = false;
+						markerInfo.Logs[i].SnapMin = 0;
+						markerInfo.Logs[i].SnapMax = 0;
+						markerInfo.Logs[i].SnapAvg = 0;
 
-						markerInfo.logs[i].min = 0;
-						markerInfo.logs[i].max = 0;
-						markerInfo.logs[i].avg = 0;
+						markerInfo.Logs[i].Min = 0;
+						markerInfo.Logs[i].Max = 0;
+						markerInfo.Logs[i].Avg = 0;
 
-						markerInfo.logs[i].samples = 0;
+						markerInfo.Logs[i].Samples = 0;
 					}
 				}
 			}
@@ -548,34 +548,34 @@ namespace Nez.Analysis
 		#region Draw
 
 		[Conditional( "DEBUG" )]
-		public void render()
+		public void Render()
 		{
-			render( _position, width );
+			Render( _position, Width );
 		}
 
 
 		[Conditional( "DEBUG" )]
-		public void render( Vector2 position, int width )
+		public void Render( Vector2 position, int width )
 		{
 			// Reset update count.
-			Interlocked.Exchange( ref updateCount, 0 );
+			Interlocked.Exchange( ref _updateCount, 0 );
 
-			if( !showLog )
+			if( !ShowLog )
 				return;
 
 			// Gets Batcher, SpriteFont, and WhiteTexture from Graphics.
-			var batcher = Graphics.instance.batcher;
-			var font = Graphics.instance.bitmapFont;
+			var batcher = Graphics.Instance.Batcher;
+			var font = Graphics.Instance.BitmapFont;
 
 			// Adjust size and position based of number of bars we should draw.
 			var height = 0;
 			var maxTime = 0f;
-			foreach( var bar in prevLog.bars )
+			foreach( var bar in _prevLog.Bars )
 			{
-				if( bar.markCount > 0 )
+				if( bar.MarkCount > 0 )
 				{
-					height += barHeight + barPadding * 2;
-					maxTime = Math.Max( maxTime, bar.markers[bar.markCount - 1].endTime );
+					height += BarHeight + BarPadding * 2;
+					maxTime = Math.Max( maxTime, bar.Markers[bar.MarkCount - 1].EndTime );
 				}
 			}
 
@@ -583,57 +583,57 @@ namespace Nez.Analysis
 			// For example, if the entire process of frame doesn't finish in less than 16.6ms
 			// then it will adjust display frame duration as 33.3ms.
 			const float frameSpan = 1.0f / 60.0f * 1000f;
-			var sampleSpan = (float)sampleFrames * frameSpan;
+			var sampleSpan = (float)_sampleFrames * frameSpan;
 
 			if( maxTime > sampleSpan )
-				frameAdjust = Math.Max( 0, frameAdjust ) + 1;
+				_frameAdjust = Math.Max( 0, _frameAdjust ) + 1;
 			else
-				frameAdjust = Math.Min( 0, frameAdjust ) - 1;
+				_frameAdjust = Math.Min( 0, _frameAdjust ) - 1;
 
-			if( Math.Abs( frameAdjust ) > autoAdjustDelay )
+			if( Math.Abs( _frameAdjust ) > AutoAdjustDelay )
 			{
-				sampleFrames = Math.Min( maxSampleFrames, sampleFrames );
-				sampleFrames = Math.Max( targetSampleFrames, (int)( maxTime / frameSpan ) + 1 );
+				_sampleFrames = Math.Min( MaxSampleFrames, _sampleFrames );
+				_sampleFrames = Math.Max( TargetSampleFrames, (int)( maxTime / frameSpan ) + 1 );
 
-				frameAdjust = 0;
+				_frameAdjust = 0;
 			}
 
 			// compute factor that converts from ms to pixel.
 			var msToPs = (float)width / sampleSpan;
 
 			// Draw start position.
-			var startY = (int)position.Y - ( height - barHeight );
+			var startY = (int)position.Y - ( height - BarHeight );
 
 			// Current y position.
 			var y = startY;
 
-			batcher.begin();
+			batcher.Begin();
 
 			// Draw transparency background.
 			var rc = new Rectangle( (int)position.X, y, width, height );
-			batcher.drawRect( rc, new Color( 0, 0, 0, 128 ) );
+			batcher.DrawRect( rc, new Color( 0, 0, 0, 128 ) );
 
 			// Draw markers for each bars.
-			rc.Height = barHeight;
-			foreach( var bar in prevLog.bars )
+			rc.Height = BarHeight;
+			foreach( var bar in _prevLog.Bars )
 			{
-				rc.Y = y + barPadding;
-				if( bar.markCount > 0 )
+				rc.Y = y + BarPadding;
+				if( bar.MarkCount > 0 )
 				{
-					for( var j = 0; j < bar.markCount; ++j )
+					for( var j = 0; j < bar.MarkCount; ++j )
 					{
-						var bt = bar.markers[j].beginTime;
-						var et = bar.markers[j].endTime;
+						var bt = bar.Markers[j].BeginTime;
+						var et = bar.Markers[j].EndTime;
 						var sx = (int)( position.X + bt * msToPs );
 						var ex = (int)( position.X + et * msToPs );
 						rc.X = sx;
 						rc.Width = Math.Max( ex - sx, 1 );
 
-						batcher.drawRect( rc, bar.markers[j].color );
+						batcher.DrawRect( rc, bar.Markers[j].Color );
 					}
 				}
 
-				y += barHeight + barPadding;
+				y += BarHeight + BarPadding;
 			}
 
 			// Draw grid lines.
@@ -642,72 +642,72 @@ namespace Nez.Analysis
 			for( float t = 1.0f; t < sampleSpan; t += 1.0f )
 			{
 				rc.X = (int)( position.X + t * msToPs );
-				batcher.drawRect( rc, Color.Gray );
+				batcher.DrawRect( rc, Color.Gray );
 			}
 
 			// Draw frame grid.
-			for( var i = 0; i <= sampleFrames; ++i )
+			for( var i = 0; i <= _sampleFrames; ++i )
 			{
 				rc.X = (int)( position.X + frameSpan * (float)i * msToPs );
-				batcher.drawRect( rc, Color.White );
+				batcher.DrawRect( rc, Color.White );
 			}
 				
 			// Generate log string.
-			y = startY - font.lineHeight;
-			logString.Length = 0;
-			foreach( var markerInfo in markers )
+			y = startY - font.LineHeight;
+			_logString.Length = 0;
+			foreach( var markerInfo in _markers )
 			{
-				for( var i = 0; i < maxBars; ++i )
+				for( var i = 0; i < MaxBars; ++i )
 				{
-					if( markerInfo.logs[i].initialized )
+					if( markerInfo.Logs[i].Initialized )
 					{
-						if( logString.Length > 0 )
-							logString.Append( "\n" );
+						if( _logString.Length > 0 )
+							_logString.Append( "\n" );
 
-						logString.Append( " Bar " );
-						logString.Append( i );
-						logString.Append( "   [" );
-						logString.Append( markerInfo.name );
+						_logString.Append( " Bar " );
+						_logString.Append( i );
+						_logString.Append( "   [" );
+						_logString.Append( markerInfo.Name );
 
-						logString.Append( "] Avg.:  " );
-						logString.Append( markerInfo.logs[i].snapAvg.ToString( "0.0000" ) );
-						logString.Append( " ms" );
+						_logString.Append( "] Avg.:  " );
+						_logString.Append( markerInfo.Logs[i].SnapAvg.ToString( "0.0000" ) );
+						_logString.Append( " ms" );
 
-						y -= font.lineHeight;
+						y -= font.LineHeight;
 					}
 				}
 			}
 
 			// Compute background size and draw it.
-			var size = font.measureString( logString );
+			var size = font.MeasureString( _logString );
 			rc = new Rectangle( (int)position.X, (int)y, (int)size.X + 25, (int)size.Y + 5 );
-			batcher.drawRect( rc, new Color( 0, 0, 0, 128 ) );
+			batcher.DrawRect( rc, new Color( 0, 0, 0, 128 ) );
 
 			// Draw log string.
-			batcher.drawString( font, logString, new Vector2( position.X + 22, y + 3 ), Color.White );
+			batcher.DrawString( font, _logString, new Vector2( position.X + 22, y + 3 ), Color.White );
 
 
 			// Draw log color boxes.
-			y += (int)( (float)font.lineHeight * 0.3f );
+			y += (int)( (float)font.LineHeight * 0.3f );
 			rc = new Rectangle( (int)position.X + 4, y, 10, 10 );
 			var rc2 = new Rectangle( (int)position.X + 5, y + 1, 8, 8 );
-			foreach( var markerInfo in markers )
+			foreach( var markerInfo in _markers )
 			{
-				for( var i = 0; i < maxBars; ++i )
+				for( var i = 0; i < MaxBars; ++i )
 				{
-					if( markerInfo.logs[i].initialized )
+					if( markerInfo.Logs[i].Initialized )
 					{
 						rc.Y = y;
 						rc2.Y = y + 1;
-						batcher.drawRect( rc, Color.White );
-						batcher.drawRect( rc2, markerInfo.logs[i].color );
+						batcher.DrawRect( rc, Color.White );
+						batcher.DrawRect( rc2, markerInfo.Logs[i].Color );
 
-						y += font.lineHeight;
+						y += font.LineHeight;
 					}
 				}
 			}
 
-			batcher.end();
+			batcher.End();
 		}
 
 		#endregion

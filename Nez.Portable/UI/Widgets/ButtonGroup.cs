@@ -12,64 +12,64 @@ namespace Nez.UI
 	/// </summary>
 	public class ButtonGroup
 	{
-		private List<Button> buttons = new List<Button>();
-		private List<Button> checkedButtons = new List<Button>( 1 );
-		private int minCheckCount, maxCheckCount = 1;
-		private bool uncheckLast = true;
-		private Button lastChecked;
+		private List<Button> _buttons = new List<Button>();
+		private List<Button> _checkedButtons = new List<Button>( 1 );
+		private int _minCheckCount, _maxCheckCount = 1;
+		private bool _uncheckLast = true;
+		private Button _lastChecked;
 
 
 		public ButtonGroup()
 		{
-			minCheckCount = 1;
+			_minCheckCount = 1;
 		}
 
 
 		public ButtonGroup( params Button[] buttons )
 		{
-			minCheckCount = 0;
-			add( buttons );
-			minCheckCount = 1;
+			_minCheckCount = 0;
+			Add( buttons );
+			_minCheckCount = 1;
 		}
 
 
-		public void add( Button button )
+		public void Add( Button button )
 		{
-			button._buttonGroup = null;
-			var shouldCheck = button.isChecked || buttons.Count < minCheckCount;
-			button.isChecked = false;
-			button._buttonGroup = this;
-			buttons.Add( button );
-			button.isChecked = shouldCheck;
+			button.ButtonGroup = null;
+			var shouldCheck = button.IsChecked || _buttons.Count < _minCheckCount;
+			button.IsChecked = false;
+			button.ButtonGroup = this;
+			_buttons.Add( button );
+			button.IsChecked = shouldCheck;
 		}
 
 
-		public void add( params Button[] buttons )
-		{
-			for( int i = 0, n = buttons.Length; i < n; i++ )
-				add( buttons[i] );
-		}
-
-
-		public void remove( Button button )
-		{
-			button._buttonGroup = null;
-			buttons.Remove( button );
-			checkedButtons.Remove( button );
-		}
-
-
-		public void remove( params Button[] buttons )
+		public void Add( params Button[] buttons )
 		{
 			for( int i = 0, n = buttons.Length; i < n; i++ )
-				remove( buttons[i] );
+				Add( buttons[i] );
 		}
 
 
-		public void clear()
+		public void Remove( Button button )
 		{
-			buttons.Clear();
-			checkedButtons.Clear();
+			button.ButtonGroup = null;
+			_buttons.Remove( button );
+			_checkedButtons.Remove( button );
+		}
+
+
+		public void Remove( params Button[] buttons )
+		{
+			for( int i = 0, n = buttons.Length; i < n; i++ )
+				Remove( buttons[i] );
+		}
+
+
+		public void Clear()
+		{
+			_buttons.Clear();
+			_checkedButtons.Clear();
 		}
 
 
@@ -77,14 +77,14 @@ namespace Nez.UI
 		/// Sets the first {@link TextButton} with the specified text to checked.
 		/// </summary>
 		/// <param name="text">Text.</param>
-		public void setChecked( string text )
+		public void SetChecked( string text )
 		{
-			for( var i = 0; i < buttons.Count; i++ )
+			for( var i = 0; i < _buttons.Count; i++ )
 			{
-				var button = buttons[i];
-				if( button is TextButton && text == ((TextButton)button).getText() )
+				var button = _buttons[i];
+				if( button is TextButton && text == ((TextButton)button).GetText() )
 				{
-					button.isChecked = true;
+					button.IsChecked = true;
 					return;
 				}
 			}
@@ -98,35 +98,35 @@ namespace Nez.UI
 		/// <returns>True if the new state should be allowed</returns>
 		/// <param name="button">Button.</param>
 		/// <param name="newState">New state.</param>
-		public bool canCheck( Button button, bool newState )
+		public bool CanCheck( Button button, bool newState )
 		{
-			if( button.isChecked == newState )
+			if( button.IsChecked == newState )
 				return false;
 
 			if( !newState )
 			{
 				// Keep button checked to enforce minCheckCount.
-				if( checkedButtons.Count <= minCheckCount )
+				if( _checkedButtons.Count <= _minCheckCount )
 					return false;
-				checkedButtons.Remove( button );
+				_checkedButtons.Remove( button );
 			}
 			else
 			{
 				// Keep button unchecked to enforce maxCheckCount.
-				if( maxCheckCount != -1 && checkedButtons.Count >= maxCheckCount )
+				if( _maxCheckCount != -1 && _checkedButtons.Count >= _maxCheckCount )
 				{
-					if( uncheckLast )
+					if( _uncheckLast )
 					{
-						int old = minCheckCount;
-						minCheckCount = 0;
-						lastChecked.isChecked = false;
-						minCheckCount = old;
+						int old = _minCheckCount;
+						_minCheckCount = 0;
+						_lastChecked.IsChecked = false;
+						_minCheckCount = old;
 					}
 					else
 						return false;
 				}
-				checkedButtons.Add( button );
-				lastChecked = button;
+				_checkedButtons.Add( button );
+				_lastChecked = button;
 			}
 
 			return true;
@@ -136,16 +136,16 @@ namespace Nez.UI
 		/// <summary>
 		/// Sets all buttons' {@link Button#isChecked()} to false, regardless of {@link #setMinCheckCount(int)}.
 		/// </summary>
-		public void uncheckAll()
+		public void UncheckAll()
 		{
-			int old = minCheckCount;
-			minCheckCount = 0;
-			for( int i = 0, n = buttons.Count; i < n; i++ )
+			int old = _minCheckCount;
+			_minCheckCount = 0;
+			for( int i = 0, n = _buttons.Count; i < n; i++ )
 			{
-				var button = buttons[i];
-				button.isChecked = false;
+				var button = _buttons[i];
+				button.IsChecked = false;
 			}
-			minCheckCount = old;
+			_minCheckCount = old;
 		}
 
 
@@ -153,10 +153,10 @@ namespace Nez.UI
 		/// The first checked button, or null.
 		/// </summary>
 		/// <returns>The checked.</returns>
-		public Button getChecked()
+		public Button GetChecked()
 		{
-			if( checkedButtons.Count > 0 )
-				return checkedButtons[0];
+			if( _checkedButtons.Count > 0 )
+				return _checkedButtons[0];
 			return null;
 		}
 
@@ -165,23 +165,23 @@ namespace Nez.UI
 		/// The first checked button index, or -1
 		/// </summary>
 		/// <returns>The checked index.</returns>
-		public int getCheckedIndex()
+		public int GetCheckedIndex()
 		{
-			if( checkedButtons.Count > 0 )
-				return buttons.IndexOf( checkedButtons[0] );
+			if( _checkedButtons.Count > 0 )
+				return _buttons.IndexOf( _checkedButtons[0] );
 			return -1;
 		}
 
 
-		public List<Button> getAllChecked()
+		public List<Button> GetAllChecked()
 		{
-			return checkedButtons;
+			return _checkedButtons;
 		}
 
 
-		public List<Button> getButtons()
+		public List<Button> GetButtons()
 		{
-			return buttons;
+			return _buttons;
 		}
 
 
@@ -189,9 +189,9 @@ namespace Nez.UI
 		/// Sets the minimum number of buttons that must be checked. Default is 1.
 		/// </summary>
 		/// <param name="minCheckCount">Minimum check count.</param>
-		public void setMinCheckCount( int minCheckCount )
+		public void SetMinCheckCount( int minCheckCount )
 		{
-			this.minCheckCount = minCheckCount;
+			this._minCheckCount = minCheckCount;
 		}
 
 
@@ -199,11 +199,11 @@ namespace Nez.UI
 		/// Sets the maximum number of buttons that can be checked. Set to -1 for no maximum. Default is 1.
 		/// </summary>
 		/// <param name="maxCheckCount">Max check count.</param>
-		public void setMaxCheckCount( int maxCheckCount )
+		public void SetMaxCheckCount( int maxCheckCount )
 		{
 			if( maxCheckCount == 0 )
 				maxCheckCount = -1;
-			this.maxCheckCount = maxCheckCount;
+			this._maxCheckCount = maxCheckCount;
 		}
 
 
@@ -213,9 +213,9 @@ namespace Nez.UI
 		/// checked. Default is true.
 		/// </summary>
 		/// <param name="uncheckLast">Uncheck last.</param>
-		public void setUncheckLast( bool uncheckLast )
+		public void SetUncheckLast( bool uncheckLast )
 		{
-			this.uncheckLast = uncheckLast;
+			this._uncheckLast = uncheckLast;
 		}
 
 	}

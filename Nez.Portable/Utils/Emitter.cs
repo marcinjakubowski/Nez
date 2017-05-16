@@ -29,7 +29,7 @@ namespace Nez.Systems
 		}
 
 
-		public void addObserver( T eventType, Action handler )
+		public void AddObserver( T eventType, Action handler )
 		{
 			List<Action> list = null;
 			if( !_messageTable.TryGetValue( eventType, out list ) )
@@ -38,12 +38,12 @@ namespace Nez.Systems
 				_messageTable.Add( eventType, list );
 			}
 
-			Assert.isFalse( list.Contains( handler ), "You are trying to add the same observer twice" );
+			Assert.IsFalse( list.Contains( handler ), "You are trying to add the same observer twice" );
 			list.Add( handler );
 		}
 
 
-		public void removeObserver( T eventType, Action handler )
+		public void RemoveObserver( T eventType, Action handler )
 		{
 			// we purposely do this in unsafe fashion so that it will throw an Exception if someone tries to remove a handler that
 			// was never added
@@ -51,7 +51,7 @@ namespace Nez.Systems
 		}
 
 
-		public void emit( T eventType )
+		public void Emit( T eventType )
 		{
 			List<Action> list = null;
 			if( _messageTable.TryGetValue( eventType, out list ) )
@@ -67,14 +67,14 @@ namespace Nez.Systems
 	/// simple event emitter that is designed to have its generic contraint be either an int or an enum. this variant lets you pass around
 	/// data with each event. See InputEvent for an example.
 	/// </summary>
-	public class Emitter<T,U> where T : struct, IComparable, IFormattable
+	public class Emitter<T,TU> where T : struct, IComparable, IFormattable
 	{
-		Dictionary<T,List<Action<U>>> _messageTable;
+		Dictionary<T,List<Action<TU>>> _messageTable;
 
 
 		public Emitter()
 		{
-			_messageTable = new Dictionary<T,List<Action<U>>>();
+			_messageTable = new Dictionary<T,List<Action<TU>>>();
 		}
 
 
@@ -85,25 +85,25 @@ namespace Nez.Systems
 		/// <param name="customComparer">Custom comparer.</param>
 		public Emitter( IEqualityComparer<T> customComparer )
 		{
-			_messageTable = new Dictionary<T,List<Action<U>>>( customComparer );
+			_messageTable = new Dictionary<T,List<Action<TU>>>( customComparer );
 		}
 
 
-		public void addObserver( T eventType, Action<U> handler )
+		public void AddObserver( T eventType, Action<TU> handler )
 		{
-			List<Action<U>> list = null;
+			List<Action<TU>> list = null;
 			if( !_messageTable.TryGetValue( eventType, out list ) )
 			{
-				list = new List<Action<U>>();
+				list = new List<Action<TU>>();
 				_messageTable.Add( eventType, list );
 			}
 
-			Assert.isFalse( list.Contains( handler ), "You are trying to add the same observer twice" );
+			Assert.IsFalse( list.Contains( handler ), "You are trying to add the same observer twice" );
 			list.Add( handler );
 		}
 
 
-		public void removeObserver( T eventType, Action<U> handler )
+		public void RemoveObserver( T eventType, Action<TU> handler )
 		{
 			// we purposely do this in unsafe fashion so that it will throw an Exception if someone tries to remove a handler that
 			// was never added
@@ -111,9 +111,9 @@ namespace Nez.Systems
 		}
 
 
-		public void emit( T eventType, U data )
+		public void Emit( T eventType, TU data )
 		{
-			List<Action<U>> list = null;
+			List<Action<TU>> list = null;
 			if( _messageTable.TryGetValue( eventType, out list ) )
 			{
 				for( var i = list.Count - 1; i >= 0; i-- )

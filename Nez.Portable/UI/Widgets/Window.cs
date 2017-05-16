@@ -13,170 +13,170 @@ namespace Nez.UI
 	/// </summary>
 	public class Window : Table, IInputListener
 	{
-		static private int MOVE = 1 << 5;
+		static private int _move = 1 << 5;
 
-		private WindowStyle style;
+		private WindowStyle _style;
 		bool _isMovable = true, _isResizable;
-		int resizeBorderSize = 8;
+		int _resizeBorderSize = 8;
 		bool _dragging;
 		bool _keepWithinStage = true;
-		Label titleLabel;
-		Table titleTable;
+		Label _titleLabel;
+		Table _titleTable;
 
 
 		public Window( string title, WindowStyle style )
 		{
-			Assert.isNotNull( title, "title cannot be null" );
+			Assert.IsNotNull( title, "title cannot be null" );
 
-			touchable = Touchable.Enabled;
-			clip = true;
+			Touchable = Touchable.Enabled;
+			Clip = true;
 
-			titleLabel = new Label( title, new LabelStyle( style.titleFont, style.titleFontColor ) );
-			titleLabel.setEllipsis( true );
+			_titleLabel = new Label( title, new LabelStyle( style.TitleFont, style.TitleFontColor ) );
+			_titleLabel.SetEllipsis( true );
 
-			titleTable = new Table();
-			titleTable.add( titleLabel ).setExpandX().setFillX().setMinWidth( 0 );
-			addElement( titleTable );
+			_titleTable = new Table();
+			_titleTable.Add( _titleLabel ).SetExpandX().SetFillX().SetMinWidth( 0 );
+			AddElement( _titleTable );
 
-			setStyle( style );
-			width = 150;
-			height = 150;
+			SetStyle( style );
+			Width = 150;
+			Height = 150;
 		}
 
 
-		public Window( string title, Skin skin, string styleName = null ) : this( title, skin.get<WindowStyle>( styleName ) )
+		public Window( string title, Skin skin, string styleName = null ) : this( title, skin.Get<WindowStyle>( styleName ) )
 		{}
 
 
 		#region IInputListener
 
-		int edge;
-		float startX, startY, lastX, lastY;
+		int _edge;
+		float _startX, _startY, _lastX, _lastY;
 
-		void IInputListener.onMouseEnter()
+		void IInputListener.OnMouseEnter()
 		{
 		}
 
 
-		void IInputListener.onMouseExit()
+		void IInputListener.OnMouseExit()
 		{
 		}
 
 
-		bool IInputListener.onMousePressed( Vector2 mousePos )
+		bool IInputListener.OnMousePressed( Vector2 mousePos )
 		{
-			float width = getWidth(), height = getHeight();
-			edge = 0;
+			float width = GetWidth(), height = GetHeight();
+			_edge = 0;
 			if( _isResizable && mousePos.X >= 0 && mousePos.X < width && mousePos.Y >= 0 && mousePos.Y < height )
 			{
-				if( mousePos.X < resizeBorderSize )
-					edge |= (int)AlignInternal.left;
-				if( mousePos.X > width - resizeBorderSize )
-					edge |= (int)AlignInternal.right;
-				if( mousePos.Y < resizeBorderSize )
-					edge |= (int)AlignInternal.top;
-				if( mousePos.Y > height - resizeBorderSize )
-					edge |= (int)AlignInternal.bottom;
+				if( mousePos.X < _resizeBorderSize )
+					_edge |= (int)AlignInternal.Left;
+				if( mousePos.X > width - _resizeBorderSize )
+					_edge |= (int)AlignInternal.Right;
+				if( mousePos.Y < _resizeBorderSize )
+					_edge |= (int)AlignInternal.Top;
+				if( mousePos.Y > height - _resizeBorderSize )
+					_edge |= (int)AlignInternal.Bottom;
 
-				int tempResizeBorderSize = resizeBorderSize;
-				if( edge != 0 )
+				int tempResizeBorderSize = _resizeBorderSize;
+				if( _edge != 0 )
 					tempResizeBorderSize += 25;
 				if( mousePos.X < tempResizeBorderSize )
-					edge |= (int)AlignInternal.left;
+					_edge |= (int)AlignInternal.Left;
 				if( mousePos.X > width - tempResizeBorderSize )
-					edge |= (int)AlignInternal.right;
+					_edge |= (int)AlignInternal.Right;
 				if( mousePos.Y < tempResizeBorderSize )
-					edge |= (int)AlignInternal.top;
+					_edge |= (int)AlignInternal.Top;
 				if( mousePos.Y > height - tempResizeBorderSize )
-					edge |= (int)AlignInternal.bottom;
+					_edge |= (int)AlignInternal.Bottom;
 			}
 
-			if( _isMovable && edge == 0 && mousePos.Y >= 0 && mousePos.Y <= getPadTop() && mousePos.X >= 0 && mousePos.X <= width )
-				edge = MOVE;
+			if( _isMovable && _edge == 0 && mousePos.Y >= 0 && mousePos.Y <= GetPadTop() && mousePos.X >= 0 && mousePos.X <= width )
+				_edge = _move;
 			
-			_dragging = edge != 0;
+			_dragging = _edge != 0;
 
-			startX = mousePos.X;
-			startY = mousePos.Y;
-			lastX = mousePos.X;
-			lastY = mousePos.Y;
+			_startX = mousePos.X;
+			_startY = mousePos.Y;
+			_lastX = mousePos.X;
+			_lastY = mousePos.Y;
 
 			return true;
 		}
 
 
-		void IInputListener.onMouseMoved( Vector2 mousePos )
+		void IInputListener.OnMouseMoved( Vector2 mousePos )
 		{
 			if( !_dragging )
 				return;
 			
-			float width = getWidth(), height = getHeight();
-			float windowX = getX(), windowY = getY();
+			float width = GetWidth(), height = GetHeight();
+			float windowX = GetX(), windowY = GetY();
 
-			var stage = getStage();
-			var parentWidth = stage.getWidth();
-			var parentHeight = stage.getHeight();
+			var stage = GetStage();
+			var parentWidth = stage.GetWidth();
+			var parentHeight = stage.GetHeight();
 
-			var clampPosition = _keepWithinStage && getParent() == stage.getRoot();
+			var clampPosition = _keepWithinStage && GetParent() == stage.GetRoot();
 
-			if( ( edge & MOVE ) != 0 )
+			if( ( _edge & _move ) != 0 )
 			{
-				float amountX = mousePos.X - startX, amountY = mousePos.Y - startY;
+				float amountX = mousePos.X - _startX, amountY = mousePos.Y - _startY;
 				windowX += amountX;
 				windowY += amountY;
 			}
-			if( ( edge & (int)AlignInternal.left ) != 0 )
+			if( ( _edge & (int)AlignInternal.Left ) != 0 )
 			{
-				float amountX = mousePos.X - startX;
-				if( width - amountX < minWidth )
-					amountX = -( minWidth - width );
+				float amountX = mousePos.X - _startX;
+				if( width - amountX < MinWidth )
+					amountX = -( MinWidth - width );
 				if( clampPosition && windowX + amountX < 0 )
 					amountX = -windowX;
 				width -= amountX;
 				windowX += amountX;
 			}
-			if( ( edge & (int)AlignInternal.top ) != 0 )
+			if( ( _edge & (int)AlignInternal.Top ) != 0 )
 			{
-				float amountY = mousePos.Y - startY;
-				if( height - amountY < minHeight )
-					amountY = -( minHeight - height );
+				float amountY = mousePos.Y - _startY;
+				if( height - amountY < MinHeight )
+					amountY = -( MinHeight - height );
 				if( clampPosition && windowY + amountY < 0 )
 					amountY = -windowY;
 				height -= amountY;
 				windowY += amountY;
 			}
-			if( ( edge & (int)AlignInternal.right ) != 0 )
+			if( ( _edge & (int)AlignInternal.Right ) != 0 )
 			{
-				float amountX = mousePos.X - lastX;
-				if( width + amountX < minWidth )
-					amountX = minWidth - width;
+				float amountX = mousePos.X - _lastX;
+				if( width + amountX < MinWidth )
+					amountX = MinWidth - width;
 				if( clampPosition && windowX + width + amountX > parentWidth )
 					amountX = parentWidth - windowX - width;
 				width += amountX;
 			}
-			if( ( edge & (int)AlignInternal.bottom ) != 0 )
+			if( ( _edge & (int)AlignInternal.Bottom ) != 0 )
 			{
-				float amountY = mousePos.Y - lastY;
-				if( height + amountY < minHeight )
-					amountY = minHeight - height;
+				float amountY = mousePos.Y - _lastY;
+				if( height + amountY < MinHeight )
+					amountY = MinHeight - height;
 				if( clampPosition && windowY + height + amountY > parentHeight )
 					amountY = parentHeight - windowY - height;
 				height += amountY;
 			}
 
-			lastX = mousePos.X;
-			lastY = mousePos.Y;
-			setBounds( Mathf.round( windowX ), Mathf.round( windowY ), Mathf.round( width ), Mathf.round( height ) );
+			_lastX = mousePos.X;
+			_lastY = mousePos.Y;
+			SetBounds( Mathf.Round( windowX ), Mathf.Round( windowY ), Mathf.Round( width ), Mathf.Round( height ) );
 		}
 
 
-		void IInputListener.onMouseUp( Vector2 mousePos )
+		void IInputListener.OnMouseUp( Vector2 mousePos )
 		{
 			_dragging = false;
 		}
 
 
-		bool IInputListener.onMouseScrolled( int mouseWheelDelta )
+		bool IInputListener.OnMouseScrolled( int mouseWheelDelta )
 		{
 			return false;
 		}
@@ -184,17 +184,17 @@ namespace Nez.UI
 		#endregion
 
 
-		public Window setStyle( WindowStyle style )
+		public Window SetStyle( WindowStyle style )
 		{
-			this.style = style;
-			setBackground( style.background );
+			this._style = style;
+			SetBackground( style.Background );
 
-			var labelStyle = titleLabel.getStyle();
-			labelStyle.font = style.titleFont ?? labelStyle.font;
-			labelStyle.fontColor = style.titleFontColor;
-			titleLabel.setStyle( labelStyle );
+			var labelStyle = _titleLabel.GetStyle();
+			labelStyle.Font = style.TitleFont ?? labelStyle.Font;
+			labelStyle.FontColor = style.TitleFontColor;
+			_titleLabel.SetStyle( labelStyle );
 
-			invalidateHierarchy();
+			InvalidateHierarchy();
 			return this;
 		}
 
@@ -203,151 +203,151 @@ namespace Nez.UI
 		/// Returns the window's style. Modifying the returned style may not have an effect until {@link #setStyle(WindowStyle)} is called
 		/// </summary>
 		/// <returns>The style.</returns>
-		public WindowStyle getStyle()
+		public WindowStyle GetStyle()
 		{
-			return style;
+			return _style;
 		}
 
 
-		public void keepWithinStage()
+		public void KeepWithinStage()
 		{
 			if( !_keepWithinStage )
 				return;
 
-			var stage = getStage();
-			var parentWidth = stage.getWidth();
-			var parentHeight = stage.getHeight();
+			var stage = GetStage();
+			var parentWidth = stage.GetWidth();
+			var parentHeight = stage.GetHeight();
 
-			if( x < 0 )
-				x = 0;
-			if( y < 0 )
-				y = 0;
-			if( getY( AlignInternal.bottom ) > parentHeight )
-				y = parentHeight - height;
-			if( getX( AlignInternal.right ) > parentWidth )
-				x = parentWidth - width;
+			if( X < 0 )
+				X = 0;
+			if( Y < 0 )
+				Y = 0;
+			if( GetY( AlignInternal.Bottom ) > parentHeight )
+				Y = parentHeight - Height;
+			if( GetX( AlignInternal.Right ) > parentWidth )
+				X = parentWidth - Width;
 		}
 
 
-		public override void draw( Graphics graphics, float parentAlpha )
+		public override void Draw( Graphics graphics, float parentAlpha )
 		{
-            keepWithinStage();
+            KeepWithinStage();
 
-			if( style.stageBackground != null )
+			if( _style.StageBackground != null )
 			{
-				var stagePos = stageToLocalCoordinates( Vector2.Zero );
-				var stageSize = stageToLocalCoordinates( new Vector2( stage.getWidth(), stage.getHeight() ) );
-				drawStageBackground( graphics, parentAlpha, getX() + stagePos.X, getY() + stagePos.Y, getX() + stageSize.X, getY() + stageSize.Y );
+				var stagePos = StageToLocalCoordinates( Vector2.Zero );
+				var stageSize = StageToLocalCoordinates( new Vector2( Stage.GetWidth(), Stage.GetHeight() ) );
+				DrawStageBackground( graphics, parentAlpha, GetX() + stagePos.X, GetY() + stagePos.Y, GetX() + stageSize.X, GetY() + stageSize.Y );
 			}
 
-			base.draw( graphics, parentAlpha );
+			base.Draw( graphics, parentAlpha );
 		}
 
 
-		protected void drawStageBackground( Graphics graphics, float parentAlpha, float x, float y, float width, float height )
+		protected void DrawStageBackground( Graphics graphics, float parentAlpha, float x, float y, float width, float height )
 		{
-			style.stageBackground.draw( graphics, x, y, width, height, new Color( color, color.A * parentAlpha ) );
+			_style.StageBackground.Draw( graphics, x, y, width, height, new Color( Color, Color.A * parentAlpha ) );
 		}
 
 
-		protected override void drawBackground( Graphics graphics, float parentAlpha, float x, float y )
+		protected override void DrawBackground( Graphics graphics, float parentAlpha, float x, float y )
 		{
-			base.drawBackground( graphics, parentAlpha, x, y );
+			base.DrawBackground( graphics, parentAlpha, x, y );
 
 			// Manually draw the title table before clipping is done.
-			titleTable.color.A = color.A;
-			float padTop = getPadTop(), padLeft = getPadLeft();
-			titleTable.setSize( getWidth() - padLeft - getPadRight(), padTop );
-			titleTable.setPosition( padLeft, 0 );
+			_titleTable.Color.A = Color.A;
+			float padTop = GetPadTop(), padLeft = GetPadLeft();
+			_titleTable.SetSize( GetWidth() - padLeft - GetPadRight(), padTop );
+			_titleTable.SetPosition( padLeft, 0 );
 		}
 
 
-		public override Element hit( Vector2 point )
+		public override Element Hit( Vector2 point )
 		{
 			// TODO: is this correct? should we be transforming the point here?
-			if( !hasParent() )
-				point = stageToLocalCoordinates( point );
+			if( !HasParent() )
+				point = StageToLocalCoordinates( point );
 
-			var hit = base.hit( point );
+			var hit = base.Hit( point );
 			if( hit == null || hit == this )
 				return hit;
 
-			var height = getHeight();
-			if( y <= height && y >= height - getPadTop() && x >= 0 && x <= getWidth() )
+			var height = GetHeight();
+			if( Y <= height && Y >= height - GetPadTop() && X >= 0 && X <= GetWidth() )
 			{
 				// Hit the title bar, don't use the hit child if it is in the Window's table.
 				Element current = hit;
-				while( current.getParent() != this )
-					current = current.getParent();
+				while( current.GetParent() != this )
+					current = current.GetParent();
 				
-				if( getCell( current ) != null )
+				if( GetCell( current ) != null )
 					return this;
 			}
 			return hit;
 		}
         
 
-		public bool isMovable()
+		public bool IsMovable()
 		{
 			return _isMovable;
 		}
 
 
-		public Window setMovable( bool isMovable )
+		public Window SetMovable( bool isMovable )
 		{
 			_isMovable = isMovable;
 			return this;
 		}
 
 
-		public Window setKeepWithinStage( bool keepWithinStage )
+		public Window SetKeepWithinStage( bool keepWithinStage )
 		{
 			_keepWithinStage = keepWithinStage;
 			return this;
 		}
 
 
-		public bool isResizable()
+		public bool IsResizable()
 		{
 			return _isResizable;
 		}
 
 
-		public Window setResizable( bool isResizable )
+		public Window SetResizable( bool isResizable )
 		{
 			_isResizable = isResizable;
 			return this;
 		}
 
 
-		public Window setResizeBorderSize( int resizeBorderSize )
+		public Window SetResizeBorderSize( int resizeBorderSize )
 		{
-			this.resizeBorderSize = resizeBorderSize;
+			this._resizeBorderSize = resizeBorderSize;
 			return this;
 		}
 
 
-		public bool isDragging()
+		public bool IsDragging()
 		{
 			return _dragging;
 		}
 
 
-		public float getPrefWidth()
+		public float GetPrefWidth()
 		{
-			return Math.Max( base.preferredWidth, titleLabel.preferredWidth + getPadLeft() + getPadRight() );
+			return Math.Max( base.PreferredWidth, _titleLabel.PreferredWidth + GetPadLeft() + GetPadRight() );
 		}
 
 
-		public Table getTitleTable()
+		public Table GetTitleTable()
 		{
-			return titleTable;
+			return _titleTable;
 		}
 
 
-		public Label getTitleLabel()
+		public Label GetTitleLabel()
 		{
-			return titleLabel;
+			return _titleLabel;
 		}
 
 	}
@@ -355,36 +355,36 @@ namespace Nez.UI
 
 	public class WindowStyle
 	{
-		public BitmapFont titleFont;
+		public BitmapFont TitleFont;
 		/** Optional. */
-		public IDrawable background;
+		public IDrawable Background;
 		/** Optional. */
-		public Color titleFontColor = Color.White;
+		public Color TitleFontColor = Color.White;
 		/** Optional. */
-		public IDrawable stageBackground;
+		public IDrawable StageBackground;
 
 
 		public WindowStyle()
 		{
-			titleFont = Graphics.instance.bitmapFont;
+			TitleFont = Graphics.Instance.BitmapFont;
 		}
 
 
 		public WindowStyle( BitmapFont titleFont, Color titleFontColor, IDrawable background )
 		{
-			this.titleFont = titleFont ?? Graphics.instance.bitmapFont;
-			this.background = background;
-			this.titleFontColor = titleFontColor;
+			this.TitleFont = titleFont ?? Graphics.Instance.BitmapFont;
+			this.Background = background;
+			this.TitleFontColor = titleFontColor;
 		}
 
 
-		public WindowStyle clone()
+		public WindowStyle Clone()
 		{
 			return new WindowStyle {
-				background = background,
-				titleFont = titleFont,
-				titleFontColor = titleFontColor,
-				stageBackground = stageBackground
+				Background = Background,
+				TitleFont = TitleFont,
+				TitleFontColor = TitleFontColor,
+				StageBackground = StageBackground
 			};
 		}
 	}

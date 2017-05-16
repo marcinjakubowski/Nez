@@ -10,15 +10,15 @@ namespace Nez.Overlap2D
 		protected override O2DScene Read( ContentReader reader, O2DScene existingInstance )
 		{
 			var scene = new O2DScene();
-			scene.sceneName = reader.ReadString();
-			scene.ambientColor = reader.ReadColor();
-			scene.composite = readComposite( reader );
+			scene.SceneName = reader.ReadString();
+			scene.AmbientColor = reader.ReadColor();
+			scene.Composite = ReadComposite( reader );
 
 			return scene;
 		}
 
 
-		O2DComposite readComposite( ContentReader reader )
+		O2DComposite ReadComposite( ContentReader reader )
 		{
 			var composite = new O2DComposite();
 
@@ -26,10 +26,10 @@ namespace Nez.Overlap2D
 			for( var i = 0; i < imageCount; i++ )
 			{
 				var image = new O2DImage();
-				readMainItem( reader, image );
-				image.imageName = reader.ReadString();
+				ReadMainItem( reader, image );
+				image.ImageName = reader.ReadString();
 
-				composite.images.Add( image );
+				composite.Images.Add( image );
 			}
 
 
@@ -37,10 +37,10 @@ namespace Nez.Overlap2D
 			for( var i = 0; i < colorPrimitiveCount; i++ )
 			{
 				var colorPrim = new O2DColorPrimitive();
-				readMainItem( reader, colorPrim );
-				readColorPrimitive( reader, colorPrim );
+				ReadMainItem( reader, colorPrim );
+				ReadColorPrimitive( reader, colorPrim );
 
-				composite.colorPrimitives.Add( colorPrim );
+				composite.ColorPrimitives.Add( colorPrim );
 			}
 
 
@@ -48,50 +48,50 @@ namespace Nez.Overlap2D
 			for( var i = 0; i < compositeItemCount; i++ )
 			{
 				var compositeItem = new O2DCompositeItem();
-				readMainItem( reader, compositeItem );
-				compositeItem.composite = readComposite( reader );
+				ReadMainItem( reader, compositeItem );
+				compositeItem.Composite = ReadComposite( reader );
 
-				composite.compositeItems.Add( compositeItem );
+				composite.CompositeItems.Add( compositeItem );
 			}
 
 			return composite;
 		}
 
 
-		void readMainItem( ContentReader reader, O2DMainItem item )
+		void ReadMainItem( ContentReader reader, O2DMainItem item )
 		{
-			item.uniqueId = reader.ReadInt32();
-			item.itemIdentifier = reader.ReadString();
-			item.itemName = reader.ReadString();
-			item.customVars = reader.ReadString();
-			item.x = reader.ReadSingle();
-			item.y = reader.ReadSingle();
-			item.scaleX = reader.ReadSingle();
-			item.scaleY = reader.ReadSingle();
-			item.originX = reader.ReadSingle();
-			item.originY = reader.ReadSingle();
-			item.rotation = reader.ReadSingle();
-			item.zIndex = reader.ReadInt32();
-			item.layerDepth = reader.ReadSingle();
-			item.layerName = reader.ReadString();
-			item.renderLayer = reader.ReadInt32();
-			item.tint = reader.ReadColor();
+			item.UniqueId = reader.ReadInt32();
+			item.ItemIdentifier = reader.ReadString();
+			item.ItemName = reader.ReadString();
+			item.CustomVars = reader.ReadString();
+			item.X = reader.ReadSingle();
+			item.Y = reader.ReadSingle();
+			item.ScaleX = reader.ReadSingle();
+			item.ScaleY = reader.ReadSingle();
+			item.OriginX = reader.ReadSingle();
+			item.OriginY = reader.ReadSingle();
+			item.Rotation = reader.ReadSingle();
+			item.ZIndex = reader.ReadInt32();
+			item.LayerDepth = reader.ReadSingle();
+			item.LayerName = reader.ReadString();
+			item.RenderLayer = reader.ReadInt32();
+			item.Tint = reader.ReadColor();
 		}
 
 
-		void readColorPrimitive( ContentReader reader, O2DColorPrimitive colorPrim )
+		void ReadColorPrimitive( ContentReader reader, O2DColorPrimitive colorPrim )
 		{
 			var count = reader.ReadInt32();
 
 			// special care needs to be taken here. if we have 4 verts everything will be fine. If we have any other number we need to
 			// reverse the array
-			colorPrim.polygon = new Vector2[count];
+			colorPrim.Polygon = new Vector2[count];
 
 			for( var i = 0; i < count; i++ )
-				colorPrim.polygon[i] = reader.ReadVector2();
+				colorPrim.Polygon[i] = reader.ReadVector2();
 
 			if( count != 4 )
-				Array.Reverse( colorPrim.polygon );
+				Array.Reverse( colorPrim.Polygon );
 		}
 
 	}

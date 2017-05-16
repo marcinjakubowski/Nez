@@ -7,42 +7,42 @@ namespace Nez.Tiled
 {
 	public class TiledTileset
 	{
-		public Texture2D texture;
-		public readonly int firstId;
-		public readonly int tileWidth;
-		public readonly int tileHeight;
-		public int spacing;
-		public int margin;
-		public Dictionary<string,string> properties = new Dictionary<string,string>();
-		public List<TiledTilesetTile> tiles = new List<TiledTilesetTile>();
+		public Texture2D Texture;
+		public readonly int FirstId;
+		public readonly int TileWidth;
+		public readonly int TileHeight;
+		public int Spacing;
+		public int Margin;
+		public Dictionary<string,string> Properties = new Dictionary<string,string>();
+		public List<TiledTilesetTile> Tiles = new List<TiledTilesetTile>();
 
-		protected readonly Dictionary<int,Subtexture> _regions;
+		protected readonly Dictionary<int,Subtexture> Regions;
 
 
 		public TiledTileset( Texture2D texture, int firstId )
 		{
-			this.texture = texture;
-			this.firstId = firstId;
-			_regions = new Dictionary<int,Subtexture>();
+			this.Texture = texture;
+			this.FirstId = firstId;
+			Regions = new Dictionary<int,Subtexture>();
 		}
 
 
 		public TiledTileset( Texture2D texture, int firstId, int tileWidth, int tileHeight, int spacing = 2, int margin = 2 )
 		{
-			this.texture = texture;
-			this.firstId = firstId;
-			this.tileWidth = tileWidth;
-			this.tileHeight = tileHeight;
-			this.spacing = spacing;
-			this.margin = margin;
+			this.Texture = texture;
+			this.FirstId = firstId;
+			this.TileWidth = tileWidth;
+			this.TileHeight = tileHeight;
+			this.Spacing = spacing;
+			this.Margin = margin;
 
 			var id = firstId;
-			_regions = new Dictionary<int,Subtexture>();
+			Regions = new Dictionary<int,Subtexture>();
 			for( var y = margin; y < texture.Height - margin; y += tileHeight + spacing )
 			{
 				for( var x = margin; x < texture.Width - margin; x += tileWidth + spacing )
 				{
-					_regions.Add( id, new Subtexture( texture, x, y, tileWidth, tileHeight ) );
+					Regions.Add( id, new Subtexture( texture, x, y, tileWidth, tileHeight ) );
 					id++;
 				}
 			}
@@ -54,9 +54,9 @@ namespace Nez.Tiled
 		/// </summary>
 		/// <returns>The tile texture region.</returns>
 		/// <param name="id">Identifier.</param>
-		public virtual Subtexture getTileTextureRegion( int id )
+		public virtual Subtexture GetTileTextureRegion( int id )
 		{
-			return _regions[id];
+			return Regions[id];
 		}
 	}
 }

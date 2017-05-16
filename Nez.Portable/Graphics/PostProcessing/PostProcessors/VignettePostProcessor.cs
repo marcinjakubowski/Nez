@@ -6,7 +6,7 @@ namespace Nez
 {
 	public class VignettePostProcessor : PostProcessor
 	{
-		public float power
+		public float Power
 		{
 			get { return _power; }
 			set
@@ -15,13 +15,13 @@ namespace Nez
 				{
 					_power = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_powerParam.SetValue( _power );
 				}
 			}
 		}
 
-		public float radius
+		public float Radius
 		{
 			get { return _radius; }
 			set
@@ -30,7 +30,7 @@ namespace Nez
 				{
 					_radius = value;
 
-					if( effect != null )
+					if( Effect != null )
 						_radiusParam.SetValue( _radius );
 				}
 			}
@@ -46,12 +46,12 @@ namespace Nez
 		{}
 
 
-		public override void onAddedToScene()
+		public override void OnAddedToScene()
 		{
-			effect = scene.content.loadEffect<Effect>( "vignette", EffectResource.vignetteBytes );
+			Effect = Scene.Content.LoadEffect<Effect>( "vignette", EffectResource.VignetteBytes );
 
-			_powerParam = effect.Parameters["_power"];
-			_radiusParam = effect.Parameters["_radius"];
+			_powerParam = Effect.Parameters["_power"];
+			_radiusParam = Effect.Parameters["_radius"];
 			_powerParam.SetValue( _power );
 			_radiusParam.SetValue( _radius );
 		}

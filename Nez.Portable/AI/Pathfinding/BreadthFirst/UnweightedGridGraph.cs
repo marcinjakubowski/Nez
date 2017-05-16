@@ -11,7 +11,7 @@ namespace Nez.AI.Pathfinding
 	/// </summary>
 	public class UnweightedGridGraph : IUnweightedGraph<Point>
 	{
-		static readonly Point[] DIRS = new []
+		static readonly Point[] Dirs = new []
 		{
 			new Point( 1, 0 ),
 			new Point( 0, -1 ),
@@ -19,7 +19,7 @@ namespace Nez.AI.Pathfinding
 			new Point( 0, 1 )
 		};
 
-		public HashSet<Point> walls = new HashSet<Point>();
+		public HashSet<Point> Walls = new HashSet<Point>();
 
 		int _width, _height;
 		List<Point> _neighbors = new List<Point>( 4 );
@@ -34,40 +34,40 @@ namespace Nez.AI.Pathfinding
 
 		public UnweightedGridGraph( TiledTileLayer tiledLayer )
 		{
-			_width = tiledLayer.width;
-			_height = tiledLayer.height;
+			_width = tiledLayer.Width;
+			_height = tiledLayer.Height;
 
-			for( var y = 0; y < tiledLayer.tiledMap.height; y++ )
+			for( var y = 0; y < tiledLayer.TiledMap.Height; y++ )
 			{
-				for( var x = 0; x < tiledLayer.tiledMap.width; x++ )
+				for( var x = 0; x < tiledLayer.TiledMap.Width; x++ )
 				{
-					if( tiledLayer.getTile( x, y ) != null )
-						walls.Add( new Point( x, y ) );
+					if( tiledLayer.GetTile( x, y ) != null )
+						Walls.Add( new Point( x, y ) );
 				}
 			}
 		}
 
 
-		public bool isNodeInBounds( Point node )
+		public bool IsNodeInBounds( Point node )
 		{
 			return 0 <= node.X && node.X < _width && 0 <= node.Y && node.Y < _height;
 		}
 
 
-		public bool isNodePassable( Point node )
+		public bool IsNodePassable( Point node )
 		{
-			return !walls.Contains( node );
+			return !Walls.Contains( node );
 		}
 
 
-		IEnumerable<Point> IUnweightedGraph<Point>.getNeighbors( Point node )
+		IEnumerable<Point> IUnweightedGraph<Point>.GetNeighbors( Point node )
 		{
 			_neighbors.Clear();
 
-			foreach( var dir in DIRS )
+			foreach( var dir in Dirs )
 			{
 				var next = new Point( node.X + dir.X, node.Y + dir.Y );
-				if( isNodeInBounds( next ) && isNodePassable( next ) )
+				if( IsNodeInBounds( next ) && IsNodePassable( next ) )
 					_neighbors.Add( next );
 			}
 
@@ -80,9 +80,9 @@ namespace Nez.AI.Pathfinding
 		/// </summary>
 		/// <param name="start">Start.</param>
 		/// <param name="goal">Goal.</param>
-		public List<Point> search( Point start, Point goal )
+		public List<Point> Search( Point start, Point goal )
 		{
-			return BreadthFirstPathfinder.search( this, start, goal );
+			return BreadthFirstPathfinder.Search( this, start, goal );
 		}
 
 	}
