@@ -291,7 +291,7 @@ namespace Nez
         /// <param name="self">Self.</param>
         /// <param name="to">To.</param>
         /// <param name="duration">Duration.</param>
-        public static ITween<Vector2> TweenLocalRotationFullo(this Entity self, float to, float duration = 0.3f)
+        public static ITween<Vector2> TweenLocalRotationFullTo(this Entity self, float to, float duration = 0.3f)
         {
             var tween = Pool<TransformVector2Tween>.Obtain();
             tween.SetTargetAndType(self.Transform, TransformTargetType.LocalRotationFull);
