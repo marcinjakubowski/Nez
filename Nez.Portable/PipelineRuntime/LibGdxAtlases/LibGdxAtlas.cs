@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nez.Sprites;
 using Nez.TextureAtlases;
 using Nez.Textures;
 
@@ -10,6 +11,7 @@ namespace Nez.LibGdxAtlases
 	public class LibGdxAtlas
 	{
 		public List<TextureAtlas> Atlases = new List<TextureAtlas>();
+        public Dictionary<string, List<Subtexture>> Animations = new Dictionary<string, List<Subtexture>>();
 
 
 		/// <summary>
@@ -53,6 +55,15 @@ namespace Nez.LibGdxAtlases
 		{
 			return Get( name );
 		}
+        /// <summary>
+        /// gets the sprite animation frames for a given name
+        /// </summary>
+        /// <param name="name">name of the anmation</param>
+        /// <returns></returns>
+	    public List<Subtexture> GetAnimation( string name )
+        {
+            return Animations[name];
+        }
 	}
 }
 
